@@ -30,7 +30,7 @@ export default function Home() {
       if (!supabase) { setLoading(false); return; }
       const [{ data: brandData }, { data: reviewData }, { data: authData }] = await Promise.all([
         supabase.from('fashion_brands').select('id, Brand, Category, Price_Range, Website, Contact_Number').order('Brand'),
-        supabase.from('reviews').select('id, brand_id, rating, review_text, created_at, website_photo_url, received_photo_url, category_ratings').eq('status', 'approved').order('created_at', { ascending: false }).limit(30),
+        supabase.from('reviews').select('id, brand_id, rating, review_text, created_at, website_photo_url, received_photo_url, category_ratings').eq('status', 'approved').order('created_at', { ascending: false }),
         supabase.auth.getUser(),
       ]);
       setBrands((brandData || []) as Brand[]);
