@@ -92,3 +92,61 @@ footer .wordmark {
     font-size: 25px;
   }
 }
+
+
+/* PULP circular brand mark */
+.topbar .wordmark {
+  width: 76px;
+  height: 76px;
+  border: 1.5px solid #d6a077;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 25px;
+  font-weight: 400;
+  letter-spacing: -1.5px;
+  color: #f6f0e8;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.topbar .wordmark span {
+  position: absolute;
+  top: 18px;
+  right: 10px;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  font-size: 7px;
+  letter-spacing: 0;
+  color: #d6a077;
+}
+
+.topbar {
+  background: #292522;
+  border-bottom: 1px solid rgba(214, 160, 119, .2);
+}
+
+.topbar nav a {
+  color: #f6f0e8;
+}
+
+.topbar .nav-cta {
+  color: #f6f0e8;
+  border-color: #d6a077;
+}
+
+@media (max-width: 680px) {
+  .topbar .wordmark {
+    width: 58px;
+    height: 58px;
+    font-size: 20px;
+  }
+
+  .topbar .wordmark span {
+    top: 12px;
+    right: 7px;
+  }
+}
