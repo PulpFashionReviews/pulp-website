@@ -221,3 +221,43 @@ body {
     background: #f6f0e8;
   }
 }
+
+/* Final contrast and spacing for lower sections */
+.promise-strip {
+  background: rgba(246, 240, 232, 0.97);
+}
+
+.directory,
+.write-section {
+  background: #f6f0e8;
+}
+
+.review-banner {
+  background: #292522;
+}
+
+.section-pad {
+  padding-top: 80px;
+  padding-bottom: 80px;
+}
+
+.brand-grid {
+  gap: 20px;
+}
+
+.brand-card {
+  background: #fffdf9;
+  border: 1px solid rgba(120, 82, 60, 0.14);
+  border-radius: 3px;
+}
+
+@media (max-width: 680px) {
+  .section-pad {
+    padding-top: 48px;
+    padding-bottom: 48px;
+  }
+
+  .brand-grid {
+    gap: 14px;
+  }
+}
