@@ -261,3 +261,64 @@ body {
     gap: 14px;
   }
 }
+
+
+/* PULP promise: editorial information, not clickable cards */
+.promise-item {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  cursor: default !important;
+  transform: none !important;
+  padding: 12px 24px !important;
+  min-height: 0 !important;
+  justify-content: center;
+  position: relative;
+}
+
+/* Fine vertical dividers between the four columns */
+.promise-item:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 15%;
+  height: 70%;
+  width: 1px;
+  background: #d8c6b5;
+}
+
+.promise-item:hover {
+  background: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.promise-item h3 {
+  font-size: 17px;
+  font-weight: 500;
+  color: #292522;
+}
+
+.promise-item p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #71655b;
+}
+
+.promise-icon {
+  font-size: 27px;
+  color: #7b233f;
+}
+
+@media (max-width: 760px) {
+  .promise-item:nth-child(odd)::after {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .promise-item::after {
+    display: none;
+  }
+}
