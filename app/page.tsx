@@ -34,7 +34,7 @@ export default function Home() {
       ]);
       setBrands((brandData || []) as Brand[]);
       setReviews((reviewData || []) as Review[]);
-      setUserEmail(authData.data.user?.email || null);
+      setUserEmail(authData.user?.email || null);
       setLoading(false);
     }
     load();
