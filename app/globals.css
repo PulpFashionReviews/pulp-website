@@ -15,3 +15,19 @@
   background-size: cover;
   background-position: center;
 }
+
+/* Hide the old CSS artwork; use the new photo instead */
+.hero-art {
+  display: none;
+}
+
+.hero {
+  display: block;
+  min-height: 570px;
+  background-size: cover;
+  background-position: center;
+}
+
+.hero-copy {
+  max-width: 650px;
+}
