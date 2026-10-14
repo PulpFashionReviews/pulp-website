@@ -150,3 +150,42 @@ footer .wordmark {
     right: 7px;
   }
 }
+
+
+/* Continue the editorial photo behind the page sections */
+body {
+  background-color: #292522;
+  background-image:
+    linear-gradient(
+      rgba(41, 37, 34, 0.12),
+      rgba(41, 37, 34, 0.12)
+    ),
+    url("/Sunlit%20Maroon%20Textiles%20in%20a%20Jali%20Courtyard_edited.png");
+  background-size: cover;
+  background-position: center top;
+  background-attachment: fixed;
+}
+
+/* Keep the hero balanced on desktop */
+.hero {
+  min-height: 650px;
+  background-position: center 48%;
+}
+
+/* Allow the lower sections to reveal the photo */
+.promise-strip,
+.directory,
+.write-section {
+  background-color: rgba(246, 241, 233, 0.86);
+}
+
+@media (max-width: 680px) {
+  .hero {
+    min-height: 0;
+    background-position: 58% center;
+  }
+
+  body {
+    background-attachment: scroll;
+  }
+}
