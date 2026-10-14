@@ -189,3 +189,35 @@ body {
     background-attachment: scroll;
   }
 }
+
+
+/* Improve readability of the lower homepage panels */
+.promise-strip {
+  background: rgba(246, 240, 232, 0.96);
+  border-top: 1px solid rgba(255, 255, 255, 0.45);
+  border-bottom: 1px solid rgba(90, 58, 43, 0.12);
+}
+
+.directory,
+.write-section {
+  background: rgba(246, 240, 232, 0.95);
+}
+
+.review-banner {
+  background: rgba(41, 37, 34, 0.96);
+}
+
+.brand-card,
+.review-form,
+.login-card {
+  border: 1px solid rgba(120, 82, 60, 0.16);
+  box-shadow: 0 8px 24px rgba(41, 30, 24, 0.05);
+}
+
+@media (max-width: 680px) {
+  .promise-strip,
+  .directory,
+  .write-section {
+    background: #f6f0e8;
+  }
+}
