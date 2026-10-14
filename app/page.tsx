@@ -12,6 +12,7 @@ export default function Home() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All categories');
+  const [sortBy, setSortBy] = useState('popular');
   const [selected, setSelected] = useState<Brand | null>(null);
   const [email, setEmail] = useState('');
   const [userEmail, setUserEmail] = useState<string | null>(null);
@@ -43,11 +44,55 @@ export default function Home() {
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  const filteredBrands = useMemo(() => brands.filter((brand) => {
-    const matchesSearch = (brand.Brand || '').toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = category === 'All categories' || (brand.Category || '').toLowerCase().includes(category.toLowerCase());
+  
+const filteredBrands = useMemo(() => {
+  const matching = brands.filter((brand) => {
+    const matchesSearch = (brand.Brand || '')
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
+    const matchesCategory =
+      category === 'All categories' ||
+      (brand.Category || '')
+        .toLowerCase()
+        .includes(category.toLowerCase());
+
     return matchesSearch && matchesCategory;
-  }), [brands, search, category]);
+  });
+
+  const reviewCount = (brandId: number) =>
+    reviews.filter((r) => r.brand_id === brandId).length;
+
+  const averageRating = (brandId: number) => {
+    const rows = reviews.filter((r) => r.brand_id === brandId);
+    return rows.length
+      ? rows.reduce((sum, r) => sum + r.rating, 0) / rows.length
+      : 0;
+  };
+
+  return matching.sort((a, b) => {
+    const countDifference = reviewCount(b.id) - reviewCount(a.id);
+    const ratingDifference = averageRating(b.id) - averageRating(a.id);
+
+    if (sortBy === 'alphabetical') {
+      return (a.Brand || '').localeCompare(b.Brand || '');
+    }
+
+    if (sortBy === 'highest-rated') {
+      return ratingDifference || countDifference ||
+        (a.Brand || '').localeCompare(b.Brand || '');
+    }
+
+    if (sortBy === 'most-reviewed') {
+      return countDifference ||
+        (a.Brand || '').localeCompare(b.Brand || '');
+    }
+
+    return countDifference || ratingDifference ||
+      (a.Brand || '').localeCompare(b.Brand || '');
+  });
+}, [brands, reviews, search, category, sortBy]);
+
 
   const brandReviews = selected ? reviews.filter((r) => r.brand_id === selected.id) : [];
   const averageFor = (brandId: number) => {
@@ -97,6 +142,20 @@ export default function Home() {
     <section className="directory section-pad" id="designers"><div className="section-top"><div><span className="section-kicker">THE DIRECTORY</span><h2>Find your next <em>favorite.</em></h2><p className="section-description">Explore Pakistani fashion brands, then read what real customers have to say.</p></div><div className="directory-count"><strong>{brands.length || '305'}</strong><span>BRANDS TO DISCOVER</span></div></div>
       {!supabase && <div className="setup-note">Your page is ready to connect. Add your Supabase keys to load the live brand directory and reviews.</div>}
       <div className="search-row"><label className="search-box"><span>⌕</span><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search designers by name…" /></label><select aria-label="Filter by category" value={category} onChange={(e) => setCategory(e.target.value)}><option>All categories</option>{Array.from(new Set(brands.map(b => b.Category).filter((x): x is string => !!x))).sort().map((c) => <option key={c}>{c}</option>)}</select></div>
+
+      
+<select
+  aria-label="Sort designers"
+  value={sortBy}
+  onChange={(e) => setSortBy(e.target.value)}
+>
+  <option value="popular">Most popular</option>
+  <option value="highest-rated">Highest rated</option>
+  <option value="most-reviewed">Most reviewed</option>
+  <option value="alphabetical">A–Z</option>
+</select>
+
+      
       <div className="brand-grid">{loading ? <p className="empty-state">Loading the directory…</p> : filteredBrands.slice(0, 12).map((brand, i) => <article className="brand-card" key={brand.id}><div className={`brand-monogram tone-${i % 5}`}><span>{(brand.Brand || 'P').slice(0, 1).toUpperCase()}</span><i>✳</i></div><div className="brand-info"><span className="brand-category">{brand.Category || 'PAKISTANI FASHION'}</span><h3>{brand.Brand}</h3><p>{brand.Price_Range || 'Price details not listed'}</p><div className="brand-card-bottom">{averageFor(brand.id) ? <span className="rating">★ {averageFor(brand.id)} <small>({reviews.filter(r => r.brand_id === brand.id).length})</small></span> : <span className="no-rating">Be the first to review</span>}<button onClick={() => { setSelected(brand); setNotice(''); }} aria-label={`View ${brand.Brand} details`}>View <span>↗</span></button></div></div></article>)}</div>
       {!loading && filteredBrands.length === 0 && <p className="empty-state">No designers found. Try another search.</p>}
       {filteredBrands.length > 12 && <p className="directory-note">Showing 12 of {filteredBrands.length} matches. Refine your search to find a specific designer.</p>}
