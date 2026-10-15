@@ -322,3 +322,20 @@ body {
     display: none;
   }
 }
+
+
+.brand-disclaimer {
+  max-width: 760px;
+  margin: 20px auto;
+  color: #d5c8bc;
+  font-size: 12px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .brand-disclaimer {
+    padding: 0 18px;
+    font-size: 11px;
+  }
+}
