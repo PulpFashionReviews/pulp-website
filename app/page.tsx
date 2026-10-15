@@ -11,7 +11,7 @@ export default function Home() {
   const [brands, setBrands] = useState<Brand[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [search, setSearch] = useState('');
-  const [category, setCategory] = useState('All categories');
+  const [categories, setCategories] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState('popular');
   const [selected, setSelected] = useState<Brand | null>(null);
   const [email, setEmail] = useState('');
