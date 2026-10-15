@@ -188,9 +188,9 @@ export default function Home() {
     <em>matters.</em>
   </h1>
   <p className="hero-intro">
-    Share your experience with Pakistani and Indian fashion designers.
-    See what other customers have to say and help each other make more
-    informed shopping decisions.
+    Real experiences from customers who have shopped Pakistani and Indian fashion.
+  Share honest reviews, discover what others have experienced, and help
+  each other shop with confidence.
   </p>
   <div className="hero-actions">
     <a className="button-primary" href="#write-review">
