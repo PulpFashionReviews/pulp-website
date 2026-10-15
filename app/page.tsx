@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase';
 
 type Brand = { id: number; Brand: string | null; Category: string | null; Price_Range: string | null; Website: string | null; Contact_Number: string | null };
 type Review = { id: number; brand_id: number; rating: number; review_text: string; created_at: string; website_photo_url: string | null; received_photo_url: string | null; category_ratings: Record<string, number> | null };
-const categories = ['Customer service', 'Communication', 'Product quality', 'Accuracy to photos', 'Delivery', 'Value for money'];
+const reviewCategories = ['Customer service', 'Communication', 'Product quality', 'Accuracy to photos', 'Delivery', 'Value for money'];
 
 export default function Home() {
   const [brands, setBrands] = useState<Brand[]>([]);
@@ -45,53 +45,98 @@ export default function Home() {
   }, []);
 
   
-const filteredBrands = useMemo(() => {
-  const matching = brands.filter((brand) => {
-    const matchesSearch = (brand.Brand || '')
-      .toLowerCase()
-      .includes(search.toLowerCase());
 
-    const matchesCategory =
-      category === 'All categories' ||
-      (brand.Category || '')
-        .toLowerCase()
-        .includes(category.toLowerCase());
 
-    return matchesSearch && matchesCategory;
-  });
+  const normalizedCategory = (value: string) => {
+    const cleaned = value.trim().toLowerCase();
 
-  const reviewCount = (brandId: number) =>
-    reviews.filter((r) => r.brand_id === brandId).length;
+    const labels: Record<string, string> = {
+      bridal: 'Bridal',
+      couture: 'Couture',
+      'luxury pret': 'Luxury Pret',
+      pret: 'Pret',
+      'ready-to-wear unstitched': 'Ready-to-Wear Unstitched',
+      'designer women\'s wear': 'Designer Women\'s Wear',
+      'women\'s apparel lifestyle': 'Women\'s Apparel Lifestyle',
+      womenswear: 'Womenswear',
+      studio: 'Studio',
+      festive: 'Festive',
+      formal: 'Formal',
+      lawn: 'Lawn',
+      unstitched: 'Unstitched',
+      'wedding wear': 'Wedding Wear',
+      basics: 'Basics',
+      collection: 'Collection',
+      'eastern wear': 'Eastern Wear',
+    };
 
-  const averageRating = (brandId: number) => {
-    const rows = reviews.filter((r) => r.brand_id === brandId);
-    return rows.length
-      ? rows.reduce((sum, r) => sum + r.rating, 0) / rows.length
-      : 0;
+    return labels[cleaned] ??
+      cleaned.replace(/\b\w/g, (letter) => letter.toUpperCase());
   };
 
-  return matching.sort((a, b) => {
-    const countDifference = reviewCount(b.id) - reviewCount(a.id);
-    const ratingDifference = averageRating(b.id) - averageRating(a.id);
+  const availableCategories = Array.from(
+    new Set(
+      brands.flatMap((brand) =>
+        (brand.Category || '')
+          .split(',')
+          .map(normalizedCategory)
+          .filter(Boolean)
+      )
+    )
+  ).sort();
 
-    if (sortBy === 'alphabetical') {
-      return (a.Brand || '').localeCompare(b.Brand || '');
-    }
+  const filteredBrands = useMemo(() => {
+    const matching = brands.filter((brand) => {
+      const matchesSearch = (brand.Brand || '')
+        .toLowerCase()
+        .includes(search.toLowerCase());
 
-    if (sortBy === 'highest-rated') {
-      return ratingDifference || countDifference ||
+      const brandCategories = (brand.Category || '')
+        .split(',')
+        .map(normalizedCategory);
+
+      const matchesCategory =
+        categories.length === 0 ||
+        categories.some((selectedCategory) =>
+          brandCategories.includes(selectedCategory)
+        );
+
+      return matchesSearch && matchesCategory;
+    });
+
+    const reviewCount = (brandId: number) =>
+      reviews.filter((r) => r.brand_id === brandId).length;
+
+    const averageRating = (brandId: number) => {
+      const rows = reviews.filter((r) => r.brand_id === brandId);
+      return rows.length
+        ? rows.reduce((sum, r) => sum + r.rating, 0) / rows.length
+        : 0;
+    };
+
+    return matching.sort((a, b) => {
+      const countDifference = reviewCount(b.id) - reviewCount(a.id);
+      const ratingDifference = averageRating(b.id) - averageRating(a.id);
+
+      if (sortBy === 'alphabetical') {
+        return (a.Brand || '').localeCompare(b.Brand || '');
+      }
+
+      if (sortBy === 'highest-rated') {
+        return ratingDifference || countDifference ||
+          (a.Brand || '').localeCompare(b.Brand || '');
+      }
+
+      if (sortBy === 'most-reviewed') {
+        return countDifference ||
+          (a.Brand || '').localeCompare(b.Brand || '');
+      }
+
+      return countDifference || ratingDifference ||
         (a.Brand || '').localeCompare(b.Brand || '');
-    }
+    });
+  }, [brands, reviews, search, categories, sortBy]);
 
-    if (sortBy === 'most-reviewed') {
-      return countDifference ||
-        (a.Brand || '').localeCompare(b.Brand || '');
-    }
-
-    return countDifference || ratingDifference ||
-      (a.Brand || '').localeCompare(b.Brand || '');
-  });
-}, [brands, reviews, search, category, sortBy]);
 
 
   const brandReviews = selected ? reviews.filter((r) => r.brand_id === selected.id) : [];
@@ -141,7 +186,36 @@ const filteredBrands = useMemo(() => {
 
     <section className="directory section-pad" id="designers"><div className="section-top"><div><span className="section-kicker">THE DIRECTORY</span><h2>Find your next <em>favorite.</em></h2><p className="section-description">Explore Pakistani fashion brands, then read what real customers have to say.</p></div><div className="directory-count"><strong>{brands.length || '305'}</strong><span>BRANDS TO DISCOVER</span></div></div>
       {!supabase && <div className="setup-note">Your page is ready to connect. Add your Supabase keys to load the live brand directory and reviews.</div>}
-      <div className="search-row"><label className="search-box"><span>⌕</span><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search designers by name…" /></label><select aria-label="Filter by category" value={category} onChange={(e) => setCategory(e.target.value)}><option>All categories</option>{Array.from(new Set(brands.map(b => b.Category).filter((x): x is string => !!x))).sort().map((c) => <option key={c}>{c}</option>)}</select></div>
+      <div className="search-row"><label className="search-box"><span>⌕</span><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search designers by name…" /></label>
+<details className="category-filter">
+  <summary>
+    Categories{categories.length > 0 ? ` (${categories.length} selected)` : ''}
+  </summary>
+  <div className="category-options">
+    {availableCategories.map((item) => (
+      <label key={item}>
+        <input
+          type="checkbox"
+          checked={categories.includes(item)}
+          onChange={(e) => {
+            setCategories((current) =>
+              e.target.checked
+                ? [...current, item]
+                : current.filter((value) => value !== item)
+            );
+          }}
+        />
+        {item}
+      </label>
+    ))}
+    {categories.length > 0 && (
+      <button type="button" onClick={() => setCategories([])}>
+        Clear filters
+      </button>
+    )}
+  </div>
+</details>
+</div>
 
       
 <select
@@ -164,7 +238,7 @@ const filteredBrands = useMemo(() => {
     <section className="review-banner" id="reviews"><div className="banner-mark">P.</div><div><span className="section-kicker">YOUR EXPERIENCE MATTERS</span><h2>REAL EXPERIENCES.<br /><em>REAL PHOTOS.</em></h2><p>Help another woman shop smarter. Tell us what was worth it, what wasn't, and what you wish you knew.</p><a className="button-light" href="#write-review">Leave a review <span>↗</span></a></div><div className="banner-stamp">BUILT BY<br />CUSTOMERS<br /><span>✳</span></div></section>
 
     <section className="write-section section-pad" id="write-review"><div className="write-intro"><span className="section-kicker">ADD YOUR VOICE</span><h2>Good or bad,<br /><em>we want to know.</em></h2><p>Thoughtful reviews make the whole community stronger. Reviews are checked before publishing to keep the directory useful and respectful.</p><div className="login-card"><h3>{userEmail ? 'You’re signed in' : 'Sign in to contribute'}</h3>{userEmail ? <><p className="signed-in">{userEmail}</p><button className="outline-button" onClick={signOut}>Sign out</button></> : <form onSubmit={signIn}><label htmlFor="email">Email address</label><input id="email" type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" /><button className="button-primary full" disabled={authLoading}>{authLoading ? 'Sending…' : 'Email me a sign-in link'} <span>↗</span></button><small>No password needed. We’ll email you a secure link.</small></form>}</div></div>
-      <form className="review-form" onSubmit={submitReview}><div className="form-heading"><span className="section-kicker">WRITE A REVIEW</span><span className="required-note">* Required fields</span></div><label htmlFor="brand-select">Which designer did you shop with? *</label><select id="brand-select" required value={selected?.id ?? ''} onChange={e => setSelected(brands.find(b => b.id === Number(e.target.value)) || null)}><option value="">Select a designer</option>{brands.map(b => <option key={b.id} value={b.id}>{b.Brand}</option>)}</select><label>Overall experience *</label><div className="stars" role="radiogroup" aria-label="Overall rating">{[1,2,3,4,5].map(n => <button type="button" key={n} className={n <= rating ? 'star active' : 'star'} onClick={() => setRating(n)} aria-label={`${n} stars`}>★</button>)}<span>{['','Poor','Fair','Good','Very good','Excellent'][rating]}</span></div><label>Your review *</label><textarea required minLength={20} rows={5} value={reviewText} onChange={e => setReviewText(e.target.value)} placeholder="Tell us about the quality, fit, service, delivery, and whether it matched the photos…" /><div className="category-ratings"><p>Rate the details <span>(optional)</span></p><div className="category-rating-grid">{categories.map(c => <label key={c}>{c}<select value={categoryRatings[c] || ''} onChange={e => setCategoryRatings(prev => ({...prev, [c]: Number(e.target.value)}))}><option value="">—</option>{[1,2,3,4,5].map(n => <option key={n} value={n}>{n} / 5</option>)}</select></label>)}</div></div><div className="photo-fields"><div><label htmlFor="website-photo">Website/product photo URL</label><input id="website-photo" type="url" value={websitePhoto} onChange={e => setWebsitePhoto(e.target.value)} placeholder="https://…" /></div><div><label htmlFor="received-photo">What you received photo URL</label><input id="received-photo" type="url" value={receivedPhoto} onChange={e => setReceivedPhoto(e.target.value)} placeholder="https://…" /></div></div><p className="form-privacy">Only submit photos and details you have permission to share. Your review will remain pending until it is approved.</p><button className="button-primary" type="submit">Submit for review <span>↗</span></button>{notice && <p className="notice" role="status">{notice}</p>}</form></section>
+      <form className="review-form" onSubmit={submitReview}><div className="form-heading"><span className="section-kicker">WRITE A REVIEW</span><span className="required-note">* Required fields</span></div><label htmlFor="brand-select">Which designer did you shop with? *</label><select id="brand-select" required value={selected?.id ?? ''} onChange={e => setSelected(brands.find(b => b.id === Number(e.target.value)) || null)}><option value="">Select a designer</option>{brands.map(b => <option key={b.id} value={b.id}>{b.Brand}</option>)}</select><label>Overall experience *</label><div className="stars" role="radiogroup" aria-label="Overall rating">{[1,2,3,4,5].map(n => <button type="button" key={n} className={n <= rating ? 'star active' : 'star'} onClick={() => setRating(n)} aria-label={`${n} stars`}>★</button>)}<span>{['','Poor','Fair','Good','Very good','Excellent'][rating]}</span></div><label>Your review *</label><textarea required minLength={20} rows={5} value={reviewText} onChange={e => setReviewText(e.target.value)} placeholder="Tell us about the quality, fit, service, delivery, and whether it matched the photos…" /><div className="category-ratings"><p>Rate the details <span>(optional)</span></p><div className="category-rating-grid">{reviewCategories.map(c => <label key={c}>{c}<select value={categoryRatings[c] || ''} onChange={e => setCategoryRatings(prev => ({...prev, [c]: Number(e.target.value)}))}><option value="">—</option>{[1,2,3,4,5].map(n => <option key={n} value={n}>{n} / 5</option>)}</select></label>)}</div></div><div className="photo-fields"><div><label htmlFor="website-photo">Website/product photo URL</label><input id="website-photo" type="url" value={websitePhoto} onChange={e => setWebsitePhoto(e.target.value)} placeholder="https://…" /></div><div><label htmlFor="received-photo">What you received photo URL</label><input id="received-photo" type="url" value={receivedPhoto} onChange={e => setReceivedPhoto(e.target.value)} placeholder="https://…" /></div></div><p className="form-privacy">Only submit photos and details you have permission to share. Your review will remain pending until it is approved.</p><button className="button-primary" type="submit">Submit for review <span>↗</span></button>{notice && <p className="notice" role="status">{notice}</p>}</form></section>
 
     <footer><a href="#top" className="wordmark footer-logo">PULP<span>®</span></a><p>Fashion reviews, from the people who know.</p><div><a href="#designers">Directory</a><a href="#write-review">Write a review</a><a href="mailto:hello@pulp.example">Contact</a></div><small>© {new Date().getFullYear()} PULP. Real experiences. Real photos.</small></footer>
 
