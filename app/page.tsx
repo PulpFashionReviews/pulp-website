@@ -187,7 +187,7 @@ export default function Home() {
     <a href="#reviews">Reviews</a>
   </nav>
   <div className="auth-links">
-    <a href="/login">Log In</a>
+    <a href="/login">Login</a>
     <a href="/signup">Sign Up</a>
   </div>
   <a className="nav-cta" href="#write-review">
