@@ -178,7 +178,8 @@ export default function Home() {
   return <main>
     <header className="topbar"><a href="#top" className="wordmark" aria-label="PULP home">PULP<span>®</span></a><nav><a href="#designers">Designers</a><a href="#how-it-works">How it works</a><a href="#reviews">Reviews</a></nav><a className="nav-cta" href="#write-review">Write a review <span>↗</span></a></header>
     <section className="hero" id="top">
-     <div className="hero-copy">
+     
+<div className="hero-copy">
   <p className="eyebrow">
     <span className="eyebrow-line" /> PAKISTANI &amp; INDIAN FASHION · REAL CUSTOMER REVIEWS
   </p>
@@ -188,21 +189,21 @@ export default function Home() {
   </h1>
   <p className="hero-intro">
     Share your experience with Pakistani and Indian fashion designers.
-    Tell the community what went well, what didn't, and whether the
-    quality, service, and outfit lived up to expectations.
+    See what other customers have to say and help each other make more
+    informed shopping decisions.
   </p>
   <div className="hero-actions">
     <a className="button-primary" href="#write-review">
-      Share Your Experience <span>↗</span>
+      Write a Review <span>↗</span>
     </a>
     <a className="text-link" href="#designers">
-      Explore Designer Reviews <span>→</span>
+      Explore Reviews <span>→</span>
     </a>
   </div>
 </div>
 
+
       <div className="hero-art" aria-label="Editorial fashion-inspired still life"><div className="art-glow" /><div className="art-label">THE CUSTOMER<br />COMES FIRST <span>✳</span></div><div className="fabric fabric-back" /><div className="fabric fabric-front" /><div className="vase"><div className="vase-neck" /><div className="vase-body" /><div className="vase-base" /></div><div className="art-caption"><span>01 / 03</span><span>Fashion, with the full picture.</span></div></div>
-      <div className="hero-bottom"><span>FOR THE WOMEN WHO WANT TO KNOW</span><span>HONESTY LOOKS GOOD ON YOU&nbsp; ↘</span></div>
     </section>
 
     <section className="promise-strip" id="how-it-works"><div className="promise-heading"><span className="section-kicker">THE PULP PROMISE</span><h2>Shop with <em>confidence.</em></h2></div><div className="promise-item"><span className="promise-icon">✳</span><div><h3>Real customers</h3><p>Reviews from people who have actually ordered.</p></div></div><div className="promise-item"><span className="promise-icon">▧</span><div><h3>Real photos</h3><p>Compare the website look with what arrived.</p></div></div><div className="promise-item"><span className="promise-icon">✎</span><div><h3>Useful details</h3><p>Rate quality, service, communication and more.</p></div></div><div className="promise-item"><span className="promise-icon">♡</span><div><h3>Community first</h3><p>Honest feedback to help every shopper decide.</p></div></div></section>
