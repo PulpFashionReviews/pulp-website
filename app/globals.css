@@ -452,3 +452,26 @@ body {
     margin-right: 0;
   }
 }
+
+/* Improve header text proportions */
+.topbar nav a {
+  font-size: 15px;
+}
+
+.topbar .auth-links a {
+  font-size: 15px;
+  color: #f8f0e8;
+}
+
+.topbar .nav-cta {
+  font-size: 15px;
+}
+
+.topbar nav {
+  gap: 32px;
+}
+
+.topbar .auth-links {
+  gap: 20px;
+  margin-right: 24px;
+}
