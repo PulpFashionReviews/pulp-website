@@ -475,3 +475,18 @@ body {
   gap: 20px;
   margin-right: 24px;
 }
+
+
+/* Keep header items closer together */
+.topbar nav {
+  gap: 20px;
+}
+
+.topbar .auth-links {
+  gap: 14px;
+  margin-right: 16px;
+}
+
+.topbar {
+  column-gap: 18px;
+}
