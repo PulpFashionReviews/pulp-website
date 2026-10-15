@@ -176,7 +176,25 @@ export default function Home() {
   }
 
   return <main>
-    <header className="topbar"><a href="#top" className="wordmark" aria-label="PULP home">PULP<span>®</span></a><nav><a href="#designers">Designers</a><a href="#how-it-works">How it works</a><a href="#reviews">Reviews</a></nav><a className="nav-cta" href="#write-review">Write a review <span>↗</span></a></header>
+    
+<header className="topbar">
+  <a href="#top" className="wordmark" aria-label="PULP home">
+    PULP<span>®</span>
+  </a>
+  <nav>
+    <a href="#designers">Designers</a>
+    <a href="#how-it-works">How it works</a>
+    <a href="#reviews">Reviews</a>
+  </nav>
+  <div className="auth-links">
+    <a href="/login">Log In</a>
+    <a href="/signup">Sign Up</a>
+  </div>
+  <a className="nav-cta" href="#write-review">
+    Write a review <span>↗</span>
+  </a>
+</header>
+
     <section className="hero" id="top">
      
 <div className="hero-copy">
