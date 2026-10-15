@@ -504,3 +504,24 @@ body {
   width: 29px;
   height: 29px;
 }
+
+/* Align all four PULP promise items at the top */
+.promise-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.promise-item .promise-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.promise-item > div {
+  align-self: flex-start;
+  margin-top: 0;
+}
+
+.promise-item h3 {
+  margin-top: 0;
+}
