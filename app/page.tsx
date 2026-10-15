@@ -224,7 +224,64 @@ export default function Home() {
       <div className="hero-art" aria-label="Editorial fashion-inspired still life"><div className="art-glow" /><div className="art-label">THE CUSTOMER<br />COMES FIRST <span>✳</span></div><div className="fabric fabric-back" /><div className="fabric fabric-front" /><div className="vase"><div className="vase-neck" /><div className="vase-body" /><div className="vase-base" /></div><div className="art-caption"><span>01 / 03</span><span>Fashion, with the full picture.</span></div></div>
     </section>
 
-    <section className="promise-strip" id="how-it-works"><div className="promise-heading"><span className="section-kicker">THE PULP PROMISE</span><h2>Shop with <em>confidence.</em></h2></div><div className="promise-item"><span className="promise-icon">✳</span><div><h3>Real customers</h3><p>Reviews from people who have actually ordered.</p></div></div><div className="promise-item"><span className="promise-icon">▧</span><div><h3>Real photos</h3><p>Compare the website look with what arrived.</p></div></div><div className="promise-item"><span className="promise-icon">✎</span><div><h3>Useful details</h3><p>Rate quality, service, communication and more.</p></div></div><div className="promise-item"><span className="promise-icon">♡</span><div><h3>Community first</h3><p>Honest feedback to help every shopper decide.</p></div></div></section>
+<section className="promise-strip" id="how-it-works">
+  <div className="promise-heading">
+    <span className="section-kicker">THE PULP PROMISE</span>
+    <h2>Shop with <em>confidence.</em></h2>
+  </div>
+
+  <div className="promise-item">
+    <span className="promise-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="8" r="3.5" />
+        <path d="M5 21v-2a7 7 0 0 1 14 0v2" />
+      </svg>
+    </span>
+    <div>
+      <h3>Real customers</h3>
+      <p>Reviews from people who have actually ordered.</p>
+    </div>
+  </div>
+
+  <div className="promise-item">
+    <span className="promise-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 7h4l2-3h6l2 3h4a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z" />
+        <circle cx="12" cy="13" r="4" />
+      </svg>
+    </span>
+    <div>
+      <h3>Real photos</h3>
+      <p>Compare the website look with what arrived.</p>
+    </div>
+  </div>
+
+  <div className="promise-item">
+    <span className="promise-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M6 3h9l5 5v13H6z" />
+        <path d="M15 3v5h5M9 13h8M9 17h8" />
+      </svg>
+    </span>
+    <div>
+      <h3>Useful details</h3>
+      <p>Rate quality, service, communication and more.</p>
+    </div>
+  </div>
+
+  <div className="promise-item">
+    <span className="promise-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z" />
+      </svg>
+    </span>
+    <div>
+      <h3>Community first</h3>
+      <p>Honest feedback to help every shopper decide.</p>
+    </div>
+  </div>
+</section>
+
 
     <section className="directory section-pad" id="designers"><div className="section-top"><div><span className="section-kicker">THE DIRECTORY</span><h2>Find your next <em>favorite.</em></h2><p className="section-description">Explore Pakistani fashion brands, then read what real customers have to say.</p></div><div className="directory-count"><strong>{brands.length || '305'}</strong><span>BRANDS TO DISCOVER</span></div></div>
       {!supabase && <div className="setup-note">Your page is ready to connect. Add your Supabase keys to load the live brand directory and reviews.</div>}
