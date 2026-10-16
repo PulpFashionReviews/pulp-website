@@ -709,3 +709,40 @@ body {
     margin-bottom: 26px;
   }
 }
+```css
+/* Keep the PULP header solid and above the hero backdrop */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #f6f3ee;
+  isolation: isolate;
+  flex-shrink: 0;
+}
+
+.topbar .auth-links {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  white-space: nowrap;
+}
+
+.topbar .auth-links button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #6e233b;
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.topbar .auth-links button:hover {
+  text-decoration: underline;
+}
+
+.topbar .auth-links span {
+  color: #615c56;
+  font-size: 12px;
+}
+```
