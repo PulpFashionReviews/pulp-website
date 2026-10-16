@@ -17,10 +17,11 @@ export default function ResetPasswordPage() {
       return;
     }
 
+    const client = supabase;
     let active = true;
 
     const checkRecovery = async () => {
-      const { data, error } = await supabase.auth.getSession();
+      const { data, error } = await client.auth.getSession();
 
       if (!active) return;
 
@@ -37,7 +38,7 @@ export default function ResetPasswordPage() {
 
     checkRecovery();
 
-    const { data: listener } = supabase.auth.onAuthStateChange(
+    const { data: listener } = client.auth.onAuthStateChange(
       (event, session) => {
         if (!active) return;
 
