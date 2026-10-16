@@ -525,3 +525,187 @@ body {
 .promise-item h3 {
   margin-top: 0;
 }
+
+/* PULP account pages: sign up, login and password reset */
+.auth-page {
+  min-height: calc(100vh - 78px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 20px;
+  background: #f6f3ee;
+  color: #252321;
+  font-family: 'DM Sans', Arial, sans-serif;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 460px;
+  padding: 44px 42px;
+  background: #fbf9f6;
+  border: 1px solid #dcd5cc;
+  box-shadow: 0 14px 40px rgba(37, 35, 33, 0.06);
+}
+
+.auth-logo {
+  display: inline-block;
+  margin-bottom: 32px;
+  color: #6e233b;
+  font-family: 'DM Sans', Arial, sans-serif;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.auth-logo span {
+  margin-left: 3px;
+  font-size: 9px;
+  letter-spacing: 0;
+  vertical-align: top;
+}
+
+.auth-kicker {
+  margin: 0 0 12px;
+  color: #6e233b;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.auth-card h1 {
+  margin: 0 0 14px;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(30px, 5vw, 38px);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+}
+
+.auth-description {
+  margin: 0 0 28px;
+  color: #77716a;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.auth-form label {
+  margin-top: 7px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.auth-form input {
+  width: 100%;
+  min-height: 47px;
+  padding: 13px 14px;
+  border: 1px solid #dcd5cc;
+  border-radius: 0;
+  outline-color: #6e233b;
+  background: #fffdfa;
+  color: #252321;
+  font-family: 'DM Sans', Arial, sans-serif;
+  font-size: 13px;
+}
+
+.auth-form input:focus {
+  border-color: #6e233b;
+}
+
+.auth-hint {
+  margin: 0;
+  color: #77716a;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.auth-form button {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 12px;
+  padding: 14px 18px;
+  border: 0;
+  border-radius: 0;
+  background: #6e233b;
+  color: #fff;
+  font-family: 'DM Sans', Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  transition: background 0.2s ease;
+}
+
+.auth-form button:hover {
+  background: #4e182b;
+}
+
+.auth-form button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.auth-forgot {
+  margin-top: 2px;
+  text-align: right;
+  font-size: 12px;
+}
+
+.auth-forgot a,
+.auth-switch a {
+  color: #6e233b;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.auth-message {
+  margin: 8px 0 0;
+  padding: 12px;
+  background: #eee8df;
+  color: #6e233b;
+  font-size: 12px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.auth-switch {
+  margin: 26px 0 0;
+  padding-top: 20px;
+  border-top: 1px solid #dcd5cc;
+  color: #77716a;
+  font-size: 12px;
+  line-height: 1.8;
+  text-align: center;
+}
+
+.auth-back {
+  display: block;
+  margin-top: 24px;
+  color: #6e233b;
+  font-size: 11px;
+  text-align: center;
+}
+
+.auth-back:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 520px) {
+  .auth-page {
+    min-height: calc(100vh - 66px);
+    padding: 28px 16px;
+  }
+
+  .auth-card {
+    padding: 32px 23px;
+  }
+
+  .auth-logo {
+    margin-bottom: 26px;
+  }
+}
