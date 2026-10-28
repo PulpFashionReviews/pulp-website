@@ -176,8 +176,6 @@ export default function Home() {
   }
 
   return <main>
-    
-```tsx
 <header className="topbar">
   <a href="#top" className="wordmark" aria-label="PULP home">
     PULP<span>®</span>
@@ -216,7 +214,6 @@ export default function Home() {
     Write a review <span>↗</span>
   </a>
 </header>
-```
 
     <section className="hero" id="top">
      
