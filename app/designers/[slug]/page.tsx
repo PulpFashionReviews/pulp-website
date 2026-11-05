@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Brand, Review, designerSlug, reviewCategories, websiteUrl } from '@/lib/designers';
+import { BRAND_SELECT, BrandRow, Review, brandCategoryNames, designerSlug, reviewCategories, websiteUrl } from '@/lib/designers';
 import { DesignerReviewForm } from '@/components/designer-review-form';
 
 export const revalidate = 60;
@@ -14,9 +14,9 @@ const getDesigner = cache(async (slug: string) => {
   if (!supabase) return null;
   const { data: brands } = await supabase
     .from('fashion_brands')
-    .select('id, Brand, Category, Price_Range, Website, Contact_Number')
+    .select(BRAND_SELECT)
     .order('id');
-  const brand = ((brands || []) as Brand[]).find((b) => designerSlug(b) === slug);
+  const brand = ((brands || []) as unknown as BrandRow[]).find((b) => designerSlug(b) === slug);
   if (!brand) return null;
   const { data: reviews } = await supabase
     .from('reviews')
@@ -24,7 +24,7 @@ const getDesigner = cache(async (slug: string) => {
     .eq('brand_id', brand.id)
     .eq('status', 'approved')
     .order('created_at', { ascending: false });
-  return { brand, reviews: (reviews || []) as Review[] };
+  return { brand, categories: brandCategoryNames(brand), reviews: (reviews || []) as Review[] };
 });
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -52,7 +52,7 @@ export default async function DesignerPage({ params }: PageProps) {
   const { slug } = await params;
   const designer = await getDesigner(slug);
   if (!designer) notFound();
-  const { brand, reviews } = designer;
+  const { brand, categories, reviews } = designer;
 
   const average = reviews.length ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : null;
   const categoryAverages = reviewCategories
@@ -81,7 +81,7 @@ export default async function DesignerPage({ params }: PageProps) {
             <span className="section-kicker">DESIGNER PROFILE</span>
             <h1>{brand.Brand}</h1>
             <p className="designer-meta">
-              {brand.Category || 'Pakistani fashion'}
+              {categories.length ? categories.join(' · ') : 'Pakistani fashion'}
               {brand.Price_Range ? ` · ${brand.Price_Range}` : ''}
             </p>
             <div className="designer-links">

@@ -7,6 +7,23 @@ export type Brand = {
   Contact_Number: string | null;
 };
 
+// Brand columns plus its clean categories (via brand_categories → categories).
+export const BRAND_SELECT =
+  'id, Brand, Category, Price_Range, Website, Contact_Number, brand_categories(categories(name, sort_order))';
+
+export type BrandRow = Brand & {
+  brand_categories?: { categories: { name: string; sort_order: number } | null }[] | null;
+};
+
+/** Clean category names for a brand, in the site's standard order. */
+export function brandCategoryNames(brand: BrandRow): string[] {
+  return (brand.brand_categories || [])
+    .map((bc) => bc.categories)
+    .filter((c): c is { name: string; sort_order: number } => !!c)
+    .sort((a, b) => a.sort_order - b.sort_order)
+    .map((c) => c.name);
+}
+
 export type Review = {
   id: number;
   brand_id: number;

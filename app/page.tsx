@@ -3,9 +3,9 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
-import { designerHref } from '@/lib/designers';
+import { designerHref, BRAND_SELECT, BrandRow, brandCategoryNames } from '@/lib/designers';
 
-type Brand = { id: number; Brand: string | null; Category: string | null; Price_Range: string | null; Website: string | null; Contact_Number: string | null };
+type Brand = BrandRow & { categories: string[] };
 type Review = { id: number; brand_id: number; rating: number; review_text: string; created_at: string; website_photo_url: string | null; received_photo_url: string | null; category_ratings: Record<string, number> | null };
 const reviewCategories = ['Customer service', 'Communication', 'Product quality', 'Accuracy to photos', 'Delivery', 'Value for money'];
 
@@ -14,6 +14,7 @@ export default function Home() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [search, setSearch] = useState('');
   const [categories, setCategories] = useState<string[]>([]);
+  const [availableCategories, setAvailableCategories] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState('popular');
   const PAGE_SIZE = 12;
   const [page, setPage] = useState(1);
@@ -35,12 +36,14 @@ export default function Home() {
   useEffect(() => {
     async function load() {
       if (!supabase) { setLoading(false); return; }
-      const [{ data: brandData }, { data: reviewData }, { data: authData }] = await Promise.all([
-        supabase.from('fashion_brands').select('id, Brand, Category, Price_Range, Website, Contact_Number').order('Brand'),
+      const [{ data: brandData }, { data: categoryData }, { data: reviewData }, { data: authData }] = await Promise.all([
+        supabase.from('fashion_brands').select(BRAND_SELECT).order('Brand'),
+        supabase.from('categories').select('name').order('sort_order'),
         supabase.from('reviews').select('id, brand_id, rating, review_text, created_at, website_photo_url, received_photo_url, category_ratings').eq('status', 'approved').order('created_at', { ascending: false }),
         supabase.auth.getUser(),
       ]);
-      setBrands((brandData || []) as Brand[]);
+      setBrands(((brandData || []) as unknown as BrandRow[]).map((b) => ({ ...b, categories: brandCategoryNames(b) })));
+      setAvailableCategories(((categoryData || []) as { name: string }[]).map((c) => c.name));
       setReviews((reviewData || []) as Review[]);
       setUserEmail(authData.user?.email || null);
       setLoading(false);
@@ -54,58 +57,16 @@ export default function Home() {
   
 
 
-  const normalizedCategory = (value: string) => {
-    const cleaned = value.trim().toLowerCase();
-
-    const labels: Record<string, string> = {
-      bridal: 'Bridal',
-      couture: 'Couture',
-      'luxury pret': 'Luxury Pret',
-      pret: 'Pret',
-      'ready-to-wear unstitched': 'Ready-to-Wear Unstitched',
-      'designer women\'s wear': 'Designer Women\'s Wear',
-      'women\'s apparel lifestyle': 'Women\'s Apparel Lifestyle',
-      womenswear: 'Womenswear',
-      studio: 'Studio',
-      festive: 'Festive',
-      formal: 'Formal',
-      lawn: 'Lawn',
-      unstitched: 'Unstitched',
-      'wedding wear': 'Wedding Wear',
-      basics: 'Basics',
-      collection: 'Collection',
-      'eastern wear': 'Eastern Wear',
-    };
-
-    return labels[cleaned] ??
-      cleaned.replace(/\b\w/g, (letter) => letter.toUpperCase());
-  };
-
-  const availableCategories = Array.from(
-    new Set(
-      brands.flatMap((brand) =>
-        (brand.Category || '')
-          .split(',')
-          .map(normalizedCategory)
-          .filter(Boolean)
-      )
-    )
-  ).sort();
-
   const filteredBrands = useMemo(() => {
     const matching = brands.filter((brand) => {
       const matchesSearch = (brand.Brand || '')
         .toLowerCase()
         .includes(search.toLowerCase());
 
-      const brandCategories = (brand.Category || '')
-        .split(',')
-        .map(normalizedCategory);
-
       const matchesCategory =
         categories.length === 0 ||
         categories.some((selectedCategory) =>
-          brandCategories.includes(selectedCategory)
+          brand.categories.includes(selectedCategory)
         );
 
       return matchesSearch && matchesCategory;
@@ -368,7 +329,7 @@ export default function Home() {
 </select>
 
       
-      <div className="brand-grid">{loading ? <p className="empty-state">Loading the directory…</p> : filteredBrands.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((brand, i) => <article className="brand-card" key={brand.id}><div className={`brand-monogram tone-${i % 5}`}><span>{(brand.Brand || 'P').slice(0, 1).toUpperCase()}</span><i>✳</i></div><div className="brand-info"><span className="brand-category">{brand.Category || 'PAKISTANI FASHION'}</span><h3>{brand.Brand}</h3><p>{brand.Price_Range || 'Price details not listed'}</p><div className="brand-card-bottom">{averageFor(brand.id) ? <span className="rating">★ {averageFor(brand.id)} <small>({reviews.filter(r => r.brand_id === brand.id).length})</small></span> : <span className="no-rating">Be the first to review</span>}<Link className="brand-card-link" href={designerHref(brand)} aria-label={`View ${brand.Brand} reviews`}>View <span>↗</span></Link></div></div></article>)}</div>
+      <div className="brand-grid">{loading ? <p className="empty-state">Loading the directory…</p> : filteredBrands.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((brand, i) => <article className="brand-card" key={brand.id}><div className={`brand-monogram tone-${i % 5}`}><span>{(brand.Brand || 'P').slice(0, 1).toUpperCase()}</span><i>✳</i></div><div className="brand-info"><span className="brand-category">{brand.categories.length ? brand.categories.join(' · ') : 'PAKISTANI FASHION'}</span><h3>{brand.Brand}</h3><p>{brand.Price_Range || 'Price details not listed'}</p><div className="brand-card-bottom">{averageFor(brand.id) ? <span className="rating">★ {averageFor(brand.id)} <small>({reviews.filter(r => r.brand_id === brand.id).length})</small></span> : <span className="no-rating">Be the first to review</span>}<Link className="brand-card-link" href={designerHref(brand)} aria-label={`View ${brand.Brand} reviews`}>View <span>↗</span></Link></div></div></article>)}</div>
       {!loading && filteredBrands.length === 0 && <p className="empty-state">No designers found. Try another search.</p>}
       {!loading && filteredBrands.length > 0 && (
         <nav className="pager" aria-label="Directory pages">
