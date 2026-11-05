@@ -57,7 +57,7 @@ export default function TermsPage() {
       <p>We may update these terms as PULP grows. If we make significant changes, we’ll update the date at the top of this page and, where appropriate, let account holders know. You can stop using PULP at any time. To delete your account and reviews, email <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</p>
 
       <h2>10. Governing law</h2>
-      <p>These terms are governed by the laws of [STATE / COUNTRY TO BE CONFIRMED], without regard to its conflict-of-law rules, and any disputes will be handled by the courts located there, except where the law of your home country gives you the right to bring a claim locally.</p>
+      <p>PULP is operated from the United States. These terms are governed by the laws of the United States and the laws of the state in which PULP is operated, without regard to conflict-of-law rules. Any dispute will be handled by the courts that have jurisdiction there, except where the law of your home country gives you the right to bring a claim locally.</p>
 
       <h2>11. Contact</h2>
       <p>Questions about these terms? Email <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</p>
