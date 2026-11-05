@@ -3,8 +3,9 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
 import { supabase } from '@/lib/supabase';
-import { BRAND_SELECT, BrandRow, Review, brandCategoryNames, designerSlug, reviewCategories, websiteUrl } from '@/lib/designers';
-import { DesignerReviewForm } from '@/components/designer-review-form';
+import { BRAND_SELECT, BrandRow, REVIEW_SELECT, Review, brandCategoryNames, designerSlug, reviewCategories, websiteUrl } from '@/lib/designers';
+import { ReviewForm } from '@/components/review-form';
+import { PHOTO_BUCKET, formatOrderMonth } from '@/lib/review-options';
 
 export const revalidate = 60;
 
@@ -20,11 +21,19 @@ const getDesigner = cache(async (slug: string) => {
   if (!brand) return null;
   const { data: reviews } = await supabase
     .from('reviews')
-    .select('id, brand_id, rating, review_text, created_at, website_photo_url, received_photo_url, category_ratings')
+    .select(REVIEW_SELECT)
     .eq('brand_id', brand.id)
     .eq('status', 'approved')
     .order('created_at', { ascending: false });
-  return { brand, categories: brandCategoryNames(brand), reviews: (reviews || []) as Review[] };
+  const rows = (reviews || []) as Review[];
+  // Photos are private; approved reviews' photos get short-lived viewing links.
+  const paths = rows.flatMap((r) => r.photo_paths ?? []);
+  const photoUrls: Record<string, string> = {};
+  if (paths.length) {
+    const { data: signed } = await supabase.storage.from(PHOTO_BUCKET).createSignedUrls(paths, 60 * 60 * 2);
+    (signed || []).forEach((item, i) => { if (item.signedUrl) photoUrls[paths[i]] = item.signedUrl; });
+  }
+  return { brand, categories: brandCategoryNames(brand), reviews: rows, photoUrls };
 });
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -52,7 +61,7 @@ export default async function DesignerPage({ params }: PageProps) {
   const { slug } = await params;
   const designer = await getDesigner(slug);
   if (!designer) notFound();
-  const { brand, categories, reviews } = designer;
+  const { brand, categories, reviews, photoUrls } = designer;
 
   const average = reviews.length ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : null;
   const categoryAverages = reviewCategories
@@ -131,8 +140,25 @@ export default async function DesignerPage({ params }: PageProps) {
             reviews.map((r) => (
               <article className="modal-review" key={r.id}>
                 <Stars value={r.rating} />
+                {(r.item_type || r.shipped_to || r.order_month) && (
+                  <p className="review-facts">
+                    {[r.item_type, r.shipped_to && `Shipped to ${r.shipped_to}`, formatOrderMonth(r.order_month) && `Ordered ${formatOrderMonth(r.order_month)}`]
+                      .filter(Boolean)
+                      .join(' · ')}
+                  </p>
+                )}
                 <p>{r.review_text}</p>
-                <small>{new Date(r.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</small>
+                {(r.photo_paths ?? []).some((path) => photoUrls[path]) && (
+                  <div className="review-photos">
+                    {(r.photo_paths ?? []).filter((path) => photoUrls[path]).map((path, i) => (
+                      <a key={path} href={photoUrls[path]} target="_blank" rel="noreferrer" aria-label={`Open photo ${i + 1}`}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={photoUrls[path]} alt={`Customer photo ${i + 1}`} loading="lazy" />
+                      </a>
+                    ))}
+                  </div>
+                )}
+                <small>{new Date(r.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}{r.updated_at && r.updated_at !== r.created_at ? ' · edited' : ''}</small>
                 {r.website_photo_url && <a href={r.website_photo_url} target="_blank" rel="noreferrer">Website photo ↗</a>}
                 {r.received_photo_url && <a href={r.received_photo_url} target="_blank" rel="noreferrer">What arrived ↗</a>}
               </article>
@@ -143,7 +169,7 @@ export default async function DesignerPage({ params }: PageProps) {
         </section>
 
         <aside id="write-review" className="designer-form-wrap">
-          <DesignerReviewForm brandId={brand.id} brandName={brand.Brand || 'this designer'} />
+          <ReviewForm brandId={brand.id} brandName={brand.Brand || 'this designer'} />
         </aside>
       </div>
 
