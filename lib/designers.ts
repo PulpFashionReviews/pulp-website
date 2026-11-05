@@ -39,5 +39,7 @@ export function designerHref(brand: Pick<Brand, 'id' | 'Brand'>) {
 }
 
 export function websiteUrl(website: string) {
-  return website.startsWith('http') ? website : `https://${website}`;
+  // Repairs stored values like "https: example.com" and bare domains.
+  const host = website.trim().replace(/^https?:\s*\/*/i, '');
+  return `https://${host}`;
 }
