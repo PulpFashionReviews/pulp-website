@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
+import { FilterDropdown } from '@/components/filter-dropdown';
 import { designerHref, BRAND_SELECT, BrandRow, brandCategoryNames } from '@/lib/designers';
 
 type Brand = BrandRow & { categories: string[] };
@@ -286,47 +287,26 @@ export default function Home() {
     <section className="directory section-pad" id="designers"><div className="section-top"><div><span className="section-kicker">THE DIRECTORY</span><h2>Find your next <em>favorite.</em></h2><p className="section-description">Explore Pakistani fashion brands, then read what real customers have to say.</p></div><div className="directory-count"><strong>{brands.length || '305'}</strong><span>BRANDS TO DISCOVER</span></div></div>
       {!supabase && <div className="setup-note">Your page is ready to connect. Add your Supabase keys to load the live brand directory and reviews.</div>}
       <div className="search-row"><label className="search-box"><span>⌕</span><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search designers by name…" /></label>
-<details className="category-filter">
-  <summary>
-    Categories{categories.length > 0 ? ` (${categories.length} selected)` : ''}
-  </summary>
-  <div className="category-options">
-    {availableCategories.map((item) => (
-      <label key={item}>
-        <input
-          type="checkbox"
-          checked={categories.includes(item)}
-          onChange={(e) => {
-            setCategories((current) =>
-              e.target.checked
-                ? [...current, item]
-                : current.filter((value) => value !== item)
-            );
-          }}
-        />
-        {item}
-      </label>
-    ))}
-    {categories.length > 0 && (
-      <button type="button" onClick={() => setCategories([])}>
-        Clear filters
-      </button>
-    )}
-  </div>
-</details>
-</div>
-
-      
-<select
-  aria-label="Sort designers"
+<FilterDropdown
+  multiple
+  label="All categories"
+  options={availableCategories.map((c) => ({ value: c, label: c }))}
+  value={categories}
+  onChange={setCategories}
+/>
+<FilterDropdown
+  label="Sort"
+  className="fdrop-sort"
+  options={[
+    { value: 'popular', label: 'Most popular' },
+    { value: 'highest-rated', label: 'Highest rated' },
+    { value: 'most-reviewed', label: 'Most reviewed' },
+    { value: 'alphabetical', label: 'A–Z' },
+  ]}
   value={sortBy}
-  onChange={(e) => setSortBy(e.target.value)}
->
-  <option value="popular">Most popular</option>
-  <option value="highest-rated">Highest rated</option>
-  <option value="most-reviewed">Most reviewed</option>
-  <option value="alphabetical">A–Z</option>
-</select>
+  onChange={setSortBy}
+/>
+</div>
 
       
       <div className="brand-grid">{loading ? <p className="empty-state">Loading the directory…</p> : filteredBrands.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((brand, i) => <article className="brand-card" key={brand.id}><div className={`brand-monogram tone-${i % 5}`}><span>{(brand.Brand || 'P').slice(0, 1).toUpperCase()}</span><i>✳</i></div><div className="brand-info"><span className="brand-category">{brand.categories.length ? brand.categories.join(' · ') : 'PAKISTANI FASHION'}</span><h3>{brand.Brand}</h3><p>{brand.Price_Range || 'Price details not listed'}</p><div className="brand-card-bottom">{averageFor(brand.id) ? <span className="rating">★ {averageFor(brand.id)} <small>({reviews.filter(r => r.brand_id === brand.id).length})</small></span> : <span className="no-rating">Be the first to review</span>}<Link className="brand-card-link" href={designerHref(brand)} aria-label={`View ${brand.Brand} reviews`}>View <span>↗</span></Link></div></div></article>)}</div>

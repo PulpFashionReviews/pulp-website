@@ -777,3 +777,30 @@ body {
 @media(max-width:900px){.designer-body{flex-direction:column}.designer-form-wrap{position:static;flex-basis:auto;width:100%}.designer-score{align-items:flex-start;border-left:0;padding-left:0}}
 
 .pager{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 0 4px}.pager .directory-note{padding:12px 0 4px}.pager-buttons{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px}.pager-buttons button{min-width:36px;height:36px;padding:0 10px;background:#fbf9f6;border:1px solid var(--line);color:var(--ink);font-size:12px;transition:background .15s,border-color .15s,color .15s}.pager-buttons button:hover:not(:disabled){border-color:var(--wine);color:var(--wine)}.pager-buttons button.active{background:var(--wine);border-color:var(--wine);color:#fff;font-weight:600}.pager-buttons button:disabled{opacity:.35;cursor:default}.pager-gap{color:var(--muted);padding:0 4px}
+
+/* Directory dropdowns (categories + sort) */
+.fdrop{position:relative;min-width:200px}
+.fdrop-sort{min-width:170px}
+.fdrop-trigger{width:100%;height:100%;min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0 14px;background:#fbf9f6;border:1px solid var(--line);color:var(--ink);font-size:11px;text-align:left;transition:border-color .2s}
+.fdrop-trigger:hover,.fdrop.is-open .fdrop-trigger{border-color:#bda4a0}
+.fdrop-trigger:focus-visible{outline:2px solid #a86a7a;outline-offset:1px}
+.fdrop.has-value .fdrop-trigger{color:var(--wine);font-weight:600}
+.fdrop-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fdrop-chevron{width:12px;height:12px;flex:none;color:var(--wine);transition:transform .2s}
+.fdrop.is-open .fdrop-chevron{transform:rotate(180deg)}
+.fdrop-panel{position:absolute;top:calc(100% + 6px);left:0;right:0;min-width:220px;z-index:15;background:#fbf9f6;border:1px solid var(--line);box-shadow:0 14px 34px rgba(37,35,33,.12);animation:fdrop-in .14s ease-out}
+.fdrop-sort .fdrop-panel{left:auto;right:0}
+@keyframes fdrop-in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.fdrop-panel ul{list-style:none;margin:0;padding:6px 0;max-height:320px;overflow:auto;outline:none}
+.fdrop-panel li{display:flex;align-items:center;gap:11px;padding:10px 16px;font-size:11px;color:var(--ink);cursor:pointer;user-select:none}
+.fdrop-panel li.active{background:#f1ebe3}
+.fdrop-panel li.selected{color:var(--wine)}
+.fdrop-check{width:15px;height:15px;flex:none;display:grid;place-items:center;color:var(--wine)}
+.fdrop-check.box{border:1px solid #c9bfb4;background:#fff;transition:background .15s,border-color .15s}
+.fdrop-panel li.selected .fdrop-check.box{background:var(--wine);border-color:var(--wine);color:#fff}
+.fdrop-check svg{width:11px;height:11px}
+.fdrop-footer{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding:9px 16px}
+.fdrop-footer button{background:none;border:0;padding:4px 0;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.fdrop-footer button:disabled{opacity:.4;cursor:default}
+.fdrop-footer .fdrop-done{color:var(--wine);font-weight:700}
+@media(max-width:680px){.fdrop,.fdrop-sort{min-width:0;width:100%}.fdrop-sort .fdrop-panel{left:0}}
