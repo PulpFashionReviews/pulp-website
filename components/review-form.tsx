@@ -286,7 +286,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
           <input ref={fileInput} type="file" accept="image/jpeg,image/png,image/webp" multiple hidden onChange={onPickFiles} />
         </div>
 
-        <p className="form-privacy">Only submit photos and details you have permission to share. Reviews and photos stay private until they’re approved.</p>
+        <p className="form-privacy">Only submit photos and details you have permission to share. Reviews and photos stay private until they’re approved. By submitting, you agree to our <Link href="/guidelines">Review Guidelines</Link> and <Link href="/terms">Terms of Use</Link>.</p>
         <div className="form-actions">
           <button className="button-primary" type="submit" disabled={submitting}>
             {submitting ? 'Saving…' : editingId ? 'Save changes' : 'Submit for review'} <span>↗</span>

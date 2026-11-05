@@ -5,6 +5,7 @@ import { cache } from 'react';
 import { supabase } from '@/lib/supabase';
 import { BRAND_SELECT, BrandRow, REVIEW_SELECT, Review, brandCategoryNames, designerSlug, reviewCategories, websiteUrl } from '@/lib/designers';
 import { ReviewForm } from '@/components/review-form';
+import { SiteFooter } from '@/components/site-footer';
 import { PHOTO_BUCKET, formatOrderMonth } from '@/lib/review-options';
 
 export const revalidate = 60;
@@ -173,16 +174,7 @@ export default async function DesignerPage({ params }: PageProps) {
         </aside>
       </div>
 
-      <footer>
-        <Link href="/" className="wordmark footer-logo">PULP<span>®</span></Link>
-        <p>Fashion reviews, from the people who know.</p>
-        <div>
-          <Link href="/#designers">Directory</Link>
-          <a href="#write-review">Write a review</a>
-          <a href="mailto:hello@pulp.example">Contact</a>
-        </div>
-        <small>© {new Date().getFullYear()} PULP. Real experiences. Real photos.</small>
-      </footer>
+      <SiteFooter />
     </main>
   );
 }

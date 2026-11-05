@@ -882,3 +882,25 @@ body {
 .designer-breakdown li{font-size:14px}
 @media(max-width:680px){.review-form{padding:24px}.review-form select,.review-form input,.review-form textarea{font-size:16px}}
 .write-intro>p{font-size:15px;line-height:1.8;max-width:380px}
+
+/* Footer policy links */
+.footer-legal{grid-column:1/-1;display:flex;gap:22px;flex-wrap:wrap;font-size:12px;color:#c9beb3}
+footer>div{font-size:12px}
+footer p{font-size:12px}
+footer small{font-size:11px;line-height:1.7}
+.form-privacy a{color:var(--wine);text-decoration:underline}
+
+/* Policy pages */
+.legal{max-width:780px;margin:0 auto;color:var(--ink)}
+.legal h1{font:500 clamp(36px,4.5vw,52px)/1.1 var(--serif);letter-spacing:-.03em;margin:14px 0 10px}
+.legal-updated{font-size:13px;color:var(--muted);margin:0 0 26px}
+.legal-intro{font-size:17px;line-height:1.75;color:#45403b;margin:0 0 36px;padding-bottom:30px;border-bottom:1px solid var(--line)}
+.legal h2{font:500 26px/1.25 var(--serif);margin:40px 0 14px;color:var(--ink)}
+.legal h3{font-size:15px;font-weight:700;margin:22px 0 8px}
+.legal p,.legal li{font-size:15px;line-height:1.8;color:#3f3a35}
+.legal ul{padding-left:20px;margin:0 0 14px}
+.legal li{margin-bottom:8px}
+.legal li::marker{color:var(--wine)}
+.legal a{color:var(--wine);text-decoration:underline}
+.legal-wrap{background:var(--paper)}
+.designer-body{background:var(--paper)}

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { FilterDropdown } from '@/components/filter-dropdown';
 import { ReviewForm } from '@/components/review-form';
+import { SiteFooter } from '@/components/site-footer';
 import { designerHref, BRAND_SELECT, BrandRow, brandCategoryNames } from '@/lib/designers';
 
 type Brand = BrandRow & { categories: string[] };
@@ -313,14 +314,7 @@ export default function Home() {
     <section className="write-section section-pad" id="write-review"><div className="write-intro"><span className="section-kicker">ADD YOUR VOICE</span><h2>Good or bad,<br /><em>we want to know.</em></h2><p>Thoughtful reviews make the whole community stronger. Reviews are checked before publishing to keep the directory useful and respectful.</p><div className="login-card"><h3>{userEmail ? 'You’re signed in' : 'Sign in to contribute'}</h3>{userEmail ? <><p className="signed-in">{userEmail}</p><button className="outline-button" onClick={signOut}>Sign out</button></> : <><p className="login-card-copy">Log in or create a free account to share your experience.</p><div className="login-card-actions"><a className="button-primary" href="/login?next=/%23write-review">Log in <span>↗</span></a><a className="outline-button" href="/signup">Create account</a></div></>}</div></div>
       <ReviewForm brands={brands} /></section>
 
-    <footer><a href="#top" className="wordmark footer-logo">PULP<span>®</span></a><p>Fashion reviews, from the people who know.</p><div><a href="#designers">Directory</a><a href="#write-review">Write a review</a><a href="mailto:hello@pulp.example">Contact</a></div><small>
-<p className="brand-disclaimer">
-  PULP is an independent fashion review directory and is not affiliated
-  with, endorsed by, or sponsored by the designers listed. All brand names
-  and logos belong to their respective owners. If you are a rights holder
-  and have a concern about a logo displayed here, please contact us.
-</p>
-© {new Date().getFullYear()} PULP. Real experiences. Real photos.</small></footer>
+    <SiteFooter />
 
   </main>;
 }
