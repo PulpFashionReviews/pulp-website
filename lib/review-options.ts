@@ -1,16 +1,15 @@
 // Shared choices and limits for the review form.
 
 export const ITEM_TYPES = [
-  'Lawn suit',
-  'Pret / ready-to-wear',
-  'Luxury pret / festive',
+  'Lawn Suit',
+  'Pret / Casual',
+  'Luxury Pret / Festive',
   'Formal',
   'Bridal',
-  'Unstitched fabric',
-  'Kurta / kurti',
+  'Unstitched Fabric',
   'Menswear',
   'Kidswear',
-  'Jewelry / accessories',
+  'Jewelry / Accessories',
   'Other',
 ];
 
