@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
 import { supabase } from '@/lib/supabase';
-import { BRAND_SELECT, BrandRow, REVIEW_SELECT, Review, brandCategoryNames, designerSlug, reviewCategories, websiteUrl } from '@/lib/designers';
+import { BRAND_SELECT, BrandRow, Review, brandCategoryNames, designerSlug, reviewCategories, websiteUrl } from '@/lib/designers';
 import { ReviewForm } from '@/components/review-form';
 import { SiteFooter } from '@/components/site-footer';
 import { PHOTO_BUCKET, formatOrderMonth } from '@/lib/review-options';
@@ -11,6 +11,23 @@ import { PHOTO_BUCKET, formatOrderMonth } from '@/lib/review-options';
 export const revalidate = 60;
 
 type PageProps = { params: Promise<{ slug: string }> };
+type FeedReview = Review & { reviewer_key: string; reviewer_orders: number };
+
+const RECENT_MONTHS = 12;
+const avg = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null);
+
+/** Each customer's newest review (rows must be newest-first). */
+function latestPerCustomer(rows: FeedReview[]) {
+  const seen = new Set<string>();
+  return rows.filter((r) => (seen.has(r.reviewer_key) ? false : (seen.add(r.reviewer_key), true)));
+}
+
+/** Group a customer's reviews together, ordered by their newest review. */
+function groupByCustomer(rows: FeedReview[]) {
+  const groups = new Map<string, FeedReview[]>();
+  for (const r of rows) groups.set(r.reviewer_key, [...(groups.get(r.reviewer_key) ?? []), r]);
+  return [...groups.values()];
+}
 
 const getDesigner = cache(async (slug: string) => {
   if (!supabase) return null;
@@ -20,13 +37,13 @@ const getDesigner = cache(async (slug: string) => {
     .order('id');
   const brand = ((brands || []) as unknown as BrandRow[]).find((b) => designerSlug(b) === slug);
   if (!brand) return null;
+  // Approved reviews; reviewer_key groups one customer's reviews without exposing their account.
   const { data: reviews } = await supabase
-    .from('reviews')
-    .select(REVIEW_SELECT)
+    .from('review_feed')
+    .select('*')
     .eq('brand_id', brand.id)
-    .eq('status', 'approved')
     .order('created_at', { ascending: false });
-  const rows = (reviews || []) as Review[];
+  const rows = (reviews || []) as FeedReview[];
   // Photos are private; approved reviews' photos get short-lived viewing links.
   const paths = rows.flatMap((r) => r.photo_paths ?? []);
   const photoUrls: Record<string, string> = {};
@@ -58,19 +75,57 @@ function Stars({ value }: { value: number }) {
   );
 }
 
+function ReviewCard({ r, photoUrls }: { r: FeedReview; photoUrls: Record<string, string> }) {
+  const photos = (r.photo_paths ?? []).filter((path) => photoUrls[path]);
+  return (
+    <article className="modal-review">
+      <Stars value={r.rating} />
+      {(r.item_type || r.shipped_to || r.order_month) && (
+        <p className="review-facts">
+          {[r.item_type, r.shipped_to && `Shipped to ${r.shipped_to}`, formatOrderMonth(r.order_month) && `Ordered ${formatOrderMonth(r.order_month)}`]
+            .filter(Boolean)
+            .join(' · ')}
+        </p>
+      )}
+      <p>{r.review_text}</p>
+      {photos.length > 0 && (
+        <div className="review-photos">
+          {photos.map((path, i) => (
+            <a key={path} href={photoUrls[path]} target="_blank" rel="noreferrer" aria-label={`Open photo ${i + 1}`}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={photoUrls[path]} alt={`Customer photo ${i + 1}`} loading="lazy" />
+            </a>
+          ))}
+        </div>
+      )}
+      <small>{new Date(r.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}{r.updated_at && r.updated_at !== r.created_at ? ' · edited' : ''}</small>
+      {r.website_photo_url && <a href={r.website_photo_url} target="_blank" rel="noreferrer">Website photo ↗</a>}
+      {r.received_photo_url && <a href={r.received_photo_url} target="_blank" rel="noreferrer">What arrived ↗</a>}
+    </article>
+  );
+}
+
 export default async function DesignerPage({ params }: PageProps) {
   const { slug } = await params;
   const designer = await getDesigner(slug);
   if (!designer) notFound();
   const { brand, categories, reviews, photoUrls } = designer;
 
-  const average = reviews.length ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : null;
+  // Fair scores: every customer counts once, using their latest review.
+  const latest = latestPerCustomer(reviews);
+  const average = avg(latest.map((r) => r.rating));
+  const cutoff = new Date();
+  cutoff.setMonth(cutoff.getMonth() - RECENT_MONTHS);
+  const recent = latestPerCustomer(reviews.filter((r) => new Date(r.created_at) > cutoff));
+  const recentAverage = avg(recent.map((r) => r.rating));
+  const groups = groupByCustomer(reviews);
   const categoryAverages = reviewCategories
     .map((category) => {
-      const scores = reviews.map((r) => r.category_ratings?.[category]).filter((n): n is number => typeof n === 'number' && n > 0);
-      return { category, score: scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : null };
+      const scores = latest.map((r) => r.category_ratings?.[category]).filter((n): n is number => typeof n === 'number' && n > 0);
+      return { category, score: avg(scores) };
     })
     .filter((c) => c.score !== null) as { category: string; score: number }[];
+  const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
 
   return (
     <main>
@@ -104,7 +159,13 @@ export default async function DesignerPage({ params }: PageProps) {
               <>
                 <strong>{average.toFixed(1)}</strong>
                 <Stars value={average} />
-                <span>{reviews.length} approved {reviews.length === 1 ? 'review' : 'reviews'}</span>
+                <span>{plural(latest.length, 'customer')} · {plural(reviews.length, 'review')}</span>
+                {recentAverage !== null && (
+                  <span className="designer-recent">
+                    Last {RECENT_MONTHS} months: <b>{recentAverage.toFixed(1)}</b> from {plural(recent.length, 'customer')}
+                  </span>
+                )}
+                {recentAverage === null && <span className="designer-recent">No reviews in the last {RECENT_MONTHS} months</span>}
               </>
             ) : (
               <>
@@ -135,35 +196,19 @@ export default async function DesignerPage({ params }: PageProps) {
 
           <div className="modal-review-head">
             <h2 id="reviews-heading" className="designer-subhead">Customer reviews</h2>
-            <span>{reviews.length} approved</span>
+            <span>{plural(latest.length, 'customer')} · {plural(reviews.length, 'review')}</span>
           </div>
           {reviews.length ? (
-            reviews.map((r) => (
-              <article className="modal-review" key={r.id}>
-                <Stars value={r.rating} />
-                {(r.item_type || r.shipped_to || r.order_month) && (
-                  <p className="review-facts">
-                    {[r.item_type, r.shipped_to && `Shipped to ${r.shipped_to}`, formatOrderMonth(r.order_month) && `Ordered ${formatOrderMonth(r.order_month)}`]
-                      .filter(Boolean)
-                      .join(' · ')}
-                  </p>
-                )}
-                <p>{r.review_text}</p>
-                {(r.photo_paths ?? []).some((path) => photoUrls[path]) && (
-                  <div className="review-photos">
-                    {(r.photo_paths ?? []).filter((path) => photoUrls[path]).map((path, i) => (
-                      <a key={path} href={photoUrls[path]} target="_blank" rel="noreferrer" aria-label={`Open photo ${i + 1}`}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={photoUrls[path]} alt={`Customer photo ${i + 1}`} loading="lazy" />
-                      </a>
-                    ))}
-                  </div>
-                )}
-                <small>{new Date(r.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}{r.updated_at && r.updated_at !== r.created_at ? ' · edited' : ''}</small>
-                {r.website_photo_url && <a href={r.website_photo_url} target="_blank" rel="noreferrer">Website photo ↗</a>}
-                {r.received_photo_url && <a href={r.received_photo_url} target="_blank" rel="noreferrer">What arrived ↗</a>}
-              </article>
-            ))
+            groups.map((group) =>
+              group.length > 1 ? (
+                <div className="repeat-customer" key={group[0].reviewer_key}>
+                  <p className="repeat-label">Repeat customer · {group.length} orders</p>
+                  {group.map((r) => <ReviewCard key={r.id} r={r} photoUrls={photoUrls} />)}
+                </div>
+              ) : (
+                <ReviewCard key={group[0].id} r={group[0]} photoUrls={photoUrls} />
+              )
+            )
           ) : (
             <p className="empty-state">No approved reviews yet. Be the first to share your experience.</p>
           )}

@@ -904,3 +904,12 @@ footer small{font-size:11px;line-height:1.7}
 .legal a{color:var(--wine);text-decoration:underline}
 .legal-wrap{background:var(--paper)}
 .designer-body{background:var(--paper)}
+
+/* Fair ratings */
+.designer-recent{display:block;margin-top:8px;font-size:13px;color:#c9c3bd}
+.designer-recent b{color:#fff;font-weight:600}
+.repeat-customer{border-left:3px solid var(--wine);padding-left:18px;margin:18px 0}
+.repeat-customer .modal-review:last-child{border-bottom:0}
+.repeat-label{font-size:11px!important;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--wine);margin:6px 0 0!important}
+.designer-score span{font-size:13px}
+.designer-score .designer-recent{text-align:right}

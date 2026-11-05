@@ -9,11 +9,12 @@ import { SiteFooter } from '@/components/site-footer';
 import { designerHref, BRAND_SELECT, BrandRow, brandCategoryNames } from '@/lib/designers';
 
 type Brand = BrandRow & { categories: string[] };
-type Review = { id: number; brand_id: number; rating: number; review_text: string; created_at: string; website_photo_url: string | null; received_photo_url: string | null; category_ratings: Record<string, number> | null };
+type Rating = { brand_id: number; score: number; customers: number; total_reviews: number };
 
 export default function Home() {
   const [brands, setBrands] = useState<Brand[]>([]);
-  const [reviews, setReviews] = useState<Review[]>([]);
+  // Fair ratings: each customer's latest approved review counts once per designer.
+  const [ratings, setRatings] = useState<Record<number, Rating>>({});
   const [search, setSearch] = useState('');
   const [categories, setCategories] = useState<string[]>([]);
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
@@ -31,12 +32,12 @@ export default function Home() {
       const [{ data: brandData }, { data: categoryData }, { data: reviewData }, { data: authData }] = await Promise.all([
         supabase.from('fashion_brands').select(BRAND_SELECT).order('Brand'),
         supabase.from('categories').select('name').order('sort_order'),
-        supabase.from('reviews').select('id, brand_id, rating, review_text, created_at, website_photo_url, received_photo_url, category_ratings').eq('status', 'approved').order('created_at', { ascending: false }),
+        supabase.from('brand_ratings').select('brand_id, score, customers, total_reviews'),
         supabase.auth.getUser(),
       ]);
       setBrands(((brandData || []) as unknown as BrandRow[]).map((b) => ({ ...b, categories: brandCategoryNames(b) })));
       setAvailableCategories(((categoryData || []) as { name: string }[]).map((c) => c.name));
-      setReviews((reviewData || []) as Review[]);
+      setRatings(Object.fromEntries(((reviewData || []) as Rating[]).map((r) => [r.brand_id, { ...r, score: Number(r.score) }])));
       setUserEmail(authData.user?.email || null);
       setLoading(false);
     }
@@ -64,15 +65,8 @@ export default function Home() {
       return matchesSearch && matchesCategory;
     });
 
-    const reviewCount = (brandId: number) =>
-      reviews.filter((r) => r.brand_id === brandId).length;
-
-    const averageRating = (brandId: number) => {
-      const rows = reviews.filter((r) => r.brand_id === brandId);
-      return rows.length
-        ? rows.reduce((sum, r) => sum + r.rating, 0) / rows.length
-        : 0;
-    };
+    const reviewCount = (brandId: number) => ratings[brandId]?.total_reviews ?? 0;
+    const averageRating = (brandId: number) => ratings[brandId]?.score ?? 0;
 
     return matching.sort((a, b) => {
       const countDifference = reviewCount(b.id) - reviewCount(a.id);
@@ -95,7 +89,7 @@ export default function Home() {
       return countDifference || ratingDifference ||
         (a.Brand || '').localeCompare(b.Brand || '');
     });
-  }, [brands, reviews, search, categories, sortBy]);
+  }, [brands, ratings, search, categories, sortBy]);
 
 
 
@@ -112,10 +106,7 @@ export default function Home() {
     document.getElementById('designers')?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const averageFor = (brandId: number) => {
-    const rows = reviews.filter((r) => r.brand_id === brandId);
-    return rows.length ? (rows.reduce((sum, r) => sum + r.rating, 0) / rows.length).toFixed(1) : null;
-  };
+  const averageFor = (brandId: number) => (ratings[brandId] ? ratings[brandId].score.toFixed(1) : null);
 
   async function signOut() {
     if (supabase) await supabase.auth.signOut();
@@ -274,7 +265,7 @@ export default function Home() {
 </div>
 
       
-      <div className="brand-grid">{loading ? <p className="empty-state">Loading the directory…</p> : filteredBrands.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((brand, i) => <article className="brand-card" key={brand.id}><div className={`brand-monogram tone-${i % 5}`}><span>{(brand.Brand || 'P').slice(0, 1).toUpperCase()}</span><i>✳</i></div><div className="brand-info"><span className="brand-category">{brand.categories.length ? brand.categories.join(' · ') : 'PAKISTANI FASHION'}</span><h3>{brand.Brand}</h3><p>{brand.Price_Range || 'Price details not listed'}</p><div className="brand-card-bottom">{averageFor(brand.id) ? <span className="rating">★ {averageFor(brand.id)} <small>({reviews.filter(r => r.brand_id === brand.id).length})</small></span> : <span className="no-rating">Be the first to review</span>}<Link className="brand-card-link" href={designerHref(brand)} aria-label={`View ${brand.Brand} reviews`}>View <span>↗</span></Link></div></div></article>)}</div>
+      <div className="brand-grid">{loading ? <p className="empty-state">Loading the directory…</p> : filteredBrands.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((brand, i) => <article className="brand-card" key={brand.id}><div className={`brand-monogram tone-${i % 5}`}><span>{(brand.Brand || 'P').slice(0, 1).toUpperCase()}</span><i>✳</i></div><div className="brand-info"><span className="brand-category">{brand.categories.length ? brand.categories.join(' · ') : 'PAKISTANI FASHION'}</span><h3>{brand.Brand}</h3><p>{brand.Price_Range || 'Price details not listed'}</p><div className="brand-card-bottom">{averageFor(brand.id) ? <span className="rating">★ {averageFor(brand.id)} <small>({ratings[brand.id]?.total_reviews ?? 0})</small></span> : <span className="no-rating">Be the first to review</span>}<Link className="brand-card-link" href={designerHref(brand)} aria-label={`View ${brand.Brand} reviews`}>View <span>↗</span></Link></div></div></article>)}</div>
       {!loading && filteredBrands.length === 0 && <p className="empty-state">No designers found. Try another search.</p>}
       {!loading && filteredBrands.length > 0 && (
         <nav className="pager" aria-label="Directory pages">
