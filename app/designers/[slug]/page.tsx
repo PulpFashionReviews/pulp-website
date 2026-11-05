@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { BRAND_SELECT, BrandRow, Review, brandCategoryNames, designerSlug, reviewCategories, websiteUrl } from '@/lib/designers';
 import { ReviewForm } from '@/components/review-form';
 import { SiteFooter } from '@/components/site-footer';
-import { PHOTO_BUCKET, formatOrderMonth } from '@/lib/review-options';
+import { PHOTO_BUCKET, facebookUrl, formatOrderMonth, instagramUrl } from '@/lib/review-options';
 
 export const revalidate = 60;
 
@@ -151,8 +151,11 @@ export default async function DesignerPage({ params }: PageProps) {
             </p>
             <div className="designer-links">
               {brand.Website && <a href={websiteUrl(brand.Website)} target="_blank" rel="noreferrer">Visit website ↗</a>}
+              {brand.instagram && <a href={instagramUrl(brand.instagram)} target="_blank" rel="noreferrer">Instagram ↗</a>}
+              {brand.facebook && <a href={facebookUrl(brand.facebook)} target="_blank" rel="noreferrer">Facebook ↗</a>}
               {brand.Contact_Number && <span>Contact: {brand.Contact_Number}</span>}
             </div>
+            {brand.ships_to && brand.ships_to.length > 0 && <p className="designer-ships">Ships to {brand.ships_to.join(' · ')}</p>}
           </div>
           <div className="designer-score">
             {average !== null ? (

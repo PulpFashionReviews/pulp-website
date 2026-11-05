@@ -35,3 +35,40 @@ export function formatOrderMonth(value: string | null) {
   if (!y || !m) return null;
   return new Date(Date.UTC(y, m - 1, 1)).toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 }
+
+export const SHIPS_TO_OPTIONS = [
+  'United States',
+  'United Kingdom',
+  'Canada',
+  'Australia',
+  'United Arab Emirates',
+  'Pakistan',
+  'Worldwide',
+];
+
+export const PRICE_RANGES = [
+  { value: 'Low', label: 'Budget' },
+  { value: 'Medium', label: 'Mid-range' },
+  { value: 'High', label: 'Luxury' },
+];
+
+export const RELATIONSHIPS = [
+  { value: 'customer', label: 'I’m a customer' },
+  { value: 'works_for_brand', label: 'I own or work for this brand' },
+  { value: 'marketer', label: 'I’m a marketer or agency for this brand' },
+];
+
+/** "@name", "name" or a full URL → an Instagram profile link. */
+export function instagramUrl(value: string) {
+  const v = value.trim();
+  if (/^https?:\/\//i.test(v)) return v;
+  if (/instagram\.com\//i.test(v)) return `https://${v.replace(/^\/+/, '')}`;
+  return `https://instagram.com/${v.replace(/^@/, '')}`;
+}
+
+export function facebookUrl(value: string) {
+  const v = value.trim();
+  if (/^https?:\/\//i.test(v)) return v;
+  if (/facebook\.com\//i.test(v)) return `https://${v.replace(/^\/+/, '')}`;
+  return `https://facebook.com/${v.replace(/^@/, '')}`;
+}

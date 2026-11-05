@@ -266,7 +266,7 @@ export default function Home() {
 
       
       <div className="brand-grid">{loading ? <p className="empty-state">Loading the directory…</p> : filteredBrands.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((brand, i) => <article className="brand-card" key={brand.id}><div className={`brand-monogram tone-${i % 5}`}><span>{(brand.Brand || 'P').slice(0, 1).toUpperCase()}</span><i>✳</i></div><div className="brand-info"><span className="brand-category">{brand.categories.length ? brand.categories.join(' · ') : 'PAKISTANI FASHION'}</span><h3>{brand.Brand}</h3><p>{brand.Price_Range || 'Price details not listed'}</p><div className="brand-card-bottom">{averageFor(brand.id) ? <span className="rating">★ {averageFor(brand.id)} <small>({ratings[brand.id]?.total_reviews ?? 0})</small></span> : <span className="no-rating">Be the first to review</span>}<Link className="brand-card-link" href={designerHref(brand)} aria-label={`View ${brand.Brand} reviews`}>View <span>↗</span></Link></div></div></article>)}</div>
-      {!loading && filteredBrands.length === 0 && <p className="empty-state">No designers found. Try another search.</p>}
+      {!loading && filteredBrands.length === 0 && <p className="empty-state">No designers found. Try another search, or <Link href="/suggest-designer">suggest a designer</Link>.</p>}
       {!loading && filteredBrands.length > 0 && (
         <nav className="pager" aria-label="Directory pages">
           <p className="directory-note">
@@ -298,6 +298,7 @@ export default function Home() {
           )}
         </nav>
       )}
+      {!loading && <p className="suggest-cta">Can’t find a designer? <Link href="/suggest-designer">Suggest one ↗</Link></p>}
     </section>
 
     <section className="review-banner" id="reviews"><div className="banner-mark">P.</div><div><span className="section-kicker">YOUR EXPERIENCE MATTERS</span><h2>REAL EXPERIENCES.<br /><em>REAL PHOTOS.</em></h2><p>Help another woman shop smarter. Tell us what was worth it, what wasn't, and what you wish you knew.</p><a className="button-light" href="#write-review">Leave a review <span>↗</span></a></div><div className="banner-stamp">BUILT BY<br />CUSTOMERS<br /><span>✳</span></div></section>

@@ -913,3 +913,33 @@ footer small{font-size:11px;line-height:1.7}
 .repeat-label{font-size:11px!important;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--wine);margin:6px 0 0!important}
 .designer-score span{font-size:13px}
 .designer-score .designer-recent{text-align:right}
+
+/* Suggest a designer */
+.suggest{display:grid;grid-template-columns:.8fr 1.2fr;gap:8%;align-items:start}
+.suggest-intro h1{font:500 clamp(36px,4.2vw,50px)/1.12 var(--serif);letter-spacing:-.03em;margin:12px 0 16px}
+.suggest-intro h1 em{color:var(--wine)}
+.suggest-intro p,.suggest-intro li{font-size:15px;line-height:1.8;color:#45403b}
+.suggest-intro ul{padding-left:20px;margin-top:18px}
+.suggest-intro li::marker{color:var(--wine)}
+.suggest-gate{gap:14px}
+.suggest-matches{background:#f4ece8;border-left:3px solid var(--wine);padding:12px 16px}
+.suggest-matches p{margin:0 0 6px;font-size:13px;color:#5a4a46}
+.suggest-matches ul{margin:0;padding-left:18px}
+.suggest-matches li{font-size:14px;line-height:1.8}
+.suggest-matches a{color:var(--wine);text-decoration:underline}
+.field-hint{font-size:13px;color:var(--muted);margin:-4px 0 6px}
+.label-optional{font-weight:400;color:var(--muted)}
+.check-group{border:0;padding:0;margin:8px 0 0;min-width:0}
+.check-group legend{font-size:14px;font-weight:600;margin-bottom:10px;padding:0}
+.check-group legend span{font-weight:400;color:var(--muted)}
+.check-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.radio-list{display:flex;flex-direction:column;gap:8px}
+.check-grid label,.radio-list label{display:flex;align-items:center;gap:10px;padding:11px 12px;border:1px solid var(--line);background:#fbf9f6;font-size:14px;cursor:pointer;transition:border-color .15s,background .15s}
+.check-grid label:hover,.radio-list label:hover{border-color:#bda4a0}
+.check-grid label.checked,.radio-list label.checked{border-color:var(--wine);background:#f6eeea;color:var(--wine)}
+.check-grid input,.radio-list input{accent-color:var(--wine);width:16px;height:16px;margin:0;flex:none}
+.suggest-cta{text-align:center;font-size:14px;color:var(--muted);margin:8px 0 0}
+.suggest-cta a,.empty-state a{color:var(--wine);text-decoration:underline}
+.designer-ships{font-size:13px;color:#c9c3bd;margin:14px 0 0}
+@media(max-width:900px){.suggest{grid-template-columns:1fr;gap:32px}}
+@media(max-width:680px){.check-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
