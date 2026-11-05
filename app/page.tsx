@@ -23,7 +23,6 @@ export default function Home() {
   useEffect(() => { setPage(1); }, [search, categories, sortBy]);
   const [selected, setSelected] = useState<Brand | null>(null);
   const [showBrandModal, setShowBrandModal] = useState(false);
-  const [email, setEmail] = useState('');
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [rating, setRating] = useState(5);
   const [reviewText, setReviewText] = useState('');
@@ -32,7 +31,6 @@ export default function Home() {
   const [receivedPhoto, setReceivedPhoto] = useState('');
   const [notice, setNotice] = useState('');
   const [loading, setLoading] = useState(true);
-  const [authLoading, setAuthLoading] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -127,15 +125,6 @@ export default function Home() {
     return rows.length ? (rows.reduce((sum, r) => sum + r.rating, 0) / rows.length).toFixed(1) : null;
   };
 
-  async function signIn(event: FormEvent) {
-    event.preventDefault();
-    if (!supabase) { setNotice('Add your Supabase project URL and publishable key to enable sign-in.'); return; }
-    setAuthLoading(true); setNotice('');
-    const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.origin } });
-    setNotice(error ? error.message : 'Check your email for your secure sign-in link.');
-    setAuthLoading(false);
-  }
-
   async function signOut() {
     if (supabase) await supabase.auth.signOut();
     setNotice('You have signed out.');
@@ -146,7 +135,8 @@ export default function Home() {
     if (!supabase) { setNotice('Connect Supabase before submitting a review.'); return; }
     if (!selected) return;
     const { data: userData } = await supabase.auth.getUser();
-    if (!userData.user) { setNotice('Please sign in with your email before submitting a review.'); return; }
+    if (!userData.user) { setNotice('Please log in before submitting a review.'); return; }
+    if (!userData.user.email_confirmed_at) { setNotice('Please confirm your email address first — check your inbox for the confirmation link.'); return; }
     const { error } = await supabase.from('reviews').insert({
       brand_id: selected.id, user_id: userData.user.id, rating, review_text: reviewText,
       category_ratings: categoryRatings, website_photo_url: websitePhoto || null,
@@ -346,7 +336,7 @@ export default function Home() {
 
     <section className="review-banner" id="reviews"><div className="banner-mark">P.</div><div><span className="section-kicker">YOUR EXPERIENCE MATTERS</span><h2>REAL EXPERIENCES.<br /><em>REAL PHOTOS.</em></h2><p>Help another woman shop smarter. Tell us what was worth it, what wasn't, and what you wish you knew.</p><a className="button-light" href="#write-review">Leave a review <span>↗</span></a></div><div className="banner-stamp">BUILT BY<br />CUSTOMERS<br /><span>✳</span></div></section>
 
-    <section className="write-section section-pad" id="write-review"><div className="write-intro"><span className="section-kicker">ADD YOUR VOICE</span><h2>Good or bad,<br /><em>we want to know.</em></h2><p>Thoughtful reviews make the whole community stronger. Reviews are checked before publishing to keep the directory useful and respectful.</p><div className="login-card"><h3>{userEmail ? 'You’re signed in' : 'Sign in to contribute'}</h3>{userEmail ? <><p className="signed-in">{userEmail}</p><button className="outline-button" onClick={signOut}>Sign out</button></> : <form onSubmit={signIn}><label htmlFor="email">Email address</label><input id="email" type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" /><button className="button-primary full" disabled={authLoading}>{authLoading ? 'Sending…' : 'Email me a sign-in link'} <span>↗</span></button><small>No password needed. We’ll email you a secure link.</small></form>}</div></div>
+    <section className="write-section section-pad" id="write-review"><div className="write-intro"><span className="section-kicker">ADD YOUR VOICE</span><h2>Good or bad,<br /><em>we want to know.</em></h2><p>Thoughtful reviews make the whole community stronger. Reviews are checked before publishing to keep the directory useful and respectful.</p><div className="login-card"><h3>{userEmail ? 'You’re signed in' : 'Sign in to contribute'}</h3>{userEmail ? <><p className="signed-in">{userEmail}</p><button className="outline-button" onClick={signOut}>Sign out</button></> : <><p className="login-card-copy">Log in or create a free account to share your experience.</p><div className="login-card-actions"><a className="button-primary" href="/login?next=/%23write-review">Log in <span>↗</span></a><a className="outline-button" href="/signup">Create account</a></div></>}</div></div>
       <form className="review-form" onSubmit={submitReview}><div className="form-heading"><span className="section-kicker">WRITE A REVIEW</span><span className="required-note">* Required fields</span></div><label htmlFor="brand-select">Which designer did you shop with? *</label><select id="brand-select" required value={selected?.id ?? ''} onChange={e => setSelected(brands.find(b => b.id === Number(e.target.value)) || null)}><option value="">Select a designer</option>{brands.map(b => <option key={b.id} value={b.id}>{b.Brand}</option>)}</select><label>Overall experience *</label><div className="stars" role="radiogroup" aria-label="Overall rating">{[1,2,3,4,5].map(n => <button type="button" key={n} className={n <= rating ? 'star active' : 'star'} onClick={() => setRating(n)} aria-label={`${n} stars`}>★</button>)}<span>{['','Poor','Fair','Good','Very good','Excellent'][rating]}</span></div><label>Your review *</label><textarea required minLength={20} rows={5} value={reviewText} onChange={e => setReviewText(e.target.value)} placeholder="Tell us about the quality, fit, service, delivery, and whether it matched the photos…" /><div className="category-ratings"><p>Rate the details <span>(optional)</span></p><div className="category-rating-grid">{reviewCategories.map(c => <label key={c}>{c}<select value={categoryRatings[c] || ''} onChange={e => setCategoryRatings(prev => ({...prev, [c]: Number(e.target.value)}))}><option value="">—</option>{[1,2,3,4,5].map(n => <option key={n} value={n}>{n} / 5</option>)}</select></label>)}</div></div><div className="photo-fields"><div><label htmlFor="website-photo">Website/product photo URL</label><input id="website-photo" type="url" value={websitePhoto} onChange={e => setWebsitePhoto(e.target.value)} placeholder="https://…" /></div><div><label htmlFor="received-photo">What you received photo URL</label><input id="received-photo" type="url" value={receivedPhoto} onChange={e => setReceivedPhoto(e.target.value)} placeholder="https://…" /></div></div><p className="form-privacy">Only submit photos and details you have permission to share. Your review will remain pending until it is approved.</p><button className="button-primary" type="submit">Submit for review <span>↗</span></button>{notice && <p className="notice" role="status">{notice}</p>}</form></section>
 
     <footer><a href="#top" className="wordmark footer-logo">PULP<span>®</span></a><p>Fashion reviews, from the people who know.</p><div><a href="#designers">Directory</a><a href="#write-review">Write a review</a><a href="mailto:hello@pulp.example">Contact</a></div><small>

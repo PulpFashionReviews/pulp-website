@@ -30,7 +30,9 @@ export default function LoginPage() {
       if (error) {
         setMessage(error.message);
       } else {
-        window.location.href = "/";
+        // Return to the page that sent them here (same-site paths only).
+        const next = new URLSearchParams(window.location.search).get("next");
+        window.location.href = next && next.startsWith("/") && !next.startsWith("//") ? next : "/";
       }
     } catch {
       setMessage("Something went wrong. Please try again.");

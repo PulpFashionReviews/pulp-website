@@ -26,6 +26,11 @@ export function DesignerReviewForm({ brandId, brandName }: { brandId: number; br
       setSubmitting(false);
       return;
     }
+    if (!userData.user.email_confirmed_at) {
+      setNotice('Please confirm your email address first — check your inbox for the confirmation link.');
+      setSubmitting(false);
+      return;
+    }
     const { error } = await supabase.from('reviews').insert({
       brand_id: brandId, user_id: userData.user.id, rating, review_text: reviewText,
       category_ratings: categoryRatings, website_photo_url: websitePhoto || null,
@@ -88,7 +93,7 @@ export function DesignerReviewForm({ brandId, brandName }: { brandId: number; br
       <button className="button-primary" type="submit" disabled={submitting}>{submitting ? 'Submitting…' : 'Submit for review'} <span>↗</span></button>
       {notice && (
         <p className="notice" role="status">
-          {notice} {needsLogin && <><Link href="/login">Log in</Link> or <Link href="/signup">sign up</Link>.</>}
+          {notice} {needsLogin && <><Link href={`/login?next=${encodeURIComponent(typeof window !== 'undefined' ? window.location.pathname + '#write-review' : '/')}`}>Log in</Link> or <Link href="/signup">sign up</Link>.</>}
         </p>
       )}
     </form>
