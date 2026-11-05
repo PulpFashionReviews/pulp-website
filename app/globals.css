@@ -775,3 +775,5 @@ body {
 .designer-breakdown strong{flex:0 0 28px;text-align:right}
 .notice a{color:var(--wine);text-decoration:underline}
 @media(max-width:900px){.designer-body{flex-direction:column}.designer-form-wrap{position:static;flex-basis:auto;width:100%}.designer-score{align-items:flex-start;border-left:0;padding-left:0}}
+
+.directory-more{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 0 4px}.directory-more .directory-note{padding:12px 0 6px}.directory-more .outline-button{padding:12px 22px;font-weight:600;border-color:var(--wine)}.directory-more .outline-button:hover{background:var(--wine);color:#fff}.directory-more .outline-button span{margin-left:8px}

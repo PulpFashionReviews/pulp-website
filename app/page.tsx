@@ -15,6 +15,10 @@ export default function Home() {
   const [search, setSearch] = useState('');
   const [categories, setCategories] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState('popular');
+  const PAGE_SIZE = 12;
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  // Start back at the first page whenever the search, filters or sort change.
+  useEffect(() => { setVisibleCount(PAGE_SIZE); }, [search, categories, sortBy]);
   const [selected, setSelected] = useState<Brand | null>(null);
   const [showBrandModal, setShowBrandModal] = useState(false);
   const [email, setEmail] = useState('');
@@ -351,9 +355,18 @@ export default function Home() {
 </select>
 
       
-      <div className="brand-grid">{loading ? <p className="empty-state">Loading the directory…</p> : filteredBrands.slice(0, 12).map((brand, i) => <article className="brand-card" key={brand.id}><div className={`brand-monogram tone-${i % 5}`}><span>{(brand.Brand || 'P').slice(0, 1).toUpperCase()}</span><i>✳</i></div><div className="brand-info"><span className="brand-category">{brand.Category || 'PAKISTANI FASHION'}</span><h3>{brand.Brand}</h3><p>{brand.Price_Range || 'Price details not listed'}</p><div className="brand-card-bottom">{averageFor(brand.id) ? <span className="rating">★ {averageFor(brand.id)} <small>({reviews.filter(r => r.brand_id === brand.id).length})</small></span> : <span className="no-rating">Be the first to review</span>}<Link className="brand-card-link" href={designerHref(brand)} aria-label={`View ${brand.Brand} reviews`}>View <span>↗</span></Link></div></div></article>)}</div>
+      <div className="brand-grid">{loading ? <p className="empty-state">Loading the directory…</p> : filteredBrands.slice(0, visibleCount).map((brand, i) => <article className="brand-card" key={brand.id}><div className={`brand-monogram tone-${i % 5}`}><span>{(brand.Brand || 'P').slice(0, 1).toUpperCase()}</span><i>✳</i></div><div className="brand-info"><span className="brand-category">{brand.Category || 'PAKISTANI FASHION'}</span><h3>{brand.Brand}</h3><p>{brand.Price_Range || 'Price details not listed'}</p><div className="brand-card-bottom">{averageFor(brand.id) ? <span className="rating">★ {averageFor(brand.id)} <small>({reviews.filter(r => r.brand_id === brand.id).length})</small></span> : <span className="no-rating">Be the first to review</span>}<Link className="brand-card-link" href={designerHref(brand)} aria-label={`View ${brand.Brand} reviews`}>View <span>↗</span></Link></div></div></article>)}</div>
       {!loading && filteredBrands.length === 0 && <p className="empty-state">No designers found. Try another search.</p>}
-      {filteredBrands.length > 12 && <p className="directory-note">Showing 12 of {filteredBrands.length} matches. Refine your search to find a specific designer.</p>}
+      {!loading && filteredBrands.length > 0 && (
+        <div className="directory-more">
+          <p className="directory-note">Showing {Math.min(visibleCount, filteredBrands.length)} of {filteredBrands.length} designers</p>
+          {visibleCount < filteredBrands.length && (
+            <button type="button" className="outline-button" onClick={() => setVisibleCount((n) => n + PAGE_SIZE * 2)}>
+              Show more designers <span>↓</span>
+            </button>
+          )}
+        </div>
+      )}
     </section>
 
     <section className="review-banner" id="reviews"><div className="banner-mark">P.</div><div><span className="section-kicker">YOUR EXPERIENCE MATTERS</span><h2>REAL EXPERIENCES.<br /><em>REAL PHOTOS.</em></h2><p>Help another woman shop smarter. Tell us what was worth it, what wasn't, and what you wish you knew.</p><a className="button-light" href="#write-review">Leave a review <span>↗</span></a></div><div className="banner-stamp">BUILT BY<br />CUSTOMERS<br /><span>✳</span></div></section>
