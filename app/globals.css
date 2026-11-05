@@ -845,3 +845,40 @@ body {
 .review-photos img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s}
 .review-photos a:hover img{transform:scale(1.04)}
 @media(max-width:680px){.order-fields{grid-template-columns:1fr}.photo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Larger, easier-to-read text on review forms and reviews */
+.review-form{padding:34px;gap:14px}
+.review-form .section-kicker{font-size:11px}
+.review-form .required-note{font-size:12px}
+.review-form>label,.order-fields label,.photo-fields label,.review-form-wrap label{font-size:14px;font-weight:600}
+.review-form select,.review-form input,.review-form textarea{font-size:15px;padding:14px}
+.review-form textarea{line-height:1.6}
+.stars .star{font-size:32px}
+.stars span{font-size:14px}
+.category-ratings>p,.photo-upload>p{font-size:15px}
+.category-rating-grid{gap:12px 18px}
+.category-rating-grid label{font-size:14px;font-weight:400;color:#4f4a44}
+.category-rating-grid select{font-size:14px;padding:10px;max-width:110px}
+.photo-upload .photo-hint{font-size:13px}
+.photo-add{font-size:13px}
+.form-privacy{font-size:13px}
+.review-form .button-primary,.form-actions .outline-button{font-size:14px}
+.review-form .notice{font-size:14px}
+.my-reviews .section-kicker{font-size:11px}
+.my-review strong{font-size:16px}
+.my-review p{font-size:13px}
+.status-pill{font-size:10px}
+.my-reviews .outline-button{font-size:13px}
+.login-card h3{font-size:22px}
+.login-card-copy{font-size:14px}
+.login-card-actions .button-primary,.login-card-actions .outline-button{font-size:14px}
+.designer-subhead{font-size:28px}
+.modal-review p{font-size:15px;line-height:1.75}
+.modal-review small{font-size:12px}
+.modal-review>a{font-size:13px}
+.modal-review .rating{font-size:15px}
+.review-facts{font-size:13px!important}
+.modal-review-head span{font-size:13px}
+.designer-breakdown li{font-size:14px}
+@media(max-width:680px){.review-form{padding:24px}.review-form select,.review-form input,.review-form textarea{font-size:16px}}
+.write-intro>p{font-size:15px;line-height:1.8;max-width:380px}

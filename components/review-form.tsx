@@ -10,10 +10,10 @@ import {
 
 type BrandOption = { id: number; Brand: string | null };
 type Props = {
-  /** Fixed vendor (designer pages). */
+  /** Fixed designer (designer pages). */
   brandId?: number;
   brandName?: string;
-  /** Vendor chooser (homepage). */
+  /** Designer chooser (homepage). */
   brands?: BrandOption[];
 };
 type Photo = { path?: string; file?: File; url: string };
@@ -42,7 +42,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
   const fileInput = useRef<HTMLInputElement>(null);
   const formTop = useRef<HTMLFormElement>(null);
 
-  const vendorName = brandName ?? brands?.find((b) => b.id === chosenId)?.Brand ?? 'this vendor';
+  const designerName = brandName ?? brands?.find((b) => b.id === chosenId)?.Brand ?? 'this designer';
 
   // Who is signed in?
   useEffect(() => {
@@ -57,7 +57,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  // The signed-in person's own reviews of the chosen vendor (any status).
+  // The signed-in person's own reviews of the chosen designer (any status).
   const loadMine = useCallback(async () => {
     if (!supabase || !me || !chosenId) { setMyReviews([]); return; }
     const { data } = await supabase
@@ -129,7 +129,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
     setNotice(''); setNeedsLogin(false);
     if (!me) { setNeedsLogin(true); setNotice('Please log in before submitting a review.'); return; }
     if (!me.confirmed) { setNotice('Please confirm your email address first — check your inbox for the confirmation link.'); return; }
-    if (!chosenId) { setNotice('Please choose the vendor you shopped with.'); return; }
+    if (!chosenId) { setNotice('Please choose the designer you shopped with.'); return; }
     if (orderMonth > thisMonth()) { setNotice('The order month can’t be in the future.'); return; }
 
     setSubmitting(true);
@@ -182,7 +182,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
     <div className="review-form-wrap">
       {myReviews.length > 0 && (
         <div className="my-reviews">
-          <span className="section-kicker">YOUR REVIEWS OF {vendorName.toUpperCase()}</span>
+          <span className="section-kicker">YOUR REVIEWS OF {designerName.toUpperCase()}</span>
           {myReviews.map((r) => (
             <div className="my-review" key={r.id}>
               <div>
@@ -207,10 +207,10 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
 
         {brands && (
           <>
-            <label htmlFor="brand-select">Which vendor did you shop with? *</label>
+            <label htmlFor="brand-select">Which designer did you shop with? *</label>
             <select id="brand-select" required value={chosenId ?? ''} disabled={!!editingId}
               onChange={(e) => { setChosenId(e.target.value ? Number(e.target.value) : null); resetForm(); }}>
-              <option value="">Select a vendor</option>
+              <option value="">Select a designer</option>
               {brands.map((b) => <option key={b.id} value={b.id}>{b.Brand}</option>)}
             </select>
           </>
