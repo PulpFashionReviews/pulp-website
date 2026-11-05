@@ -16,9 +16,9 @@ export default function Home() {
   const [categories, setCategories] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState('popular');
   const PAGE_SIZE = 12;
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [page, setPage] = useState(1);
   // Start back at the first page whenever the search, filters or sort change.
-  useEffect(() => { setVisibleCount(PAGE_SIZE); }, [search, categories, sortBy]);
+  useEffect(() => { setPage(1); }, [search, categories, sortBy]);
   const [selected, setSelected] = useState<Brand | null>(null);
   const [showBrandModal, setShowBrandModal] = useState(false);
   const [email, setEmail] = useState('');
@@ -145,6 +145,19 @@ export default function Home() {
   }, [brands, reviews, search, categories, sortBy]);
 
 
+
+  const totalPages = Math.max(1, Math.ceil(filteredBrands.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  // Page numbers to show: first, last, and two on either side of the current page, with gaps.
+  const pageNumbers: (number | null)[] = [];
+  for (let n = 1; n <= totalPages; n++) {
+    if (n === 1 || n === totalPages || Math.abs(n - currentPage) <= 2) pageNumbers.push(n);
+    else if (pageNumbers[pageNumbers.length - 1] !== null) pageNumbers.push(null);
+  }
+  const goToPage = (n: number) => {
+    setPage(Math.min(Math.max(1, n), totalPages));
+    document.getElementById('designers')?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   const brandReviews = selected ? reviews.filter((r) => r.brand_id === selected.id) : [];
   const averageFor = (brandId: number) => {
@@ -355,17 +368,38 @@ export default function Home() {
 </select>
 
       
-      <div className="brand-grid">{loading ? <p className="empty-state">Loading the directory…</p> : filteredBrands.slice(0, visibleCount).map((brand, i) => <article className="brand-card" key={brand.id}><div className={`brand-monogram tone-${i % 5}`}><span>{(brand.Brand || 'P').slice(0, 1).toUpperCase()}</span><i>✳</i></div><div className="brand-info"><span className="brand-category">{brand.Category || 'PAKISTANI FASHION'}</span><h3>{brand.Brand}</h3><p>{brand.Price_Range || 'Price details not listed'}</p><div className="brand-card-bottom">{averageFor(brand.id) ? <span className="rating">★ {averageFor(brand.id)} <small>({reviews.filter(r => r.brand_id === brand.id).length})</small></span> : <span className="no-rating">Be the first to review</span>}<Link className="brand-card-link" href={designerHref(brand)} aria-label={`View ${brand.Brand} reviews`}>View <span>↗</span></Link></div></div></article>)}</div>
+      <div className="brand-grid">{loading ? <p className="empty-state">Loading the directory…</p> : filteredBrands.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((brand, i) => <article className="brand-card" key={brand.id}><div className={`brand-monogram tone-${i % 5}`}><span>{(brand.Brand || 'P').slice(0, 1).toUpperCase()}</span><i>✳</i></div><div className="brand-info"><span className="brand-category">{brand.Category || 'PAKISTANI FASHION'}</span><h3>{brand.Brand}</h3><p>{brand.Price_Range || 'Price details not listed'}</p><div className="brand-card-bottom">{averageFor(brand.id) ? <span className="rating">★ {averageFor(brand.id)} <small>({reviews.filter(r => r.brand_id === brand.id).length})</small></span> : <span className="no-rating">Be the first to review</span>}<Link className="brand-card-link" href={designerHref(brand)} aria-label={`View ${brand.Brand} reviews`}>View <span>↗</span></Link></div></div></article>)}</div>
       {!loading && filteredBrands.length === 0 && <p className="empty-state">No designers found. Try another search.</p>}
       {!loading && filteredBrands.length > 0 && (
-        <div className="directory-more">
-          <p className="directory-note">Showing {Math.min(visibleCount, filteredBrands.length)} of {filteredBrands.length} designers</p>
-          {visibleCount < filteredBrands.length && (
-            <button type="button" className="outline-button" onClick={() => setVisibleCount((n) => n + PAGE_SIZE * 2)}>
-              Show more designers <span>↓</span>
-            </button>
+        <nav className="pager" aria-label="Directory pages">
+          <p className="directory-note">
+            Showing {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filteredBrands.length)} of {filteredBrands.length} designers
+          </p>
+          {totalPages > 1 && (
+            <div className="pager-buttons">
+              <button type="button" onClick={() => goToPage(1)} disabled={currentPage === 1} aria-label="First page">«</button>
+              <button type="button" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} aria-label="Previous page">‹</button>
+              {pageNumbers.map((n, idx) =>
+                n === null ? (
+                  <span key={`gap-${idx}`} className="pager-gap" aria-hidden="true">…</span>
+                ) : (
+                  <button
+                    type="button"
+                    key={n}
+                    onClick={() => goToPage(n)}
+                    className={n === currentPage ? 'active' : ''}
+                    aria-current={n === currentPage ? 'page' : undefined}
+                    aria-label={`Page ${n}`}
+                  >
+                    {n}
+                  </button>
+                )
+              )}
+              <button type="button" onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages} aria-label="Next page">›</button>
+              <button type="button" onClick={() => goToPage(totalPages)} disabled={currentPage === totalPages} aria-label="Last page">»</button>
+            </div>
           )}
-        </div>
+        </nav>
       )}
     </section>
 
