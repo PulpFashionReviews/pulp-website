@@ -156,14 +156,14 @@ export default function Home() {
      
 <div className="hero-copy">
   <p className="eyebrow">
-    <span className="eyebrow-line" /> PAKISTANI &amp; INDIAN FASHION · REAL CUSTOMER REVIEWS
+    <span className="eyebrow-line" /> PAKISTANI FASHION · REAL CUSTOMER REVIEWS
   </p>
   <h1>
     Your experience<br />
     <em>matters.</em>
   </h1>
   <p className="hero-intro">
-    Real experiences from customers who have shopped Pakistani and Indian fashion.
+    Real experiences from customers who have shopped Pakistani designers.
   Share honest reviews, discover what others have experienced, and help
   each other shop with confidence.
   </p>

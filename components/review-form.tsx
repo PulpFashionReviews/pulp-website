@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { REVIEW_SELECT, Review, reviewCategories } from '@/lib/designers';
 import {
-  ITEM_TYPES, SHIP_COUNTRIES, PHOTO_BUCKET, MAX_PHOTOS, MAX_PHOTO_BYTES, PHOTO_TYPES, formatOrderMonth,
+  ITEM_TYPES_FALLBACK, SHIP_COUNTRIES, PHOTO_BUCKET, MAX_PHOTOS, MAX_PHOTO_BYTES, PHOTO_TYPES, formatOrderMonth,
 } from '@/lib/review-options';
 
 type BrandOption = { id: number; Brand: string | null };
@@ -23,6 +23,7 @@ const thisMonth = () => new Date().toISOString().slice(0, 7);
 
 export function ReviewForm({ brandId, brandName, brands }: Props) {
   const [me, setMe] = useState<Me>(null);
+  const [itemTypes, setItemTypes] = useState<string[]>(ITEM_TYPES_FALLBACK);
   const [chosenId, setChosenId] = useState<number | null>(brandId ?? null);
   const [myReviews, setMyReviews] = useState<Review[]>([]);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -43,6 +44,15 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
   const formTop = useRef<HTMLFormElement>(null);
 
   const designerName = brandName ?? brands?.find((b) => b.id === chosenId)?.Brand ?? 'this designer';
+
+  // "What did you order?" uses the same categories as the directory.
+  useEffect(() => {
+    if (!supabase) return;
+    supabase.from('categories').select('name').order('sort_order').then(({ data }) => {
+      const names = ((data || []) as { name: string }[]).map((c) => c.name);
+      if (names.length) setItemTypes([...names, 'Other']);
+    });
+  }, []);
 
   // Who is signed in?
   useEffect(() => {
@@ -229,7 +239,8 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
             <label htmlFor="item-type">What did you order? *</label>
             <select id="item-type" required value={itemType} onChange={(e) => setItemType(e.target.value)}>
               <option value="">Select item type</option>
-              {ITEM_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+              {itemTypes.map((t) => <option key={t} value={t}>{t}</option>)}
+              {itemType && !itemTypes.includes(itemType) && <option value={itemType}>{itemType}</option>}
             </select>
           </div>
           <div>

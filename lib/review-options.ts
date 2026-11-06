@@ -1,15 +1,18 @@
 // Shared choices and limits for the review form.
 
-export const ITEM_TYPES = [
-  'Lawn Suit',
-  'Pret / Casual',
-  'Luxury Pret / Festive',
-  'Formal',
+// "What did you order?" matches the directory categories (loaded from the
+// database); this list is only used if they can't be loaded.
+export const ITEM_TYPES_FALLBACK = [
   'Bridal',
-  'Unstitched Fabric',
+  'Formal',
+  'Luxury Pret/Festive',
+  'Pret/Casual',
+  'Lawn',
+  'Unstitched',
   'Menswear',
-  'Kidswear',
-  'Jewelry / Accessories',
+  'Kids',
+  'Jewelry/Accessories',
+  'Modest Wear & Hijabs',
   'Other',
 ];
 
