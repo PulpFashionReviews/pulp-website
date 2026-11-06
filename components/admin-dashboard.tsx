@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { designerHref, reviewCategories } from '@/lib/designers';
-import { PHOTO_BUCKET, RELATIONSHIPS, formatOrderMonth, instagramUrl, facebookUrl } from '@/lib/review-options';
+import { PHOTO_BUCKET, RELATIONSHIPS, formatOrderMonth, instagramUrl, facebookUrl, priceSymbol } from '@/lib/review-options';
 import { FilterDropdown } from '@/components/filter-dropdown';
 
 type Status = 'pending' | 'approved' | 'rejected';
@@ -213,7 +213,7 @@ export function AdminDashboard() {
                   </dd>
                   <dt>Categories</dt><dd>{s.categories || '—'}</dd>
                   <dt>Ships to</dt><dd>{s.ships_to?.length ? s.ships_to.join(', ') : '—'}</dd>
-                  <dt>Price range</dt><dd>{s.price_range || '—'}</dd>
+                  <dt>Price range</dt><dd>{priceSymbol(s.price_range) || '—'}</dd>
                   {s.notes && <><dt>Notes</dt><dd>{s.notes}</dd></>}
                 </dl>
                 <div className="admin-actions">

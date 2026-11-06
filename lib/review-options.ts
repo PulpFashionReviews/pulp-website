@@ -50,10 +50,17 @@ export const SHIPS_TO_OPTIONS = [
 ];
 
 export const PRICE_RANGES = [
-  { value: 'Low', label: 'Budget' },
-  { value: 'Medium', label: 'Mid-range' },
-  { value: 'High', label: 'Luxury' },
+  { value: 'Low', label: '$ · Budget' },
+  { value: 'Medium', label: '$$ · Mid-range' },
+  { value: 'High', label: '$$$ · Luxury' },
 ];
+
+/** "Low" / "Medium" / "High" → "$" / "$$" / "$$$". */
+export function priceSymbol(value: string | null | undefined) {
+  if (!value) return null;
+  const symbols: Record<string, string> = { low: '$', medium: '$$', high: '$$$' };
+  return symbols[value.trim().toLowerCase()] ?? value;
+}
 
 export const RELATIONSHIPS = [
   { value: 'customer', label: 'I’m a customer' },

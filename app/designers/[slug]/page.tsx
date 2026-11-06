@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { BRAND_SELECT, BrandRow, Review, brandCategoryNames, designerSlug, reviewCategories, websiteUrl } from '@/lib/designers';
 import { ReviewForm } from '@/components/review-form';
 import { SiteFooter } from '@/components/site-footer';
-import { PHOTO_BUCKET, facebookUrl, formatOrderMonth, instagramUrl } from '@/lib/review-options';
+import { PHOTO_BUCKET, facebookUrl, formatOrderMonth, instagramUrl, priceSymbol } from '@/lib/review-options';
 
 export const revalidate = 60;
 
@@ -147,7 +147,7 @@ export default async function DesignerPage({ params }: PageProps) {
             <h1>{brand.Brand}</h1>
             <p className="designer-meta">
               {categories.length ? categories.join(' · ') : 'Pakistani fashion'}
-              {brand.Price_Range ? ` · ${brand.Price_Range}` : ''}
+              {brand.Price_Range ? ` · ${priceSymbol(brand.Price_Range)}` : ''}
             </p>
             <div className="designer-links">
               {brand.Website && <a href={websiteUrl(brand.Website)} target="_blank" rel="noreferrer">Visit website ↗</a>}
