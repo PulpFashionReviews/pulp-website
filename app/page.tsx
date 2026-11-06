@@ -181,62 +181,74 @@ export default function Home() {
       <div className="hero-art" aria-label="Editorial fashion-inspired still life"><div className="art-glow" /><div className="art-label">THE CUSTOMER<br />COMES FIRST <span>✳</span></div><div className="fabric fabric-back" /><div className="fabric fabric-front" /><div className="vase"><div className="vase-neck" /><div className="vase-body" /><div className="vase-base" /></div><div className="art-caption"><span>01 / 03</span><span>Fashion, with the full picture.</span></div></div>
     </section>
 
-<section className="promise-strip" id="how-it-works">
-  <div className="promise-heading">
-    <span className="section-kicker">THE PULP PROMISE</span>
-    <h2>Shop with <em>confidence.</em></h2>
-  </div>
-
-  <div className="promise-item">
-    <span className="promise-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="8" r="3.5" />
-        <path d="M5 21v-2a7 7 0 0 1 14 0v2" />
-      </svg>
-    </span>
-    <div>
-      <h3>Real customers</h3>
-      <p>Reviews from people who have actually ordered.</p>
+<section className="how-it-works" id="how-it-works">
+  <div className="how-intro">
+    <span className="section-kicker">HOW IT WORKS</span>
+    <h2>Ordered from Pakistan and got <em>burned?</em> You’re not alone.</h2>
+    <p>
+      The outfit looked nothing like the photos. The “original” turned out to be a copy. Delivery took months,
+      customs fees came out of nowhere, and your messages went unanswered. PULP is where shoppers outside Pakistan
+      tell the truth about what happened — so the next person doesn’t have to learn the hard way.
+    </p>
+    <p>
+      And when a designer gets it right, we want to hear that too. PULP is just as much a place to find the designers
+      real customers trust before you spend anything.
+    </p>
+    <div className="how-actions">
+      <a className="button-primary" href="#write-review">Share your experience <span>↗</span></a>
+      <a className="text-link-dark" href="#designers">Find trusted designers <span>→</span></a>
     </div>
   </div>
 
-  <div className="promise-item">
-    <span className="promise-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 7h4l2-3h6l2 3h4a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z" />
-        <circle cx="12" cy="13" r="4" />
-      </svg>
-    </span>
-    <div>
-      <h3>Real photos</h3>
-      <p>Compare the website look with what arrived.</p>
-    </div>
-  </div>
-
-  <div className="promise-item">
-    <span className="promise-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M6 3h9l5 5v13H6z" />
-        <path d="M15 3v5h5M9 13h8M9 17h8" />
-      </svg>
-    </span>
-    <div>
-      <h3>Useful details</h3>
-      <p>Rate quality, service, communication and more.</p>
-    </div>
-  </div>
-
-  <div className="promise-item">
-    <span className="promise-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z" />
-      </svg>
-    </span>
-    <div>
-      <h3>Community first</h3>
-      <p>Honest feedback to help every shopper decide.</p>
-    </div>
-  </div>
+  <ol className="how-steps">
+    <li>
+      <span className="promise-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12Z" />
+          <path d="M8.5 11h7M8.5 14.5h4.5" />
+        </svg>
+      </span>
+      <div>
+        <h3>Tell your story</h3>
+        <p>Quality, fit, delivery, customs, communication — say what really happened, good or bad, in your own words.</p>
+      </div>
+    </li>
+    <li>
+      <span className="promise-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 7h4l2-3h6l2 3h4a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z" />
+          <circle cx="12" cy="13" r="4" />
+        </svg>
+      </span>
+      <div>
+        <h3>Show the proof</h3>
+        <p>Put the website photo next to what actually arrived. Pictures say what a sales page won’t.</p>
+      </div>
+    </li>
+    <li>
+      <span className="promise-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 3 4 6v6c0 4.5 3.4 8.1 8 9 4.6-.9 8-4.5 8-9V6l-8-3Z" />
+          <path d="M12 8v5M12 16.5h.01" />
+        </svg>
+      </span>
+      <div>
+        <h3>Warn the next shopper</h3>
+        <p>Your review could save someone’s wedding outfit — and their money. Every review is checked, so it can’t be bought or buried.</p>
+      </div>
+    </li>
+    <li>
+      <span className="promise-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z" />
+        </svg>
+      </span>
+      <div>
+        <h3>Find the ones worth it</h3>
+        <p>Sort by highest rated to discover designers with genuinely happy customers — and order with confidence.</p>
+      </div>
+    </li>
+  </ol>
 </section>
 
 

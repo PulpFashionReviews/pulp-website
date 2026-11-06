@@ -943,3 +943,20 @@ footer small{font-size:11px;line-height:1.7}
 .designer-ships{font-size:13px;color:#c9c3bd;margin:14px 0 0}
 @media(max-width:900px){.suggest{grid-template-columns:1fr;gap:32px}}
 @media(max-width:680px){.check-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* How it works */
+.how-it-works{background:#eee8df;padding:78px 6.2%;display:grid;grid-template-columns:1fr 1fr;gap:7%;align-items:start;border-bottom:1px solid var(--line)}
+.how-intro h2{font:500 clamp(32px,3.6vw,46px)/1.15 var(--serif);letter-spacing:-.03em;margin:14px 0 20px}
+.how-intro h2 em{color:var(--wine)}
+.how-intro p{font-size:16px;line-height:1.8;color:#45403b;margin:0 0 14px;max-width:560px}
+.how-actions{display:flex;align-items:center;gap:26px;flex-wrap:wrap;margin-top:26px}
+.how-actions .button-primary{font-size:14px}
+.text-link-dark{font-size:14px;font-weight:600;color:var(--wine);border-bottom:1px solid var(--wine);padding-bottom:5px}
+.text-link-dark span{margin-left:8px}
+.how-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px;counter-reset:step}
+.how-steps li{display:flex;gap:16px;align-items:flex-start;background:#f8f5f0;border:1px solid var(--line);padding:22px 22px 20px}
+.how-steps .promise-icon{flex:none;width:40px;height:40px;display:grid;place-items:center;border-radius:50%;background:#f1e6e4;color:var(--wine)}
+.how-steps .promise-icon svg{width:21px;height:21px}
+.how-steps h3{font:500 21px/1.25 var(--serif);margin:2px 0 6px}
+.how-steps p{font-size:15px;line-height:1.7;color:#5a544e;margin:0}
+@media(max-width:900px){.how-it-works{grid-template-columns:1fr;gap:36px;padding:56px 6%}}
