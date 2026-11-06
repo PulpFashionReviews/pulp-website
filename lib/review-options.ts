@@ -11,7 +11,7 @@ export const ITEM_TYPES_FALLBACK = [
   'Unstitched',
   'Menswear',
   'Kids',
-  'Jewelry/Accessories',
+  'Jewelry, Shoes & Accessories',
   'Modest Wear & Hijabs',
   'Other',
 ];
