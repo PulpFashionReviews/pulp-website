@@ -10,7 +10,6 @@ export const ITEM_TYPES = [
   'Menswear',
   'Kidswear',
   'Jewelry / Accessories',
-  'Modest Wear / Hijab',
   'Other',
 ];
 
