@@ -42,10 +42,13 @@ export type Review = {
   photo_paths: string[] | null;
   status?: string;
   updated_at?: string | null;
+  proof_path?: string | null;
+  order_ref?: string | null;
+  verified_purchase?: boolean;
 };
 
 export const REVIEW_SELECT =
-  'id, brand_id, rating, review_text, created_at, website_photo_url, received_photo_url, category_ratings, item_type, shipped_to, order_month, photo_paths, status, updated_at';
+  'id, brand_id, rating, review_text, created_at, website_photo_url, received_photo_url, category_ratings, item_type, shipped_to, order_month, photo_paths, status, updated_at, proof_path, order_ref, verified_purchase';
 
 export const reviewCategories = ['Customer service', 'Communication', 'Product quality', 'Accuracy to photos', 'Delivery', 'Value for money'];
 

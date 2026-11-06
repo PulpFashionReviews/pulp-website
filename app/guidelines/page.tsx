@@ -30,6 +30,14 @@ export default function GuidelinesPage() {
         <li>No nudity, no unrelated images, and no photos copied from other websites or social media accounts.</li>
       </ul>
 
+      <h2>Guest reviews and proof of purchase</h2>
+      <ul>
+        <li>You don’t need an account to post. As a <strong>guest</strong>, you confirm your email with a one-click link, then add at least one photo and a <strong>proof of purchase</strong> — an order confirmation, receipt, or the line from your bank or PayPal statement.</li>
+        <li>Account holders can add proof too. When we can match the proof to the designer and your order, your review gets a <strong>✓ Verified purchase</strong> badge.</li>
+        <li>Proof is <strong>only seen by PULP</strong>, never published, and deleted 30 days after your review is checked. Cover your card number and address if you like — we just need the designer, date and amount.</li>
+        <li>Each order number can be used for one review per designer. Edited or fake proof means the review won’t be published.</li>
+      </ul>
+
       <h2>Keep it fair and factual</h2>
       <ul>
         <li><strong>Describe what happened rather than making accusations.</strong> “The suit was advertised as an original but the fabric label and embroidery didn’t match the brand’s own photos” is helpful. Calling a business “criminals” or “fraudsters” isn’t, and we’ll ask you to rephrase.</li>

@@ -79,7 +79,10 @@ function ReviewCard({ r, photoUrls }: { r: FeedReview; photoUrls: Record<string,
   const photos = (r.photo_paths ?? []).filter((path) => photoUrls[path]);
   return (
     <article className="modal-review">
-      <Stars value={r.rating} />
+      <div className="review-card-top">
+        <Stars value={r.rating} />
+        {r.verified_purchase && <span className="verified-badge" title="PULP checked this reviewer’s proof of purchase">✓ Verified purchase</span>}
+      </div>
       {(r.item_type || r.shipped_to || r.order_month) && (
         <p className="review-facts">
           {[r.item_type, r.shipped_to && `Shipped to ${r.shipped_to}`, formatOrderMonth(r.order_month) && `Ordered ${formatOrderMonth(r.order_month)}`]

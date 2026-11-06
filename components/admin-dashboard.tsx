@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { designerHref, reviewCategories } from '@/lib/designers';
-import { PHOTO_BUCKET, RELATIONSHIPS, formatOrderMonth, instagramUrl, facebookUrl, priceSymbol } from '@/lib/review-options';
+import { PHOTO_BUCKET, PROOF_BUCKET, RELATIONSHIPS, formatOrderMonth, instagramUrl, facebookUrl, priceSymbol } from '@/lib/review-options';
 import { FilterDropdown } from '@/components/filter-dropdown';
 
 type Status = 'pending' | 'approved' | 'rejected';
@@ -14,6 +14,7 @@ type QueueReview = {
   category_ratings: Record<string, number> | null; photo_paths: string[] | null;
   created_at: string; updated_at: string | null; status: Status;
   reviewer_email: string | null; reviewer_review_count: number;
+  proof_path: string | null; order_ref: string | null; verified_purchase: boolean; is_guest: boolean;
 };
 type QueueSubmission = {
   id: number; created_at: string; brand_name: string; website: string | null; instagram: string | null;
@@ -39,6 +40,7 @@ export function AdminDashboard() {
   const [subs, setSubs] = useState<QueueSubmission[]>([]);
   const [counts, setCounts] = useState({ reviews: 0, suggestions: 0 });
   const [photoUrls, setPhotoUrls] = useState<Record<string, string>>({});
+  const [proofUrls, setProofUrls] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState<string | null>(null);
   const [message, setMessage] = useState('');
 
@@ -71,6 +73,13 @@ export function AdminDashboard() {
         (signed || []).forEach((s, i) => { if (s.signedUrl) map[paths[i]] = s.signedUrl; });
         setPhotoUrls(map);
       }
+      const proofs = rows.map((r) => r.proof_path).filter((p): p is string => !!p);
+      if (proofs.length) {
+        const { data: signed } = await supabase.storage.from(PROOF_BUCKET).createSignedUrls(proofs, 3600);
+        const map: Record<string, string> = {};
+        (signed || []).forEach((s, i) => { if (s.signedUrl) map[proofs[i]] = s.signedUrl; });
+        setProofUrls(map);
+      }
     } else {
       const { data, error } = await supabase.rpc('admin_submission_queue', { p_status: status });
       if (error) { setMessage(error.message); return; }
@@ -80,15 +89,29 @@ export function AdminDashboard() {
 
   useEffect(() => { if (access === 'ok') { load(); loadCounts(); } }, [access, load, loadCounts]);
 
-  async function decideReview(r: QueueReview, next: Status) {
+  // Proof of purchase is deleted 30 days after a review is decided.
+  useEffect(() => {
+    if (access !== 'ok' || !supabase) return;
+    (async () => {
+      const { data } = await supabase!.rpc('admin_expired_proofs');
+      const rows = (data || []) as { id: number; proof_path: string }[];
+      if (!rows.length) return;
+      const { error } = await supabase!.storage.from(PROOF_BUCKET).remove(rows.map((r) => r.proof_path));
+      if (!error) await supabase!.rpc('admin_clear_proofs', { p_ids: rows.map((r) => r.id) });
+    })();
+  }, [access]);
+
+  async function decideReview(r: QueueReview, next: Status, verified?: boolean) {
     if (!supabase) return;
     setBusy(`r${r.id}`);
-    const { error } = await supabase.rpc('admin_set_review_status', { p_id: r.id, p_status: next });
+    const { error } = await supabase.rpc('admin_set_review_status', {
+      p_id: r.id, p_status: next, ...(verified === undefined ? {} : { p_verified: verified }),
+    });
     setBusy(null);
     if (error) { setMessage(error.message); return; }
     setReviews((cur) => cur.filter((x) => x.id !== r.id));
     setMessage(next === 'approved'
-      ? `Approved — it will appear on ${r.brand_name}'s page within about a minute.`
+      ? `Approved${verified ? ' as a verified purchase' : ''} — it will appear on ${r.brand_name}'s page within about a minute.`
       : next === 'rejected' ? 'Review rejected. It stays private.' : 'Moved back to waiting.');
     loadCounts();
   }
@@ -159,7 +182,11 @@ export function AdminDashboard() {
                         {r.reviewer_email ?? 'Unknown reviewer'} · {r.reviewer_review_count} {r.reviewer_review_count === 1 ? 'review' : 'reviews'} total · submitted {fmt(r.created_at)}
                       </p>
                     </div>
-                    {edited && <span className="status-pill">Edited {fmt(r.updated_at!)}</span>}
+                    <div className="admin-pills">
+                      {r.is_guest && <span className="status-pill">Guest</span>}
+                      {r.verified_purchase && <span className="status-pill status-verified">✓ Verified purchase</span>}
+                      {edited && <span className="status-pill">Edited {fmt(r.updated_at!)}</span>}
+                    </div>
                   </div>
                   <p className="admin-stars">{'★'.repeat(r.rating)}<span className="muted-stars">{'★'.repeat(5 - r.rating)}</span></p>
                   <p className="review-facts">
@@ -179,8 +206,17 @@ export function AdminDashboard() {
                       ))}
                     </div>
                   )}
+                  <div className="admin-proof">
+                    <strong>Proof of purchase:</strong>{' '}
+                    {r.proof_path
+                      ? (proofUrls[r.proof_path] ? <a href={proofUrls[r.proof_path]} target="_blank" rel="noreferrer">Open proof ↗</a> : 'on file')
+                      : r.verified_purchase ? 'checked (file deleted after 30 days)' : 'none'}
+                    {r.order_ref && <> · Order number: <b>{r.order_ref}</b></>}
+                    {r.proof_path && r.status === 'pending' && <span className="admin-proof-hint"> — check the designer, date and order number match before verifying.</span>}
+                  </div>
                   <div className="admin-actions">
-                    {r.status !== 'approved' && <button className="button-primary" disabled={busy === `r${r.id}`} onClick={() => decideReview(r, 'approved')}>Approve <span>✓</span></button>}
+                    {r.status !== 'approved' && r.proof_path && <button className="button-primary" disabled={busy === `r${r.id}`} onClick={() => decideReview(r, 'approved', true)}>Approve as verified purchase <span>✓</span></button>}
+                    {r.status !== 'approved' && <button className={r.proof_path ? 'outline-button' : 'button-primary'} disabled={busy === `r${r.id}`} onClick={() => decideReview(r, 'approved', false)}>{r.proof_path ? 'Approve without badge' : <>Approve <span>✓</span></>}</button>}
                     {r.status !== 'rejected' && <button className="outline-button" disabled={busy === `r${r.id}`} onClick={() => decideReview(r, 'rejected')}>{r.status === 'approved' ? 'Unpublish' : 'Reject'}</button>}
                     {r.status !== 'pending' && <button className="admin-link" disabled={busy === `r${r.id}`} onClick={() => decideReview(r, 'pending')}>Move back to waiting</button>}
                     {r.reviewer_email && <a className="admin-link" href={`mailto:${r.reviewer_email}?subject=${encodeURIComponent(`Your PULP review of ${r.brand_name}`)}`}>Email reviewer</a>}

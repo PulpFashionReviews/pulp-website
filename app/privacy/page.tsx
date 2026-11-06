@@ -17,13 +17,14 @@ export default function PrivacyPage() {
       <h2>What we collect</h2>
       <h3>When you create an account</h3>
       <ul>
-        <li><strong>Your email address and password.</strong> Passwords are stored in encrypted (hashed) form by our authentication provider; we can’t see them.</li>
+        <li><strong>Your email address and password.</strong> Passwords are stored in encrypted (hashed) form by our authentication provider; we can’t see them. If you post as a <strong>guest</strong>, we only store your email address, which you confirm with a one-click link.</li>
         <li><strong>Account records</strong>, such as when you signed up, confirmed your email and last signed in.</li>
       </ul>
       <h3>When you write a review</h3>
       <ul>
         <li>The <strong>designer you reviewed</strong>, your <strong>ratings and written review</strong>, the <strong>item type, country it was shipped to and month you ordered</strong>, and any <strong>photos</strong> you upload.</li>
         <li>Photos are stored privately until your review is approved. Please don’t include personal details (like your address or order number) in photos or review text.</li>
+        <li><strong>Proof of purchase</strong> (required for guest reviews, optional otherwise), such as an order confirmation, receipt or bank statement line, and an optional order number. Proof is <strong>never published</strong>: only you and PULP’s moderators can see it, and we use it only to check your review is based on a real order. You’re welcome to cover your card number and address before uploading.</li>
       </ul>
       <h3>When you browse</h3>
       <ul>
@@ -32,7 +33,7 @@ export default function PrivacyPage() {
       </ul>
 
       <h2>What’s public</h2>
-      <p>Once approved, your review — including ratings, text, item type, shipping country, order month and photos — is visible to anyone visiting PULP. <strong>Your email address is never shown publicly.</strong></p>
+      <p>Once approved, your review — including ratings, text, item type, shipping country, order month and photos — is visible to anyone visiting PULP. <strong>Your email address, proof of purchase and order number are never shown publicly.</strong> If we verified your proof, your review shows a “Verified purchase” badge.</p>
 
       <h2>How we use your information</h2>
       <ul>
@@ -47,14 +48,14 @@ export default function PrivacyPage() {
       <h2>Who we share it with</h2>
       <p>We use trusted service providers to run PULP. They process information on our behalf and only as needed to provide their service:</p>
       <ul>
-        <li><strong>Supabase</strong> — account sign-in, database and photo storage;</li>
+        <li><strong>Supabase</strong> — account sign-in, sign-in emails, database, and photo and proof-of-purchase storage;</li>
         <li><strong>Vercel</strong> — website hosting and delivery.</li>
       </ul>
       <p>We may also share information if required by law, to protect the rights or safety of PULP, our users or others, or as part of a sale or reorganisation of PULP (in which case this policy would continue to apply to your information).</p>
       <p>Our providers may store and process data in the United States and other countries. Where required, we rely on appropriate safeguards for international transfers.</p>
 
       <h2>How long we keep it</h2>
-      <p>We keep your account information for as long as your account is open. Reviews stay published until you or we remove them. When you delete your account, we delete or anonymise your personal information within a reasonable period, except where we need to keep certain records for legal, security or fraud-prevention reasons. Server logs are kept for a limited time by our hosting provider.</p>
+      <p>We keep your account information for as long as your account is open. Reviews stay published until you or we remove them. Proof of purchase files are deleted 30 days after we approve or reject the review; we keep only whether the purchase was verified. When you delete your account, we delete or anonymise your personal information within a reasonable period, except where we need to keep certain records for legal, security or fraud-prevention reasons. Server logs are kept for a limited time by our hosting provider.</p>
 
       <h2>Your choices and rights</h2>
       <ul>

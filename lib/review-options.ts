@@ -31,6 +31,11 @@ export const MAX_PHOTOS = 4;
 export const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
 export const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
+// Proof of purchase: private, seen only by the reviewer and PULP admins.
+export const PROOF_BUCKET = 'purchase-proofs';
+export const MAX_PROOF_BYTES = 10 * 1024 * 1024;
+export const PROOF_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
+
 /** "2026-10-01" → "October 2026" */
 export function formatOrderMonth(value: string | null) {
   if (!value) return null;
