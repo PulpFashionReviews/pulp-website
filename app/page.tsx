@@ -68,26 +68,20 @@ export default function Home() {
     const reviewCount = (brandId: number) => ratings[brandId]?.total_reviews ?? 0;
     const averageRating = (brandId: number) => ratings[brandId]?.score ?? 0;
 
+    // Brands with an established website rank ahead of those without, when popularity ties.
+    const hasWebsite = (brand: Brand) => (brand.Website && brand.Website.trim() ? 1 : 0);
+
     return matching.sort((a, b) => {
       const countDifference = reviewCount(b.id) - reviewCount(a.id);
       const ratingDifference = averageRating(b.id) - averageRating(a.id);
+      const websiteDifference = hasWebsite(b) - hasWebsite(a);
+      const byName = (a.Brand || '').localeCompare(b.Brand || '');
 
-      if (sortBy === 'alphabetical') {
-        return (a.Brand || '').localeCompare(b.Brand || '');
-      }
-
-      if (sortBy === 'highest-rated') {
-        return ratingDifference || countDifference ||
-          (a.Brand || '').localeCompare(b.Brand || '');
-      }
-
-      if (sortBy === 'most-reviewed') {
-        return countDifference ||
-          (a.Brand || '').localeCompare(b.Brand || '');
-      }
-
-      return countDifference || ratingDifference ||
-        (a.Brand || '').localeCompare(b.Brand || '');
+      if (sortBy === 'alphabetical') return byName;
+      if (sortBy === 'highest-rated') return ratingDifference || countDifference || websiteDifference || byName;
+      if (sortBy === 'most-reviewed') return countDifference || websiteDifference || byName;
+      // Most popular (default): most reviewed, then best rated, then has a website, then A–Z.
+      return countDifference || ratingDifference || websiteDifference || byName;
     });
   }, [brands, ratings, search, categories, sortBy]);
 
