@@ -1097,3 +1097,32 @@ footer>div a{white-space:nowrap}
 @media(max-width:680px){.topbar nav{justify-content:center}.topbar nav a,.topbar nav .nav-cta{font-size:15px}}
 @media(max-width:900px){.topbar .auth-links a{font-size:15px}}
 .photo-upload .photo-hint b{color:var(--ink);font-weight:600}
+
+/* Designer claims & replies */
+.claimed-label{display:inline-block;font-size:14px;font-weight:600;color:#2f5d36;background:#e3efe4;padding:5px 11px;border-radius:999px;margin:4px 0 10px}
+.claim-link{display:inline-block;margin-top:14px;font-size:15px;color:var(--wine);text-decoration:underline;text-underline-offset:3px}
+.claim-form{display:flex;flex-direction:column;gap:10px}
+.claim-fields{display:flex;flex-direction:column;gap:10px}
+.claim-hint{font-size:14px;color:var(--muted);margin:0}
+.claim-hint a{color:var(--wine);text-decoration:underline}
+.claim-box{background:#fbf9f6;border:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.claim-box p{margin:0;font-size:15px;line-height:1.6}
+.claim-box a:not(.button-primary):not(.outline-button){color:var(--wine);text-decoration:underline}
+.claim-ok{border-color:#a9c9ad;background:#f1f7f1}
+.designer-reply{margin:12px 0 4px 14px;padding:12px 14px;border-left:3px solid #d6a077;background:#faf6f1}
+.designer-reply .reply-head{font-size:14px;color:var(--muted);margin:0 0 6px}
+.designer-reply .reply-head b{color:var(--ink)}
+.designer-reply .reply-body{font-size:15px;line-height:1.7;margin:0;white-space:pre-line}
+.designer-reply.editing{display:flex;flex-direction:column;gap:8px}
+.designer-reply.editing label{font-size:14px;font-weight:600}
+.designer-reply.editing textarea{background:#fff;border:1px solid var(--line);padding:12px;font-size:15px;line-height:1.6;resize:vertical}
+.reply-actions{display:flex;gap:10px;flex-wrap:wrap}
+.reply-note{font-size:13px;color:var(--muted);margin:0}
+.reply-controls{display:flex;gap:16px;margin-top:8px;font-size:14px;align-items:center}
+.reply-error{color:var(--wine)}
+.admin-quote{font-size:14px;color:var(--muted);margin:6px 0;font-style:italic}
+.claim-form>label,.claim-fields>label{font-size:15px;font-weight:600;margin-top:4px}
+.claim-form select,.claim-fields input,.claim-fields textarea{width:100%}
+.label-optional{font-weight:400;color:var(--muted)}
+.designer-hero .claim-link{color:#e6c3a5}
+.designer-hero .claim-link:hover{color:#fff}

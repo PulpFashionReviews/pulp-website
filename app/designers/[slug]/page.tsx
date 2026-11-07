@@ -8,6 +8,7 @@ import { ReviewForm } from '@/components/review-form';
 import { SiteFooter } from '@/components/site-footer';
 import { PHOTO_BUCKET, facebookUrl, formatOrderMonth, instagramUrl, priceSymbol } from '@/lib/review-options';
 import { AuthLinks } from '@/components/auth-links';
+import { DesignerReply, Reply } from '@/components/designer-reply';
 
 export const revalidate = 60;
 
@@ -52,7 +53,14 @@ const getDesigner = cache(async (slug: string) => {
     const { data: signed } = await supabase.storage.from(PHOTO_BUCKET).createSignedUrls(paths, 60 * 60 * 2);
     (signed || []).forEach((item, i) => { if (item.signedUrl) photoUrls[paths[i]] = item.signedUrl; });
   }
-  return { brand, categories: brandCategoryNames(brand), reviews: rows, photoUrls };
+  // Designers' public replies (hidden ones are filtered out by the database).
+  const { data: replyRows } = await supabase
+    .from('review_replies')
+    .select('id, review_id, body, created_at, updated_at')
+    .eq('brand_id', brand.id);
+  const replies: Record<number, Reply> = {};
+  for (const r of (replyRows || []) as Reply[]) replies[r.review_id] = r;
+  return { brand, categories: brandCategoryNames(brand), reviews: rows, photoUrls, replies };
 });
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -76,7 +84,7 @@ function Stars({ value }: { value: number }) {
   );
 }
 
-function ReviewCard({ r, photoUrls }: { r: FeedReview; photoUrls: Record<string, string> }) {
+function ReviewCard({ r, photoUrls, reply, brandName }: { r: FeedReview; photoUrls: Record<string, string>; reply: Reply | null; brandName: string }) {
   const photos = (r.photo_paths ?? []).filter((path) => photoUrls[path]);
   return (
     <article className="modal-review">
@@ -105,6 +113,7 @@ function ReviewCard({ r, photoUrls }: { r: FeedReview; photoUrls: Record<string,
       <small>{new Date(r.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}{r.updated_at && r.updated_at !== r.created_at ? ' · edited' : ''}</small>
       {r.website_photo_url && <a href={r.website_photo_url} target="_blank" rel="noreferrer">Website photo ↗</a>}
       {r.received_photo_url && <a href={r.received_photo_url} target="_blank" rel="noreferrer">What arrived ↗</a>}
+      <DesignerReply reviewId={r.id} brandId={r.brand_id} brandName={brandName} initial={reply} />
     </article>
   );
 }
@@ -113,7 +122,8 @@ export default async function DesignerPage({ params }: PageProps) {
   const { slug } = await params;
   const designer = await getDesigner(slug);
   if (!designer) notFound();
-  const { brand, categories, reviews, photoUrls } = designer;
+  const { brand, categories, reviews, photoUrls, replies } = designer;
+  const brandName = brand.Brand || 'the designer';
 
   // Fair scores: every customer counts once, using their latest review.
   const latest = latestPerCustomer(reviews);
@@ -149,6 +159,7 @@ export default async function DesignerPage({ params }: PageProps) {
           <div>
             <span className="section-kicker">DESIGNER PROFILE</span>
             <h1>{brand.Brand}</h1>
+            {brand.claimed_at && <p className="claimed-label" title="This designer has verified their PULP page and can reply to reviews">✓ Claimed by designer</p>}
             <p className="designer-meta">
               {categories.length ? categories.join(' · ') : 'Pakistani fashion'}
               {brand.Price_Range ? ` · ${priceSymbol(brand.Price_Range)}` : ''}
@@ -160,6 +171,7 @@ export default async function DesignerPage({ params }: PageProps) {
               {brand.Contact_Number && <span>Contact: {brand.Contact_Number}</span>}
             </div>
             {brand.ships_to && brand.ships_to.length > 0 && <p className="designer-ships">Ships to {brand.ships_to.join(' · ')}</p>}
+            {!brand.claimed_at && <Link className="claim-link" href={`/claim?designer=${brand.id}`}>Are you {brand.Brand}? Claim this page free →</Link>}
           </div>
           <div className="designer-score">
             {average !== null ? (
@@ -210,10 +222,10 @@ export default async function DesignerPage({ params }: PageProps) {
               group.length > 1 ? (
                 <div className="repeat-customer" key={group[0].reviewer_key}>
                   <p className="repeat-label">Repeat customer · {group.length} orders</p>
-                  {group.map((r) => <ReviewCard key={r.id} r={r} photoUrls={photoUrls} />)}
+                  {group.map((r) => <ReviewCard key={r.id} r={r} photoUrls={photoUrls} reply={replies[r.id] ?? null} brandName={brandName} />)}
                 </div>
               ) : (
-                <ReviewCard key={group[0].id} r={group[0]} photoUrls={photoUrls} />
+                <ReviewCard key={group[0].id} r={group[0]} photoUrls={photoUrls} reply={replies[group[0].id] ?? null} brandName={brandName} />
               )
             )
           ) : (

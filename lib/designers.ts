@@ -8,11 +8,12 @@ export type Brand = {
   instagram?: string | null;
   facebook?: string | null;
   ships_to?: string[] | null;
+  claimed_at?: string | null;
 };
 
 // Brand columns plus its clean categories (via brand_categories → categories).
 export const BRAND_SELECT =
-  'id, Brand, Category, Price_Range, Website, Contact_Number, instagram, facebook, ships_to, brand_categories(categories(name, sort_order))';
+  'id, Brand, Category, Price_Range, Website, Contact_Number, instagram, facebook, ships_to, claimed_at, brand_categories(categories(name, sort_order))';
 
 export type BrandRow = Brand & {
   brand_categories?: { categories: { name: string; sort_order: number } | null }[] | null;

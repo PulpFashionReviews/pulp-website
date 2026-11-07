@@ -23,6 +23,19 @@ type QueueSubmission = {
   approved_brand_id: number | null; similar_existing: string | null;
 };
 
+type QueueClaim = {
+  id: number; brand_id: number; brand_name: string; brand_website: string | null; brand_instagram: string | null;
+  contact_name: string; role: string; business_email: string | null; instagram: string | null; note: string | null;
+  status: Status; created_at: string; account_email: string | null; already_claimed: boolean;
+};
+type FeedReply = {
+  id: number; review_id: number; brand_id: number; brand_name: string; body: string; hidden: boolean;
+  created_at: string; updated_at: string | null; author_email: string | null; review_text: string; review_rating: number;
+};
+const CLAIM_ROLES: Record<string, string> = { owner: 'Owner / founder', staff: 'Works for the brand', agency: 'Agency / representative' };
+const emailDomain = (e: string | null) => (e && e.includes('@') ? e.split('@')[1].toLowerCase() : null);
+const siteDomain = (w: string | null) => (w ? w.trim().replace(/^https?:\s*\/*/i, '').replace(/^www\./i, '').split('/')[0].toLowerCase() : null);
+
 const STATUS_OPTIONS = [
   { value: 'pending', label: 'Waiting for review' },
   { value: 'approved', label: 'Approved' },
@@ -34,11 +47,13 @@ const withHttp = (v: string) => (/^https?:\/\//i.test(v.trim()) ? v.trim() : `ht
 
 export function AdminDashboard() {
   const [access, setAccess] = useState<'checking' | 'denied' | 'ok'>('checking');
-  const [tab, setTab] = useState<'reviews' | 'suggestions'>('reviews');
+  const [tab, setTab] = useState<'reviews' | 'suggestions' | 'claims' | 'replies'>('reviews');
+  const [claims, setClaims] = useState<QueueClaim[]>([]);
+  const [replies, setReplies] = useState<FeedReply[]>([]);
   const [status, setStatus] = useState<Status>('pending');
   const [reviews, setReviews] = useState<QueueReview[]>([]);
   const [subs, setSubs] = useState<QueueSubmission[]>([]);
-  const [counts, setCounts] = useState({ reviews: 0, suggestions: 0 });
+  const [counts, setCounts] = useState({ reviews: 0, suggestions: 0, claims: 0 });
   const [photoUrls, setPhotoUrls] = useState<Record<string, string>>({});
   const [proofUrls, setProofUrls] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState<string | null>(null);
@@ -51,11 +66,12 @@ export function AdminDashboard() {
 
   const loadCounts = useCallback(async () => {
     if (!supabase) return;
-    const [r, s] = await Promise.all([
+    const [r, s, c] = await Promise.all([
       supabase.rpc('admin_review_queue', { p_status: 'pending' }),
       supabase.rpc('admin_submission_queue', { p_status: 'pending' }),
+      supabase.rpc('admin_claim_queue', { p_status: 'pending' }),
     ]);
-    setCounts({ reviews: (r.data || []).length, suggestions: (s.data || []).length });
+    setCounts({ reviews: (r.data || []).length, suggestions: (s.data || []).length, claims: (c.data || []).length });
   }, []);
 
   const load = useCallback(async () => {
@@ -80,10 +96,18 @@ export function AdminDashboard() {
         (signed || []).forEach((s, i) => { if (s.signedUrl) map[proofs[i]] = s.signedUrl; });
         setProofUrls(map);
       }
-    } else {
+    } else if (tab === 'suggestions') {
       const { data, error } = await supabase.rpc('admin_submission_queue', { p_status: status });
       if (error) { setMessage(error.message); return; }
       setSubs((data || []) as QueueSubmission[]);
+    } else if (tab === 'claims') {
+      const { data, error } = await supabase.rpc('admin_claim_queue', { p_status: status });
+      if (error) { setMessage(error.message); return; }
+      setClaims((data || []) as QueueClaim[]);
+    } else {
+      const { data, error } = await supabase.rpc('admin_reply_feed');
+      if (error) { setMessage(error.message); return; }
+      setReplies((data || []) as FeedReply[]);
     }
   }, [tab, status]);
 
@@ -130,6 +154,29 @@ export function AdminDashboard() {
     loadCounts();
   }
 
+  async function decideClaim(c: QueueClaim, approve: boolean) {
+    if (!supabase) return;
+    setBusy(`c${c.id}`);
+    const { error } = await supabase.rpc('admin_decide_claim', { p_id: c.id, p_approve: approve });
+    setBusy(null);
+    if (error) { setMessage(error.message); return; }
+    setClaims((cur) => cur.filter((x) => x.id !== c.id));
+    setMessage(approve
+      ? `Approved — ${c.account_email ?? 'the designer'} can now reply to ${c.brand_name}'s reviews. Consider emailing them to let them know.`
+      : 'Claim rejected.');
+    loadCounts();
+  }
+
+  async function toggleReply(x: FeedReply) {
+    if (!supabase) return;
+    setBusy(`x${x.id}`);
+    const { error } = await supabase.rpc('admin_set_reply_hidden', { p_id: x.id, p_hidden: !x.hidden });
+    setBusy(null);
+    if (error) { setMessage(error.message); return; }
+    setReplies((cur) => cur.map((y) => (y.id === x.id ? { ...y, hidden: !x.hidden } : y)));
+    setMessage(x.hidden ? 'Reply is visible again.' : 'Reply hidden from the public page.');
+  }
+
   if (access === 'checking') return <p className="empty-state">Loading…</p>;
   if (access === 'denied') {
     return (
@@ -150,6 +197,7 @@ export function AdminDashboard() {
         <div className="admin-counts">
           <div><strong>{counts.reviews}</strong><span>reviews waiting</span></div>
           <div><strong>{counts.suggestions}</strong><span>suggestions waiting</span></div>
+          <div><strong>{counts.claims}</strong><span>claims waiting</span></div>
         </div>
       </div>
 
@@ -161,8 +209,14 @@ export function AdminDashboard() {
           <button role="tab" aria-selected={tab === 'suggestions'} className={tab === 'suggestions' ? 'active' : ''} onClick={() => setTab('suggestions')}>
             Designer suggestions {counts.suggestions > 0 && <span>{counts.suggestions}</span>}
           </button>
+          <button role="tab" aria-selected={tab === 'claims'} className={tab === 'claims' ? 'active' : ''} onClick={() => setTab('claims')}>
+            Designer claims {counts.claims > 0 && <span>{counts.claims}</span>}
+          </button>
+          <button role="tab" aria-selected={tab === 'replies'} className={tab === 'replies' ? 'active' : ''} onClick={() => setTab('replies')}>
+            Designer replies
+          </button>
         </div>
-        <FilterDropdown label="Status" className="fdrop-sort" options={STATUS_OPTIONS} value={status} onChange={(v) => setStatus(v as Status)} />
+        {tab !== 'replies' && <FilterDropdown label="Status" className="fdrop-sort" options={STATUS_OPTIONS} value={status} onChange={(v) => setStatus(v as Status)} />}
       </div>
 
       {message && <p className="notice admin-notice" role="status">{message}</p>}
@@ -224,6 +278,74 @@ export function AdminDashboard() {
                 </article>
               );
             })}
+          </div>
+        )
+      )}
+
+      {tab === 'claims' && (
+        claims.length === 0 ? <p className="empty-state">Nothing here. {status === 'pending' && 'You’re all caught up.'}</p> : (
+          <div className="admin-list">
+            {claims.map((c) => {
+              const dom = emailDomain(c.business_email);
+              const site = siteDomain(c.brand_website);
+              const domainMatch = dom && site && (dom === site || site.endsWith(`.${dom}`) || dom.endsWith(`.${site}`));
+              return (
+                <article className="admin-card" key={c.id}>
+                  <div className="admin-card-top">
+                    <div>
+                      <Link href={designerHref({ id: c.brand_id, Brand: c.brand_name })} target="_blank" className="admin-brand">{c.brand_name} ↗</Link>
+                      <p className="admin-meta">{c.contact_name} · {CLAIM_ROLES[c.role] ?? c.role} · account {c.account_email ?? 'unknown'} · {fmt(c.created_at)}</p>
+                    </div>
+                    <div className="admin-pills">
+                      {domainMatch && <span className="status-pill status-verified">Email matches website</span>}
+                      {c.already_claimed && <span className="status-pill status-rejected">Page already claimed</span>}
+                    </div>
+                  </div>
+                  <dl className="admin-fields">
+                    <dt>Business email</dt><dd>{c.business_email ? <a href={`mailto:${c.business_email}`}>{c.business_email}</a> : '—'}</dd>
+                    <dt>Instagram given</dt><dd>{c.instagram ? <a href={instagramUrl(c.instagram)} target="_blank" rel="noreferrer">{c.instagram} ↗</a> : '—'}</dd>
+                    <dt>Brand on file</dt>
+                    <dd className="admin-links">
+                      {c.brand_website ? <a href={withHttp(c.brand_website)} target="_blank" rel="noreferrer">{site} ↗</a> : 'No website'}
+                      {c.brand_instagram && <a href={instagramUrl(c.brand_instagram)} target="_blank" rel="noreferrer">Instagram ↗</a>}
+                    </dd>
+                    {c.note && <><dt>Note</dt><dd>{c.note}</dd></>}
+                  </dl>
+                  <p className="admin-proof-hint">Verify before approving: a business email on the brand’s own domain, or a message to PULP from the brand’s official Instagram account.</p>
+                  <div className="admin-actions">
+                    {c.status === 'pending' && <>
+                      <button className="button-primary" disabled={busy === `c${c.id}`} onClick={() => decideClaim(c, true)}>Approve claim <span>✓</span></button>
+                      <button className="outline-button" disabled={busy === `c${c.id}`} onClick={() => decideClaim(c, false)}>Reject</button>
+                    </>}
+                    {c.business_email && <a className="admin-link" href={`mailto:${c.business_email}?subject=${encodeURIComponent(`Verifying your PULP page for ${c.brand_name}`)}`}>Email business address</a>}
+                    {c.account_email && <a className="admin-link" href={`mailto:${c.account_email}?subject=${encodeURIComponent(`Your PULP claim: ${c.brand_name}`)}`}>Email account</a>}
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )
+      )}
+
+      {tab === 'replies' && (
+        replies.length === 0 ? <p className="empty-state">No designer replies yet.</p> : (
+          <div className="admin-list">
+            {replies.map((x) => (
+              <article className="admin-card" key={x.id}>
+                <div className="admin-card-top">
+                  <div>
+                    <Link href={designerHref({ id: x.brand_id, Brand: x.brand_name })} target="_blank" className="admin-brand">{x.brand_name} ↗</Link>
+                    <p className="admin-meta">{x.author_email ?? 'Unknown'} · {fmt(x.updated_at ?? x.created_at)}{x.updated_at ? ' (edited)' : ''}</p>
+                  </div>
+                  {x.hidden && <span className="status-pill status-rejected">Hidden</span>}
+                </div>
+                <p className="admin-quote">Replying to {'★'.repeat(x.review_rating)} “{x.review_text.length > 160 ? `${x.review_text.slice(0, 160)}…` : x.review_text}”</p>
+                <p className="admin-text">{x.body}</p>
+                <div className="admin-actions">
+                  <button className="outline-button" disabled={busy === `x${x.id}`} onClick={() => toggleReply(x)}>{x.hidden ? 'Show reply again' : 'Hide reply'}</button>
+                </div>
+              </article>
+            ))}
           </div>
         )
       )}

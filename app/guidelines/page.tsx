@@ -68,6 +68,8 @@ export default function GuidelinesPage() {
       <h2>For designers</h2>
       <ul>
         <li>PULP is independent. Designers can’t pay to have reviews removed, hidden or reordered.</li>
+        <li><strong>Claim your page for free</strong> on our <Link href="/claim">For designers</Link> page. Once we’ve verified you, you can reply publicly to any review of your brand — replies are always free.</li>
+        <li>Keep replies professional: thank customers, explain what happened, and say how you’re putting things right. Don’t share a customer’s personal or order details, make threats, or attack the reviewer. We may hide replies that break these guidelines.</li>
         <li>If you believe a review breaks these guidelines — for example, it isn’t from a real customer or contains false statements of fact — email us at <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> with the designer name, the review, and what you believe is wrong. We’ll look into it and may contact the reviewer.</li>
         <li>Please don’t contact reviewers to pressure them to change or remove a review.</li>
       </ul>

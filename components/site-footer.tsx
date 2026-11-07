@@ -10,6 +10,7 @@ export function SiteFooter() {
         <Link href="/#designers">Directory</Link>
         <Link href="/#write-review">Write a review</Link>
         <Link href="/suggest-designer">Suggest a designer</Link>
+        <Link href="/claim">For designers</Link>
         <a href={`mailto:${CONTACT_EMAIL}`}>Contact</a>
       </div>
       <nav className="footer-legal" aria-label="Policies">
