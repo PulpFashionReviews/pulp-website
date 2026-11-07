@@ -147,24 +147,29 @@ export default function Home() {
      
 <div className="hero-copy">
   <p className="eyebrow">
-    <span className="eyebrow-line" /> PAKISTANI FASHION · REAL CUSTOMER REVIEWS
+    <span className="hero-stars" aria-hidden="true">★★★★★</span> CUSTOMER REVIEWS · PAKISTANI DESIGNERS
   </p>
   <h1>
-    Your experience<br />
-    <em>matters.</em>
+    Real reviews of<br />
+    <em>Pakistani designers.</em>
   </h1>
   <p className="hero-intro">
-    Real experiences from customers who have shopped Pakistani designers.
-  Share honest reviews, discover what others have experienced, and help
-  each other shop with confidence.
+    Before you order, see what other shoppers actually received — with photos, delivery times, sizing and service.
+    Then share your own experience.
   </p>
+  <form className="hero-search" role="search" onSubmit={(e) => { e.preventDefault(); setPage(1); document.getElementById('designers')?.scrollIntoView({ behavior: 'smooth' }); }}>
+    <span aria-hidden="true">⌕</span>
+    <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search a designer, e.g. Maria B." aria-label="Search for a designer" />
+    <button type="submit" className="button-primary">See reviews</button>
+  </form>
+  <ul className="hero-facts">
+    <li><b>{brands.length || 370}</b> designers</li>
+    <li>Real photos of what arrived</li>
+    <li>Every review checked</li>
+  </ul>
   <div className="hero-actions">
-    <a className="button-primary" href="#write-review">
-      Write a Review
-    </a>
-    <a className="text-link" href="#designers">
-      Explore Reviews <span>→</span>
-    </a>
+    <a className="button-light" href="#write-review">Write a review <span>↗</span></a>
+    <a className="text-link" href="#designers">Browse all designers <span>→</span></a>
   </div>
 </div>
 

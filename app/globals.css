@@ -1153,3 +1153,18 @@ footer>div a{white-space:nowrap}
 .contact-sent p{font-size:16px;line-height:1.7;margin:0 0 8px}
 .contact-sent .outline-button{align-self:flex-start}
 .hp-field{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+
+/* Hero: say "reviews" at first glance */
+.hero-stars{color:#e0b07f;letter-spacing:.08em;font-size:15px}
+.hero h1{margin:22px 0 18px}
+.hero-intro{max-width:500px}
+.hero-search{display:flex;align-items:center;gap:10px;background:#fff;padding:6px 6px 6px 16px;max-width:540px;margin-top:26px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.hero-search>span{font-size:24px;color:var(--wine)}
+.hero-search input{flex:1;min-width:0;border:0;outline:none;background:transparent;font-size:16px;color:var(--ink);padding:12px 0}
+.hero-search .button-primary{padding:13px 18px;white-space:nowrap}
+.hero-facts{list-style:none;display:flex;flex-wrap:wrap;gap:8px 22px;padding:0;margin:16px 0 0;font-size:15px;color:#e8dcd2}
+.hero-facts li::before{content:'✓';color:#e0b07f;margin-right:7px;font-weight:700}
+.hero-facts b{color:#fff}
+.hero .hero-actions{margin-top:26px}
+@media(max-width:680px){.hero-search{padding:5px 5px 5px 12px}.hero-search input{font-size:15px}.hero-search .button-primary{padding:12px 12px}.hero-facts{font-size:14px}}
+.hero-copy .eyebrow,.hero-intro,.hero-facts{text-shadow:0 1px 10px rgba(0,0,0,.65)}

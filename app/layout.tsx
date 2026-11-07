@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'PULP — Real experiences. Real photos.',
+  title: 'PULP — Real reviews of Pakistani fashion designers',
   description: 'Honest reviews of Pakistani fashion designers, from real customers.',
 };
 
