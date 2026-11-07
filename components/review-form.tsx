@@ -300,7 +300,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
             <div className="guest-options">
               <div>
                 <strong>With an account</strong>
-                <p>Log in or create a free account. Proof of purchase is optional and earns a Verified purchase badge.</p>
+                <p>Log in or create a free account. Photos and proof of purchase are optional — adding proof earns a ✓ Verified purchase badge.</p>
                 <div className="guest-links"><Link href={loginHref()}>Log in</Link> · <Link href="/signup">Create account</Link></div>
               </div>
               <div>
