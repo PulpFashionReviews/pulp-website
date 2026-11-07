@@ -113,9 +113,9 @@ export default function Home() {
   </a>
 
   <nav>
-    <a href="#designers">Designers</a>
-    <a href="#how-it-works">How it works</a>
-    <a href="#reviews">Reviews</a>
+    <a href="#designers">Find a Designer</a>
+    <a className="nav-cta" href="#write-review">Write a Review <span>↗</span></a>
+    <a href="#how-it-works">How it Works</a>
   </nav>
 
   <div className="auth-links">
@@ -141,9 +141,6 @@ export default function Home() {
     )}
   </div>
 
-  <a className="nav-cta" href="#write-review">
-    Write a review <span>↗</span>
-  </a>
 </header>
 
     <section className="hero" id="top">

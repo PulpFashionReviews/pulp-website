@@ -1068,3 +1068,21 @@ footer>div a{white-space:nowrap}
 .mode-panel .guest-email-row input{background:#fff}
 .upload-later{font-size:14px;color:var(--wine);margin:8px 0 0}
 .photo-add:disabled,.proof-row .outline-button:disabled{opacity:.5;cursor:not-allowed}
+
+/* Header: logo · [Find a Designer · Write a Review · How it Works] · Login / Sign Up */
+.topbar nav{display:flex!important;align-items:center}
+.topbar nav .nav-cta{padding:8px 0}
+@media(max-width:900px){
+  .topbar{flex-wrap:nowrap}
+  .topbar nav{position:absolute;left:50%;transform:translateX(-50%);width:auto;order:0;flex-wrap:nowrap;gap:18px}
+  .topbar nav a,.topbar nav .nav-cta{font-size:15px}
+}
+@media(max-width:680px){
+  .topbar{min-height:72px;padding-top:12px;padding-bottom:12px}
+  .topbar nav a:not(.nav-cta){display:none}
+  .topbar nav .nav-cta{font-size:14px}
+  .topbar nav .nav-cta span{padding-left:6px}
+  .topbar .auth-links{margin-right:0;gap:10px}
+  .topbar .auth-links a{font-size:14px}
+  .topbar .auth-links span{display:none}
+}

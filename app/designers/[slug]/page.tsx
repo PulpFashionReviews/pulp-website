@@ -7,6 +7,7 @@ import { BRAND_SELECT, BrandRow, Review, brandCategoryNames, designerSlug, revie
 import { ReviewForm } from '@/components/review-form';
 import { SiteFooter } from '@/components/site-footer';
 import { PHOTO_BUCKET, facebookUrl, formatOrderMonth, instagramUrl, priceSymbol } from '@/lib/review-options';
+import { AuthLinks } from '@/components/auth-links';
 
 export const revalidate = 60;
 
@@ -135,11 +136,11 @@ export default async function DesignerPage({ params }: PageProps) {
       <header className="topbar">
         <Link href="/" className="wordmark" aria-label="PULP home">PULP<span>®</span></Link>
         <nav>
-          <Link href="/#designers">Designers</Link>
-          <Link href="/#how-it-works">How it works</Link>
-          <a href="#designer-reviews">Reviews</a>
+          <Link href="/#designers">Find a Designer</Link>
+          <a className="nav-cta" href="#write-review">Write a Review <span>↗</span></a>
+          <Link href="/#how-it-works">How it Works</Link>
         </nav>
-        <a className="nav-cta" href="#write-review">Write a review <span>↗</span></a>
+        <AuthLinks />
       </header>
 
       <section className="designer-hero">

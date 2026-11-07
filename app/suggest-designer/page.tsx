@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SiteFooter } from '@/components/site-footer';
 import { SuggestDesignerForm } from '@/components/suggest-designer-form';
+import { AuthLinks } from '@/components/auth-links';
 
 export const metadata: Metadata = {
   title: 'Suggest a designer — PULP',
@@ -14,11 +15,11 @@ export default function SuggestDesignerPage() {
       <header className="topbar">
         <Link href="/" className="wordmark" aria-label="PULP home">PULP<span>®</span></Link>
         <nav>
-          <Link href="/#designers">Designers</Link>
-          <Link href="/#how-it-works">How it works</Link>
-          <Link href="/guidelines">Guidelines</Link>
+          <Link href="/#designers">Find a Designer</Link>
+          <Link className="nav-cta" href="/#write-review">Write a Review <span>↗</span></Link>
+          <Link href="/#how-it-works">How it Works</Link>
         </nav>
-        <Link className="nav-cta" href="/#write-review">Write a review <span>↗</span></Link>
+        <AuthLinks />
       </header>
       <div className="legal-wrap">
         <section className="suggest section-pad">
