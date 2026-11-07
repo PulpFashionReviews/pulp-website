@@ -363,7 +363,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
               </div>
             ) : (
               <div className="mode-panel">
-                <p>No password needed — confirm your email with a one-click link. Guest reviews need a photo and a proof of purchase, which only PULP sees.</p>
+                <p>No password needed — confirm your email with a one-click link. Guest reviews need <b>a photo</b>, which is shown publicly with your review, and <b>a proof of purchase</b>, which only PULP sees.</p>
                 {guestSent ? (
                   <p className="guest-sent" role="status">Check <b>{guestEmail}</b> for a one-click link from PULP. It brings you back here with your answers saved. (Nothing arrived? Check spam, or <button type="button" className="text-button" onClick={() => setGuestSent(false)}>try again</button>.)</p>
                 ) : (
@@ -429,7 +429,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
 
         <div className="photo-upload">
           <p>Photos {guestRules ? <>* <span>(at least 1, up to {MAX_PHOTOS})</span></> : <span>(optional, up to {MAX_PHOTOS})</span>}</p>
-          <p className="photo-hint">What arrived — and, if you like, a screenshot of the listing. JPG, PNG or WebP, up to 5 MB each.</p>
+          <p className="photo-hint">What arrived — and, if you like, a screenshot of the listing. <b>Photos are shown publicly with your review.</b> JPG, PNG or WebP, up to 5 MB each.</p>
           <div className="photo-grid">
             {photos.map((p, i) => (
               <div className="photo-thumb" key={p.path ?? p.url}>
