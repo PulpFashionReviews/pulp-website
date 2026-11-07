@@ -7,8 +7,6 @@ export function SiteFooter() {
       <Link href="/" className="wordmark footer-logo">PULP<span>®</span></Link>
       <p>Fashion reviews, from the people who know.</p>
       <div>
-        <Link href="/#designers">Directory</Link>
-        <Link href="/#write-review">Write a review</Link>
         <Link href="/suggest-designer">Suggest a designer</Link>
         <Link href="/claim">For designers</Link>
         <a href={`mailto:${CONTACT_EMAIL}`}>Contact</a>
