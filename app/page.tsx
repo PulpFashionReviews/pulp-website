@@ -113,9 +113,9 @@ export default function Home() {
   </a>
 
   <nav>
+    <a href="#how-it-works">How It Works</a>
     <a href="#designers">Find a Designer</a>
-    <a className="nav-cta" href="#write-review">Write a Review</a>
-    <a href="#how-it-works">How it Works</a>
+    <a className="nav-cta" href="#write-review">Review a Designer</a>
   </nav>
 
   <div className="auth-links">
