@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { FilterDropdown } from '@/components/filter-dropdown';
 import { ReviewForm } from '@/components/review-form';
 import { SiteFooter } from '@/components/site-footer';
-import { designerHref, BRAND_SELECT, BrandRow, brandCategoryNames } from '@/lib/designers';
+import { designerHref, BRAND_SELECT, BrandRow, brandCategoryNames, logoUrl } from '@/lib/designers';
 
 type Brand = BrandRow & { categories: string[] };
 type Rating = { brand_id: number; score: number; customers: number; total_reviews: number };
@@ -268,7 +268,7 @@ export default function Home() {
 </div>
 
       
-      <div className="brand-grid">{loading ? <p className="empty-state">Loading the directory…</p> : filteredBrands.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((brand, i) => <article className="brand-card" key={brand.id}><div className={`brand-monogram tone-${i % 5}`}><span>{(brand.Brand || 'P').slice(0, 1).toUpperCase()}</span><i>✳</i></div><div className="brand-info"><span className="brand-category">{brand.categories.length ? brand.categories.join(' · ') : 'PAKISTANI FASHION'}</span><h3>{brand.Brand}</h3><div className="brand-card-bottom">{averageFor(brand.id) ? <span className="rating">★ {averageFor(brand.id)} <small>({ratings[brand.id]?.total_reviews ?? 0})</small></span> : <span className="no-rating">Be the first to review</span>}<Link className="brand-card-link" href={designerHref(brand)} aria-label={`View ${brand.Brand} reviews`}>View <span>↗</span></Link></div></div></article>)}</div>
+      <div className="brand-grid">{loading ? <p className="empty-state">Loading the directory…</p> : filteredBrands.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((brand, i) => <article className="brand-card" key={brand.id}><div className={`brand-monogram tone-${i % 5}${brand.logo_path ? ' has-logo' : ''}`}>{brand.logo_path ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={logoUrl(brand.logo_path) ?? ''} alt={`${brand.Brand} logo`} loading="lazy" /> : <><span>{(brand.Brand || 'P').slice(0, 1).toUpperCase()}</span><i>✳</i></>}</div><div className="brand-info"><span className="brand-category">{brand.categories.length ? brand.categories.join(' · ') : 'PAKISTANI FASHION'}</span><h3>{brand.Brand}</h3><div className="brand-card-bottom">{averageFor(brand.id) ? <span className="rating">★ {averageFor(brand.id)} <small>({ratings[brand.id]?.total_reviews ?? 0})</small></span> : <span className="no-rating">Be the first to review</span>}<Link className="brand-card-link" href={designerHref(brand)} aria-label={`View ${brand.Brand} reviews`}>View <span>↗</span></Link></div></div></article>)}</div>
       {!loading && filteredBrands.length === 0 && <p className="empty-state">No designers found. Try another search, or <Link href="/suggest-designer">suggest a designer</Link>.</p>}
       {!loading && filteredBrands.length > 0 && (
         <nav className="pager" aria-label="Directory pages">

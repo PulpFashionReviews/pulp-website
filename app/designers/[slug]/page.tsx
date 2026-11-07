@@ -9,6 +9,7 @@ import { SiteFooter } from '@/components/site-footer';
 import { PHOTO_BUCKET, facebookUrl, formatOrderMonth, instagramUrl, priceSymbol } from '@/lib/review-options';
 import { AuthLinks } from '@/components/auth-links';
 import { DesignerReply, Reply } from '@/components/designer-reply';
+import { LogoManager } from '@/components/logo-manager';
 
 export const revalidate = 60;
 
@@ -158,7 +159,10 @@ export default async function DesignerPage({ params }: PageProps) {
         <div className="designer-hero-grid">
           <div>
             <span className="section-kicker">DESIGNER PROFILE</span>
-            <h1>{brand.Brand}</h1>
+            <div className="designer-title">
+              <LogoManager brandId={brand.id} brandName={brand.Brand || 'Designer'} initialPath={brand.logo_path ?? null} />
+              <h1>{brand.Brand}</h1>
+            </div>
             {brand.claimed_at && <p className="claimed-label" title="This designer has verified their PULP page and can reply to reviews">✓ Claimed by designer</p>}
             <p className="designer-meta">
               {categories.length ? categories.join(' · ') : 'Pakistani fashion'}

@@ -9,11 +9,12 @@ export type Brand = {
   facebook?: string | null;
   ships_to?: string[] | null;
   claimed_at?: string | null;
+  logo_path?: string | null;
 };
 
 // Brand columns plus its clean categories (via brand_categories → categories).
 export const BRAND_SELECT =
-  'id, Brand, Category, Price_Range, Website, Contact_Number, instagram, facebook, ships_to, claimed_at, brand_categories(categories(name, sort_order))';
+  'id, Brand, Category, Price_Range, Website, Contact_Number, instagram, facebook, ships_to, claimed_at, logo_path, brand_categories(categories(name, sort_order))';
 
 export type BrandRow = Brand & {
   brand_categories?: { categories: { name: string; sort_order: number } | null }[] | null;
@@ -75,4 +76,13 @@ export function websiteUrl(website: string) {
   // Repairs stored values like "https: example.com" and bare domains.
   const host = website.trim().replace(/^https?:\s*\/*/i, '');
   return `https://${host}`;
+}
+
+export const LOGO_BUCKET = 'designer-logos';
+
+/** Public URL of a designer's logo (logos are public images). */
+export function logoUrl(path: string | null | undefined) {
+  const base = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/rest\/v1\/?$/, '').replace(/\/$/, '');
+  if (!path || !base) return null;
+  return `${base}/storage/v1/object/public/${LOGO_BUCKET}/${path}`;
 }

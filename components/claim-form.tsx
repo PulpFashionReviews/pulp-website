@@ -99,7 +99,7 @@ export function ClaimForm() {
         </div>
       ) : brandId && managed.includes(brandId) ? (
         <div className="claim-box claim-ok">
-          <p><b>You manage this page.</b> Open it to reply to reviews — you’ll see a “Reply publicly” button under each one.</p>
+          <p><b>You manage this page.</b> Open it to add your logo and reply to reviews — you’ll see “Upload logo” at the top and a “Reply publicly” button under each review.</p>
           {brand && <Link className="button-primary" href={designerHref(brand)}>Go to {brand.Brand} <span>↗</span></Link>}
         </div>
       ) : myClaim?.status === 'pending' ? (

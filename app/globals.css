@@ -1126,3 +1126,18 @@ footer>div a{white-space:nowrap}
 .label-optional{font-weight:400;color:var(--muted)}
 .designer-hero .claim-link{color:#e6c3a5}
 .designer-hero .claim-link:hover{color:#fff}
+
+/* Designer logos */
+.designer-title{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.designer-title h1{margin:0}
+.designer-logo-wrap{display:flex;flex-direction:column;gap:6px}
+.designer-logo{width:88px;height:88px;object-fit:contain;background:#fff;border-radius:50%;border:1px solid rgba(214,160,119,.5);padding:8px}
+.designer-logo.empty{display:grid;place-items:center;font-size:13px;font-weight:600;color:#e6c3a5;background:transparent;border:1px dashed #d6a077;text-align:center;line-height:1.3}
+.logo-controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:13px}
+.designer-hero .logo-controls .text-button{color:#e6c3a5}
+.logo-hint{color:#bfb2a8}
+.brand-monogram.has-logo{background:#fff}
+.brand-monogram.has-logo img{width:78%;height:78%;object-fit:contain}
+.designer-title .designer-logo{order:1;flex:none}
+.designer-title h1{order:2}
+.designer-title .logo-controls{order:3;flex-basis:100%;margin-top:-6px}

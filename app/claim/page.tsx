@@ -18,9 +18,9 @@ export default function ClaimPage() {
           <div className="suggest-intro">
             <span className="section-kicker">FOR DESIGNERS</span>
             <h1>Claim your <em>page.</em></h1>
-            <p>Run a brand listed on PULP? Claim your page for free so you can reply publicly to customer reviews — thank happy customers and give your side when something went wrong.</p>
+            <p>Run a brand listed on PULP? Claim your page for free to add your logo and reply publicly to customer reviews — thank happy customers and give your side when something went wrong.</p>
             <ul>
-              <li>Free to claim. Replies are always free.</li>
+              <li>Free to claim. Replies and your logo are always free.</li>
               <li>We verify every claim before giving access — usually by email from your brand’s website domain or a message from your official Instagram.</li>
               <li>Claiming never changes your ratings, your position in the directory, or which reviews are shown.</li>
             </ul>
