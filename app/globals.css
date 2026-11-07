@@ -1055,3 +1055,16 @@ footer>div a{white-space:nowrap}
 .more-toggle{align-self:flex-start;background:none;border:1px dashed #cdbfb3;color:var(--wine);font-size:15px;font-weight:600;padding:11px 14px;margin-top:6px;text-align:left}
 .more-toggle span{font-weight:400;color:var(--muted)}
 .more-toggle:hover{border-color:var(--wine)}
+
+/* Account / guest toggle at the top of the review form */
+.post-mode{display:flex;flex-direction:column;gap:10px;margin-bottom:6px}
+.post-mode-label{font:500 22px var(--serif);margin:0}
+.mode-toggle{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--wine);background:#fbf9f6}
+.mode-toggle button{border:0;background:transparent;color:var(--wine);font-size:15px;font-weight:600;padding:12px 10px}
+.mode-toggle button.active{background:var(--wine);color:#fff}
+.mode-panel{display:flex;flex-direction:column;gap:8px;background:#fbf9f6;border:1px solid var(--line);padding:14px}
+.mode-panel>p{font-size:15px;line-height:1.6;color:var(--muted);margin:0}
+.mode-panel .guest-email-row{flex-direction:column;margin:0}
+.mode-panel .guest-email-row input{background:#fff}
+.upload-later{font-size:14px;color:var(--wine);margin:8px 0 0}
+.photo-add:disabled,.proof-row .outline-button:disabled{opacity:.5;cursor:not-allowed}

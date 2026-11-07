@@ -45,7 +45,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
   const [guestSent, setGuestSent] = useState(false);
   const [guestBusy, setGuestBusy] = useState(false);
   const [guestNotice, setGuestNotice] = useState('');
-  const [guestOpen, setGuestOpen] = useState(false);
+  const [mode, setMode] = useState<'account' | 'guest'>('account');
   const [showProof, setShowProof] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
 
@@ -56,6 +56,8 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
   const proofInput = useRef<HTMLInputElement>(null);
   const formTop = useRef<HTMLFormElement>(null);
 
+  // Guest rules (photo + proof required) apply to guests, and preview while choosing "As a guest".
+  const guestRules = me ? me.guest : mode === 'guest';
   const designerName = brandName ?? brands?.find((b) => b.id === chosenId)?.Brand ?? 'this designer';
 
   // "What did you order?" uses the same categories as the directory.
@@ -82,6 +84,41 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
     const { data: sub } = supabase.auth.onAuthStateChange(() => { read(); });
     return () => sub.subscription.unsubscribe();
   }, []);
+
+  // Keep a draft on this device so answers survive logging in or confirming an email.
+  const DRAFT_KEY = 'pulp-review-draft';
+  const restored = useRef(false);
+  const [draftReady, setDraftReady] = useState(false);
+  useEffect(() => {
+    if (restored.current) return;
+    restored.current = true;
+    setDraftReady(true);
+    try {
+      const raw = window.localStorage.getItem(DRAFT_KEY);
+      if (!raw) return;
+      const d = JSON.parse(raw);
+      if (brandId && d.brandId !== brandId) return;
+      if (!brandId && d.brandId) setChosenId(d.brandId);
+      if (d.rating) setRating(d.rating);
+      if (d.reviewText) setReviewText(d.reviewText);
+      if (d.itemType) setItemType(d.itemType);
+      if (d.shippedTo) setShippedTo(d.shippedTo);
+      if (d.orderMonth) setOrderMonth(d.orderMonth);
+      if (d.categoryRatings && Object.keys(d.categoryRatings).length) { setCategoryRatings(d.categoryRatings); setShowDetails(true); }
+      if (d.orderRef) setOrderRef(d.orderRef);
+      if (d.mode === 'guest') setMode('guest');
+    } catch { /* storage unavailable */ }
+  }, [brandId]);
+  useEffect(() => {
+    if (editingId || !draftReady) return;
+    try {
+      const empty = !reviewText && !itemType && !shippedTo && !orderMonth && !orderRef && !Object.keys(categoryRatings).length;
+      if (empty) { window.localStorage.removeItem(DRAFT_KEY); return; }
+      window.localStorage.setItem(DRAFT_KEY, JSON.stringify({
+        brandId: chosenId, rating, reviewText, itemType, shippedTo, orderMonth, categoryRatings, orderRef, mode,
+      }));
+    } catch { /* storage unavailable */ }
+  }, [draftReady, editingId, chosenId, rating, reviewText, itemType, shippedTo, orderMonth, categoryRatings, orderRef, mode]);
 
   // Back from a guest sign-in link: bring the form into view.
   useEffect(() => {
@@ -184,7 +221,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
   async function signOut() {
     if (!supabase) return;
     await supabase.auth.signOut();
-    resetForm(); setGuestSent(false); setGuestOpen(false); setNotice('');
+    resetForm(); setGuestSent(false); setNotice('');
   }
 
   function removePhoto(index: number) {
@@ -200,7 +237,12 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
     event.preventDefault();
     if (!supabase) { setNotice('Reviews are temporarily unavailable. Please try again later.'); return; }
     setNotice(''); setNeedsLogin(false);
-    if (!me) { setNeedsLogin(true); setNotice('Please log in before submitting a review.'); return; }
+    if (!me) {
+      if (mode === 'guest') { setNotice('Please confirm your email first — enter it at the top of the form and click the link we send you.'); }
+      else { setNeedsLogin(true); setNotice('Please log in before submitting a review — your answers are saved on this device.'); }
+      formTop.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
     if (!me.confirmed) { setNotice('Please confirm your email address first — check your inbox for the confirmation link.'); return; }
     if (!chosenId) { setNotice('Please choose the designer you shopped with.'); return; }
     if (orderMonth > thisMonth()) { setNotice('The order month can’t be in the future.'); return; }
@@ -260,6 +302,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
         ? 'Your changes are saved. The updated review will appear once it’s approved again.'
         : 'Thank you! Your review has been submitted and will appear once it’s approved.');
       resetForm();
+      try { window.localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
       loadMine();
     } catch (err) {
       if (uploaded.length) await supabase.storage.from(PHOTO_BUCKET).remove(uploaded);
@@ -294,37 +337,38 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
         </div>
       )}
 
-      {!me ? (
-        <div className="review-form review-start">
-          <span className="section-kicker">WRITE A REVIEW</span>
-          {brandName && <h2 className="designer-subhead">Shopped with {brandName}?</h2>}
-          <p className="start-title">How would you like to post?</p>
-          <div className="start-options">
-            <div className="start-option">
-              <span className="start-number">1</span>
-              <div>
-                <strong>With an account</strong>
-                <p>A star rating and a few lines is all you need. Photos are optional.</p>
+      <form className="review-form" onSubmit={submit} ref={formTop}>
+        <div className="form-heading">
+          <span className="section-kicker">{editingId ? 'EDIT YOUR REVIEW' : 'WRITE A REVIEW'}</span>
+          <span className="required-note">* Required</span>
+        </div>
+        {me ? (
+          <p className="guest-banner">
+            {me.guest ? 'Posting as a guest' : 'Signed in as'}: <b>{me.email}</b> · <button type="button" className="text-button" onClick={signOut}>{me.guest ? 'Use a different email' : 'Sign out'}</button>
+          </p>
+        ) : (
+          <div className="post-mode">
+            <p className="post-mode-label">How would you like to post?</p>
+            <div className="mode-toggle" role="tablist" aria-label="How would you like to post?">
+              <button type="button" role="tab" aria-selected={mode === 'account'} className={mode === 'account' ? 'active' : ''} onClick={() => setMode('account')}>With an account</button>
+              <button type="button" role="tab" aria-selected={mode === 'guest'} className={mode === 'guest' ? 'active' : ''} onClick={() => setMode('guest')}>As a guest</button>
+            </div>
+            {mode === 'account' ? (
+              <div className="mode-panel">
+                <p>Log in or create a free account. Photos and proof of purchase are optional. You can start writing below — your answers are saved on this device while you log in.</p>
                 <div className="start-actions">
                   <Link className="button-primary" href={loginHref()}>Log in <span>↗</span></Link>
-                  <Link className="outline-button" href="/signup">Create account</Link>
+                  <Link className="outline-button" href={`/signup`}>Create account</Link>
                 </div>
               </div>
-            </div>
-            <div className={`start-option${guestOpen ? ' open' : ''}`}>
-              <span className="start-number">2</span>
-              <div>
-                <strong>As a guest — no password</strong>
-                <p>Confirm your email with a one-click link. You’ll add a photo and proof of purchase, which only PULP sees.</p>
-                {!guestOpen ? (
-                  <div className="start-actions">
-                    <button type="button" className="outline-button" onClick={() => setGuestOpen(true)}>Continue as guest</button>
-                  </div>
-                ) : guestSent ? (
-                  <p className="guest-sent" role="status">Check <b>{guestEmail}</b> for a one-click link from PULP. It brings you back here to write your review. (Nothing arrived? Check spam, or <button type="button" className="text-button" onClick={() => setGuestSent(false)}>try again</button>.)</p>
+            ) : (
+              <div className="mode-panel">
+                <p>No password needed — confirm your email with a one-click link. Guest reviews need a photo and a proof of purchase, which only PULP sees.</p>
+                {guestSent ? (
+                  <p className="guest-sent" role="status">Check <b>{guestEmail}</b> for a one-click link from PULP. It brings you back here with your answers saved. (Nothing arrived? Check spam, or <button type="button" className="text-button" onClick={() => setGuestSent(false)}>try again</button>.)</p>
                 ) : (
                   <div className="guest-email-row">
-                    <input type="email" autoFocus placeholder="you@example.com" value={guestEmail} onChange={(e) => setGuestEmail(e.target.value)} aria-label="Your email"
+                    <input type="email" placeholder="you@example.com" value={guestEmail} onChange={(e) => setGuestEmail(e.target.value)} aria-label="Your email"
                       onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); if (guestEmail.includes('@')) sendGuestLink(); } }} />
                     <button type="button" className="button-primary" disabled={guestBusy || !guestEmail.includes('@')} onClick={sendGuestLink}>
                       {guestBusy ? 'Sending…' : 'Email me a link'}
@@ -333,18 +377,9 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
                   </div>
                 )}
               </div>
-            </div>
+            )}
           </div>
-        </div>
-      ) : (
-      <form className="review-form" onSubmit={submit} ref={formTop}>
-        <div className="form-heading">
-          <span className="section-kicker">{editingId ? 'EDIT YOUR REVIEW' : 'WRITE A REVIEW'}</span>
-          <span className="required-note">* Required</span>
-        </div>
-        <p className="guest-banner">
-          {me.guest ? 'Posting as a guest' : 'Signed in as'}: <b>{me.email}</b> · <button type="button" className="text-button" onClick={signOut}>{me.guest ? 'Use a different email' : 'Sign out'}</button>
-        </p>
+        )}
 
         {brandName && <h2 className="designer-subhead">{editingId ? `Update your ${brandName} review` : `Shopped with ${brandName}?`}</h2>}
 
@@ -393,7 +428,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
         <textarea id="review-text" required minLength={20} maxLength={5000} rows={4} value={reviewText} onChange={(e) => setReviewText(e.target.value)} placeholder="Quality, fit, service, delivery — did it match the photos?" />
 
         <div className="photo-upload">
-          <p>Photos {me.guest ? <>* <span>(at least 1, up to {MAX_PHOTOS})</span></> : <span>(optional, up to {MAX_PHOTOS})</span>}</p>
+          <p>Photos {guestRules ? <>* <span>(at least 1, up to {MAX_PHOTOS})</span></> : <span>(optional, up to {MAX_PHOTOS})</span>}</p>
           <p className="photo-hint">What arrived — and, if you like, a screenshot of the listing. JPG, PNG or WebP, up to 5 MB each.</p>
           <div className="photo-grid">
             {photos.map((p, i) => (
@@ -403,23 +438,24 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
               </div>
             ))}
             {photos.length < MAX_PHOTOS && (
-              <button type="button" className="photo-add" onClick={() => fileInput.current?.click()}>
+              <button type="button" className="photo-add" disabled={!me} title={!me ? 'Log in or confirm your email first' : undefined} onClick={() => fileInput.current?.click()}>
                 <span>+</span>Add photo
               </button>
             )}
           </div>
+          {!me && <p className="upload-later">You can add photos once you’ve {mode === 'guest' ? 'confirmed your email' : 'logged in'}.</p>}
           <input ref={fileInput} type="file" accept="image/jpeg,image/png,image/webp" multiple hidden onChange={onPickFiles} />
         </div>
 
-        {me.guest || showProof ? (
+        {guestRules || showProof ? (
           <div className="proof-upload">
-            <p>Proof of purchase {me.guest ? '*' : <span>(optional — earns a ✓ Verified purchase badge)</span>}</p>
+            <p>Proof of purchase {guestRules ? '*' : <span>(optional — earns a ✓ Verified purchase badge)</span>}</p>
             <p className="photo-hint">Order confirmation, receipt, or bank/PayPal statement line — JPG, PNG, WebP or PDF, up to 10 MB. <b>Only PULP sees this.</b> It’s never published and is deleted 30 days after your review is checked. Feel free to cover your card number and address.</p>
             <div className="proof-row">
               {proof ? (
                 <span className="proof-file">📎 {proof.name} <button type="button" onClick={() => setProof(null)} aria-label="Remove proof of purchase">×</button></span>
               ) : (
-                <button type="button" className="outline-button" onClick={() => proofInput.current?.click()}>Add proof of purchase</button>
+                <button type="button" className="outline-button" disabled={!me} onClick={() => proofInput.current?.click()}>Add proof of purchase</button>
               )}
             </div>
             <input ref={proofInput} type="file" accept="image/jpeg,image/png,image/webp,application/pdf" hidden onChange={onPickProof} />
@@ -466,7 +502,6 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
           </p>
         )}
       </form>
-      )}
     </div>
   );
 }
