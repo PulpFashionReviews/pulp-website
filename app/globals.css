@@ -1037,3 +1037,21 @@ footer>div a{white-space:nowrap}
 .proof-upload .photo-hint b{color:var(--ink)}
 @media(max-width:680px){.guest-options{grid-template-columns:1fr}}
 .guest-email-row{flex-direction:column}
+
+/* Review start: choose account or guest first */
+.review-start{gap:14px}
+.start-title{font:500 26px var(--serif);margin:4px 0 2px}
+.start-options{display:flex;flex-direction:column;gap:12px}
+.start-option{display:flex;gap:14px;align-items:flex-start;border:1px solid var(--line);background:#fbf9f6;padding:18px}
+.start-option.open{border-color:#bda4a0}
+.start-number{flex:none;width:30px;height:30px;border-radius:50%;background:var(--wine);color:#fff;display:grid;place-items:center;font-weight:700;font-size:15px}
+.start-option>div{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.start-option strong{font-size:17px}
+.start-option p{font-size:15px;line-height:1.6;color:var(--muted);margin:0}
+.start-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.start-actions .button-primary,.start-actions .outline-button{padding:12px 16px;font-size:15px}
+.start-option .guest-email-row{flex-direction:column;margin-top:6px}
+.start-option .guest-email-row input{background:#fff;border:1px solid var(--line);padding:13px;font-size:15px}
+.more-toggle{align-self:flex-start;background:none;border:1px dashed #cdbfb3;color:var(--wine);font-size:15px;font-weight:600;padding:11px 14px;margin-top:6px;text-align:left}
+.more-toggle span{font-weight:400;color:var(--muted)}
+.more-toggle:hover{border-color:var(--wine)}

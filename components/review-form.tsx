@@ -45,6 +45,9 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
   const [guestSent, setGuestSent] = useState(false);
   const [guestBusy, setGuestBusy] = useState(false);
   const [guestNotice, setGuestNotice] = useState('');
+  const [guestOpen, setGuestOpen] = useState(false);
+  const [showProof, setShowProof] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
 
   const [notice, setNotice] = useState('');
   const [needsLogin, setNeedsLogin] = useState(false);
@@ -112,7 +115,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
     setEditingId(null);
     setRating(5); setReviewText(''); setItemType(''); setShippedTo(''); setOrderMonth('');
     setCategoryRatings({}); setPhotos([]); setRemovedPaths([]);
-    setProof(null); setOrderRef('');
+    setProof(null); setOrderRef(''); setShowProof(false); setShowDetails(false);
     if (fileInput.current) fileInput.current.value = '';
     if (proofInput.current) proofInput.current.value = '';
   }
@@ -128,6 +131,8 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
     setCategoryRatings(r.category_ratings ?? {});
     setOrderRef(r.order_ref ?? '');
     setProof(r.proof_path ? { path: r.proof_path, name: 'Proof on file' } : null);
+    setShowProof(!!(r.proof_path || r.order_ref));
+    setShowDetails(Object.keys(r.category_ratings ?? {}).length > 0);
     const paths = r.photo_paths ?? [];
     if (supabase && paths.length) {
       const { data } = await supabase.storage.from(PHOTO_BUCKET).createSignedUrls(paths, 3600);
@@ -179,7 +184,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
   async function signOut() {
     if (!supabase) return;
     await supabase.auth.signOut();
-    resetForm(); setGuestSent(false); setNotice('');
+    resetForm(); setGuestSent(false); setGuestOpen(false); setNotice('');
   }
 
   function removePhoto(index: number) {
@@ -289,44 +294,57 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
         </div>
       )}
 
-      <form className="review-form" onSubmit={submit} ref={formTop}>
-        <div className="form-heading">
-          <span className="section-kicker">{editingId ? 'EDIT YOUR REVIEW' : 'WRITE A REVIEW'}</span>
-          <span className="required-note">* Required fields</span>
-        </div>
-        {!me && (
-          <div className="guest-box">
-            <p className="guest-title">How would you like to post?</p>
-            <div className="guest-options">
+      {!me ? (
+        <div className="review-form review-start">
+          <span className="section-kicker">WRITE A REVIEW</span>
+          {brandName && <h2 className="designer-subhead">Shopped with {brandName}?</h2>}
+          <p className="start-title">How would you like to post?</p>
+          <div className="start-options">
+            <div className="start-option">
+              <span className="start-number">1</span>
               <div>
                 <strong>With an account</strong>
-                <p>Log in or create a free account. Photos and proof of purchase are optional — adding proof earns a ✓ Verified purchase badge.</p>
-                <div className="guest-links"><Link href={loginHref()}>Log in</Link> · <Link href="/signup">Create account</Link></div>
+                <p>A star rating and a few lines is all you need. Photos are optional.</p>
+                <div className="start-actions">
+                  <Link className="button-primary" href={loginHref()}>Log in <span>↗</span></Link>
+                  <Link className="outline-button" href="/signup">Create account</Link>
+                </div>
               </div>
+            </div>
+            <div className={`start-option${guestOpen ? ' open' : ''}`}>
+              <span className="start-number">2</span>
               <div>
                 <strong>As a guest — no password</strong>
-                {guestSent ? (
+                <p>Confirm your email with a one-click link. You’ll add a photo and proof of purchase, which only PULP sees.</p>
+                {!guestOpen ? (
+                  <div className="start-actions">
+                    <button type="button" className="outline-button" onClick={() => setGuestOpen(true)}>Continue as guest</button>
+                  </div>
+                ) : guestSent ? (
                   <p className="guest-sent" role="status">Check <b>{guestEmail}</b> for a one-click link from PULP. It brings you back here to write your review. (Nothing arrived? Check spam, or <button type="button" className="text-button" onClick={() => setGuestSent(false)}>try again</button>.)</p>
                 ) : (
-                  <>
-                    <p>Confirm your email with a one-click link. Guest reviews need photos and a proof of purchase, which only PULP sees.</p>
-                    <div className="guest-email-row">
-                      <input type="email" placeholder="you@example.com" value={guestEmail} onChange={(e) => setGuestEmail(e.target.value)} aria-label="Your email"
-                        onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); if (guestEmail.includes('@')) sendGuestLink(); } }} />
-                      <button type="button" className="outline-button" disabled={guestBusy || !guestEmail.includes('@')} onClick={sendGuestLink}>
-                        {guestBusy ? 'Sending…' : 'Email me a link'}
-                      </button>
-                    </div>
+                  <div className="guest-email-row">
+                    <input type="email" autoFocus placeholder="you@example.com" value={guestEmail} onChange={(e) => setGuestEmail(e.target.value)} aria-label="Your email"
+                      onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); if (guestEmail.includes('@')) sendGuestLink(); } }} />
+                    <button type="button" className="button-primary" disabled={guestBusy || !guestEmail.includes('@')} onClick={sendGuestLink}>
+                      {guestBusy ? 'Sending…' : 'Email me a link'}
+                    </button>
                     {guestNotice && <p className="guest-error">{guestNotice}</p>}
-                  </>
+                  </div>
                 )}
               </div>
             </div>
           </div>
-        )}
-        {me?.guest && (
-          <p className="guest-banner">Posting as a guest: <b>{me.email}</b> · <button type="button" className="text-button" onClick={signOut}>Use a different email</button></p>
-        )}
+        </div>
+      ) : (
+      <form className="review-form" onSubmit={submit} ref={formTop}>
+        <div className="form-heading">
+          <span className="section-kicker">{editingId ? 'EDIT YOUR REVIEW' : 'WRITE A REVIEW'}</span>
+          <span className="required-note">* Required</span>
+        </div>
+        <p className="guest-banner">
+          {me.guest ? 'Posting as a guest' : 'Signed in as'}: <b>{me.email}</b> · <button type="button" className="text-button" onClick={signOut}>{me.guest ? 'Use a different email' : 'Sign out'}</button>
+        </p>
 
         {brandName && <h2 className="designer-subhead">{editingId ? `Update your ${brandName} review` : `Shopped with ${brandName}?`}</h2>}
 
@@ -372,30 +390,11 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
         </div>
 
         <label htmlFor="review-text">Your review *</label>
-        <textarea id="review-text" required minLength={20} maxLength={5000} rows={5} value={reviewText} onChange={(e) => setReviewText(e.target.value)} placeholder="Tell us about the quality, fit, service, delivery, and whether it matched the photos…" />
-
-        <div className="category-ratings">
-          <p>Rate the details <span>(optional)</span></p>
-          <div className="category-rating-grid">
-            {reviewCategories.map((c) => (
-              <label key={c}>
-                {c}
-                <select value={categoryRatings[c] || ''} onChange={(e) => setCategoryRatings((prev) => {
-                  const next = { ...prev };
-                  if (e.target.value) next[c] = Number(e.target.value); else delete next[c];
-                  return next;
-                })}>
-                  <option value="">—</option>
-                  {[1, 2, 3, 4, 5].map((n) => <option key={n} value={n}>{n} / 5</option>)}
-                </select>
-              </label>
-            ))}
-          </div>
-        </div>
+        <textarea id="review-text" required minLength={20} maxLength={5000} rows={4} value={reviewText} onChange={(e) => setReviewText(e.target.value)} placeholder="Quality, fit, service, delivery — did it match the photos?" />
 
         <div className="photo-upload">
-          <p>Photos {me?.guest ? <>* <span>(at least 1, up to {MAX_PHOTOS})</span></> : <span>(optional, up to {MAX_PHOTOS})</span>}</p>
-          <p className="photo-hint">Show what arrived — and, if you like, a screenshot of how it looked on the website. JPG, PNG or WebP, up to 5 MB each.</p>
+          <p>Photos {me.guest ? <>* <span>(at least 1, up to {MAX_PHOTOS})</span></> : <span>(optional, up to {MAX_PHOTOS})</span>}</p>
+          <p className="photo-hint">What arrived — and, if you like, a screenshot of the listing. JPG, PNG or WebP, up to 5 MB each.</p>
           <div className="photo-grid">
             {photos.map((p, i) => (
               <div className="photo-thumb" key={p.path ?? p.url}>
@@ -412,22 +411,49 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
           <input ref={fileInput} type="file" accept="image/jpeg,image/png,image/webp" multiple hidden onChange={onPickFiles} />
         </div>
 
-        <div className="proof-upload">
-          <p>Proof of purchase {me?.guest ? '*' : <span>(optional — earns a ✓ Verified purchase badge)</span>}</p>
-          <p className="photo-hint">An order confirmation email, receipt, or the line from your bank or PayPal statement. JPG, PNG, WebP or PDF, up to 10 MB. <b>Only PULP sees this</b> — it’s never published, and it’s deleted 30 days after your review is checked. Feel free to cover your card number and address.</p>
-          <div className="proof-row">
-            {proof ? (
-              <span className="proof-file">📎 {proof.name} <button type="button" onClick={() => setProof(null)} aria-label="Remove proof of purchase">×</button></span>
-            ) : (
-              <button type="button" className="outline-button" onClick={() => proofInput.current?.click()}>Add proof of purchase</button>
-            )}
+        {me.guest || showProof ? (
+          <div className="proof-upload">
+            <p>Proof of purchase {me.guest ? '*' : <span>(optional — earns a ✓ Verified purchase badge)</span>}</p>
+            <p className="photo-hint">Order confirmation, receipt, or bank/PayPal statement line — JPG, PNG, WebP or PDF, up to 10 MB. <b>Only PULP sees this.</b> It’s never published and is deleted 30 days after your review is checked. Feel free to cover your card number and address.</p>
+            <div className="proof-row">
+              {proof ? (
+                <span className="proof-file">📎 {proof.name} <button type="button" onClick={() => setProof(null)} aria-label="Remove proof of purchase">×</button></span>
+              ) : (
+                <button type="button" className="outline-button" onClick={() => proofInput.current?.click()}>Add proof of purchase</button>
+              )}
+            </div>
+            <input ref={proofInput} type="file" accept="image/jpeg,image/png,image/webp,application/pdf" hidden onChange={onPickProof} />
+            <label htmlFor="order-ref" className="order-ref-label">Order number <span>(optional)</span></label>
+            <input id="order-ref" type="text" maxLength={80} value={orderRef} onChange={(e) => setOrderRef(e.target.value)} placeholder="e.g. #10234" />
           </div>
-          <input ref={proofInput} type="file" accept="image/jpeg,image/png,image/webp,application/pdf" hidden onChange={onPickProof} />
-          <label htmlFor="order-ref" className="order-ref-label">Order number <span>(optional)</span></label>
-          <input id="order-ref" type="text" maxLength={80} value={orderRef} onChange={(e) => setOrderRef(e.target.value)} placeholder="e.g. #10234" />
-        </div>
+        ) : (
+          <button type="button" className="more-toggle" onClick={() => setShowProof(true)}>+ Add proof of purchase <span>(optional — earns a ✓ Verified purchase badge)</span></button>
+        )}
 
-        <p className="form-privacy">Only submit photos and details you have permission to share. Reviews and photos stay private until they’re approved. By submitting, you agree to our <Link href="/guidelines">Review Guidelines</Link> and <Link href="/terms">Terms of Use</Link>.</p>
+        {showDetails ? (
+          <div className="category-ratings">
+            <p>Rate the details <span>(optional)</span></p>
+            <div className="category-rating-grid">
+              {reviewCategories.map((c) => (
+                <label key={c}>
+                  {c}
+                  <select value={categoryRatings[c] || ''} onChange={(e) => setCategoryRatings((prev) => {
+                    const next = { ...prev };
+                    if (e.target.value) next[c] = Number(e.target.value); else delete next[c];
+                    return next;
+                  })}>
+                    <option value="">—</option>
+                    {[1, 2, 3, 4, 5].map((n) => <option key={n} value={n}>{n} / 5</option>)}
+                  </select>
+                </label>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <button type="button" className="more-toggle" onClick={() => setShowDetails(true)}>+ Rate service, quality, delivery &amp; more <span>(optional)</span></button>
+        )}
+
+        <p className="form-privacy">Reviews and photos stay private until approved. By submitting, you agree to our <Link href="/guidelines">Review Guidelines</Link> and <Link href="/terms">Terms of Use</Link>.</p>
         <div className="form-actions">
           <button className="button-primary" type="submit" disabled={submitting}>
             {submitting ? 'Saving…' : editingId ? 'Save changes' : 'Submit for review'} <span>↗</span>
@@ -440,6 +466,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
           </p>
         )}
       </form>
+      )}
     </div>
   );
 }
