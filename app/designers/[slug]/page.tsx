@@ -137,7 +137,7 @@ export default async function DesignerPage({ params }: PageProps) {
         <Link href="/" className="wordmark" aria-label="PULP home">PULP<span>®</span></Link>
         <nav>
           <Link href="/#designers">Find a Designer</Link>
-          <a className="nav-cta" href="#write-review">Write a Review <span>↗</span></a>
+          <a className="nav-cta" href="#write-review">Write a Review</a>
           <Link href="/#how-it-works">How it Works</Link>
         </nav>
         <AuthLinks />

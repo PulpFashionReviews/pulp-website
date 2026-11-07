@@ -16,7 +16,7 @@ export default function SuggestDesignerPage() {
         <Link href="/" className="wordmark" aria-label="PULP home">PULP<span>®</span></Link>
         <nav>
           <Link href="/#designers">Find a Designer</Link>
-          <Link className="nav-cta" href="/#write-review">Write a Review <span>↗</span></Link>
+          <Link className="nav-cta" href="/#write-review">Write a Review</Link>
           <Link href="/#how-it-works">How it Works</Link>
         </nav>
         <AuthLinks />

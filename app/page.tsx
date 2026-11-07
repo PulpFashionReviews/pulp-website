@@ -114,7 +114,7 @@ export default function Home() {
 
   <nav>
     <a href="#designers">Find a Designer</a>
-    <a className="nav-cta" href="#write-review">Write a Review <span>↗</span></a>
+    <a className="nav-cta" href="#write-review">Write a Review</a>
     <a href="#how-it-works">How it Works</a>
   </nav>
 
@@ -160,7 +160,7 @@ export default function Home() {
   </p>
   <div className="hero-actions">
     <a className="button-primary" href="#write-review">
-      Write a Review <span>↗</span>
+      Write a Review
     </a>
     <a className="text-link" href="#designers">
       Explore Reviews <span>→</span>
