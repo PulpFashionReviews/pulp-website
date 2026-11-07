@@ -32,6 +32,8 @@ type FeedReply = {
   id: number; review_id: number; brand_id: number; brand_name: string; body: string; hidden: boolean;
   created_at: string; updated_at: string | null; author_email: string | null; review_text: string; review_rating: number;
 };
+type Message = { id: number; name: string | null; email: string; topic: string; message: string; handled: boolean; created_at: string; account_email: string | null };
+const TOPIC_LABELS: Record<string, string> = { question: 'Question', feedback: 'Feedback', review: 'Problem with a review', designer: 'Designer enquiry', press: 'Press / partnership', other: 'Other' };
 const CLAIM_ROLES: Record<string, string> = { owner: 'Owner / founder', staff: 'Works for the brand', agency: 'Agency / representative' };
 const emailDomain = (e: string | null) => (e && e.includes('@') ? e.split('@')[1].toLowerCase() : null);
 const siteDomain = (w: string | null) => (w ? w.trim().replace(/^https?:\s*\/*/i, '').replace(/^www\./i, '').split('/')[0].toLowerCase() : null);
@@ -47,13 +49,14 @@ const withHttp = (v: string) => (/^https?:\/\//i.test(v.trim()) ? v.trim() : `ht
 
 export function AdminDashboard() {
   const [access, setAccess] = useState<'checking' | 'denied' | 'ok'>('checking');
-  const [tab, setTab] = useState<'reviews' | 'suggestions' | 'claims' | 'replies'>('reviews');
+  const [tab, setTab] = useState<'reviews' | 'suggestions' | 'claims' | 'replies' | 'messages'>('reviews');
+  const [messages, setMessages] = useState<Message[]>([]);
   const [claims, setClaims] = useState<QueueClaim[]>([]);
   const [replies, setReplies] = useState<FeedReply[]>([]);
   const [status, setStatus] = useState<Status>('pending');
   const [reviews, setReviews] = useState<QueueReview[]>([]);
   const [subs, setSubs] = useState<QueueSubmission[]>([]);
-  const [counts, setCounts] = useState({ reviews: 0, suggestions: 0, claims: 0 });
+  const [counts, setCounts] = useState({ reviews: 0, suggestions: 0, claims: 0, messages: 0 });
   const [photoUrls, setPhotoUrls] = useState<Record<string, string>>({});
   const [proofUrls, setProofUrls] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState<string | null>(null);
@@ -66,12 +69,13 @@ export function AdminDashboard() {
 
   const loadCounts = useCallback(async () => {
     if (!supabase) return;
-    const [r, s, c] = await Promise.all([
+    const [r, s, c, m] = await Promise.all([
       supabase.rpc('admin_review_queue', { p_status: 'pending' }),
       supabase.rpc('admin_submission_queue', { p_status: 'pending' }),
       supabase.rpc('admin_claim_queue', { p_status: 'pending' }),
+      supabase.rpc('admin_message_feed', { p_handled: false }),
     ]);
-    setCounts({ reviews: (r.data || []).length, suggestions: (s.data || []).length, claims: (c.data || []).length });
+    setCounts({ reviews: (r.data || []).length, suggestions: (s.data || []).length, claims: (c.data || []).length, messages: (m.data || []).length });
   }, []);
 
   const load = useCallback(async () => {
@@ -104,6 +108,10 @@ export function AdminDashboard() {
       const { data, error } = await supabase.rpc('admin_claim_queue', { p_status: status });
       if (error) { setMessage(error.message); return; }
       setClaims((data || []) as QueueClaim[]);
+    } else if (tab === 'messages') {
+      const { data, error } = await supabase.rpc('admin_message_feed', { p_handled: status !== 'pending' });
+      if (error) { setMessage(error.message); return; }
+      setMessages((data || []) as Message[]);
     } else {
       const { data, error } = await supabase.rpc('admin_reply_feed');
       if (error) { setMessage(error.message); return; }
@@ -167,6 +175,16 @@ export function AdminDashboard() {
     loadCounts();
   }
 
+  async function toggleHandled(m: Message) {
+    if (!supabase) return;
+    setBusy(`m${m.id}`);
+    const { error } = await supabase.rpc('admin_set_message_handled', { p_id: m.id, p_handled: !m.handled });
+    setBusy(null);
+    if (error) { setMessage(error.message); return; }
+    setMessages((cur) => cur.filter((x) => x.id !== m.id));
+    loadCounts();
+  }
+
   async function toggleReply(x: FeedReply) {
     if (!supabase) return;
     setBusy(`x${x.id}`);
@@ -198,6 +216,7 @@ export function AdminDashboard() {
           <div><strong>{counts.reviews}</strong><span>reviews waiting</span></div>
           <div><strong>{counts.suggestions}</strong><span>suggestions waiting</span></div>
           <div><strong>{counts.claims}</strong><span>claims waiting</span></div>
+          <div><strong>{counts.messages}</strong><span>new messages</span></div>
         </div>
       </div>
 
@@ -215,8 +234,12 @@ export function AdminDashboard() {
           <button role="tab" aria-selected={tab === 'replies'} className={tab === 'replies' ? 'active' : ''} onClick={() => setTab('replies')}>
             Designer replies
           </button>
+          <button role="tab" aria-selected={tab === 'messages'} className={tab === 'messages' ? 'active' : ''} onClick={() => setTab('messages')}>
+            Messages {counts.messages > 0 && <span>{counts.messages}</span>}
+          </button>
         </div>
-        {tab !== 'replies' && <FilterDropdown label="Status" className="fdrop-sort" options={STATUS_OPTIONS} value={status} onChange={(v) => setStatus(v as Status)} />}
+        {tab === 'messages' && <FilterDropdown label="Status" className="fdrop-sort" options={[{ value: 'pending', label: 'New' }, { value: 'approved', label: 'Handled' }]} value={status === 'pending' ? 'pending' : 'approved'} onChange={(v) => setStatus(v as Status)} />}
+        {tab !== 'replies' && tab !== 'messages' && <FilterDropdown label="Status" className="fdrop-sort" options={STATUS_OPTIONS} value={status} onChange={(v) => setStatus(v as Status)} />}
       </div>
 
       {message && <p className="notice admin-notice" role="status">{message}</p>}
@@ -323,6 +346,28 @@ export function AdminDashboard() {
                 </article>
               );
             })}
+          </div>
+        )
+      )}
+
+      {tab === 'messages' && (
+        messages.length === 0 ? <p className="empty-state">No {status === 'pending' ? 'new ' : 'handled '}messages.</p> : (
+          <div className="admin-list">
+            {messages.map((m) => (
+              <article className="admin-card" key={m.id}>
+                <div className="admin-card-top">
+                  <div>
+                    <p className="admin-brand">{TOPIC_LABELS[m.topic] ?? m.topic}</p>
+                    <p className="admin-meta">{m.name ? `${m.name} · ` : ''}{m.email}{m.account_email && m.account_email !== m.email ? ` (account ${m.account_email})` : ''} · {fmt(m.created_at)}</p>
+                  </div>
+                </div>
+                <p className="admin-text">{m.message}</p>
+                <div className="admin-actions">
+                  <a className="button-primary" href={`mailto:${m.email}?subject=${encodeURIComponent(`Re: your message to PULP`)}`}>Reply by email <span>↗</span></a>
+                  <button className="outline-button" disabled={busy === `m${m.id}`} onClick={() => toggleHandled(m)}>{m.handled ? 'Mark as new' : 'Mark as handled'}</button>
+                </div>
+              </article>
+            ))}
           </div>
         )
       )}

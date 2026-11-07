@@ -1141,3 +1141,15 @@ footer>div a{white-space:nowrap}
 .designer-title .designer-logo{order:1;flex:none}
 .designer-title h1{order:2}
 .designer-title .logo-controls{order:3;flex-basis:100%;margin-top:-6px}
+
+/* Contact page */
+.contact-email{font-size:15px;color:var(--muted);line-height:1.6}
+.contact-email a{font:500 24px var(--serif);color:var(--wine);text-decoration:underline;text-underline-offset:4px;overflow-wrap:anywhere}
+.contact-form,.contact-sent{gap:10px}
+.contact-form>label{font-size:15px;font-weight:600;margin-top:4px}
+.contact-form input,.contact-form select,.contact-form textarea{width:100%}
+.contact-form .button-primary{align-self:flex-start}
+.contact-sent h2{font:500 30px var(--serif);margin:4px 0}
+.contact-sent p{font-size:16px;line-height:1.7;margin:0 0 8px}
+.contact-sent .outline-button{align-self:flex-start}
+.hp-field{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}

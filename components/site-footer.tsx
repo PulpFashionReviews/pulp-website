@@ -9,7 +9,7 @@ export function SiteFooter() {
       <div>
         <Link href="/suggest-designer">Suggest a designer</Link>
         <Link href="/claim">For designers</Link>
-        <a href={`mailto:${CONTACT_EMAIL}`}>Contact</a>
+        <Link href="/contact">Contact</Link>
       </div>
       <nav className="footer-legal" aria-label="Policies">
         <Link href="/guidelines">Review Guidelines</Link>

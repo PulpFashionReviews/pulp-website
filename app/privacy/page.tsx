@@ -28,6 +28,7 @@ export default function PrivacyPage() {
       </ul>
       <h3>When you browse</h3>
       <ul>
+        <li>If you use our <strong>contact form</strong>, your name (optional), email address, topic and message. We store a copy so we can reply, and the form forwards it to our inbox by email.</li>
         <li>Like most websites, our hosting provider automatically records <strong>technical information</strong> such as your IP address, browser type, the pages you visit and the time of your visit, to keep the site secure and working.</li>
         <li>If you’re signed in, your browser stores a <strong>login session</strong> so you stay signed in. We don’t currently use advertising or analytics cookies.</li>
       </ul>
@@ -49,7 +50,8 @@ export default function PrivacyPage() {
       <p>We use trusted service providers to run PULP. They process information on our behalf and only as needed to provide their service:</p>
       <ul>
         <li><strong>Supabase</strong> — account sign-in, sign-in emails, database, and photo and proof-of-purchase storage;</li>
-        <li><strong>Vercel</strong> — website hosting and delivery.</li>
+        <li><strong>Vercel</strong> — website hosting and delivery;</li>
+        <li><strong>FormSubmit</strong> — forwards contact-form messages to our email inbox.</li>
       </ul>
       <p>We may also share information if required by law, to protect the rights or safety of PULP, our users or others, or as part of a sale or reorganisation of PULP (in which case this policy would continue to apply to your information).</p>
       <p>Our providers may store and process data in the United States and other countries. Where required, we rely on appropriate safeguards for international transfers.</p>
