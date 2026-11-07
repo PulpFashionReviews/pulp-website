@@ -24,7 +24,7 @@ export default function PrivacyPage() {
       <ul>
         <li>The <strong>designer you reviewed</strong>, your <strong>ratings and written review</strong>, the <strong>item type, country it was shipped to and month you ordered</strong>, and any <strong>photos</strong> you upload.</li>
         <li>Photos are stored privately until your review is approved. Please don’t include personal details (like your address or order number) in photos or review text.</li>
-        <li><strong>Proof of purchase</strong> (required for guest reviews, optional otherwise), such as an order confirmation, receipt or bank statement line, and an optional order number. Proof is <strong>never published</strong>: only you and PULP’s moderators can see it, and we use it only to check your review is based on a real order. You’re welcome to cover your card number and address before uploading.</li>
+        <li><strong>Proof of purchase</strong> (optional), such as an order confirmation, receipt or bank statement line, and an optional order number. Proof is <strong>never published</strong>: only you and PULP’s moderators can see it, and we use it only to check your review is based on a real order. You’re welcome to cover your card number and address before uploading.</li>
       </ul>
       <h3>When you browse</h3>
       <ul>

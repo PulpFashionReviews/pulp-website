@@ -56,7 +56,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
   const proofInput = useRef<HTMLInputElement>(null);
   const formTop = useRef<HTMLFormElement>(null);
 
-  // Guest rules (photo + proof required) apply to guests, and preview while choosing "As a guest".
+  // Guest rules (a photo is required) apply to guests, and preview while choosing "As a guest".
   const guestRules = me ? me.guest : mode === 'guest';
   const designerName = brandName ?? brands?.find((b) => b.id === chosenId)?.Brand ?? 'this designer';
 
@@ -247,7 +247,6 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
     if (!chosenId) { setNotice('Please choose the designer you shopped with.'); return; }
     if (orderMonth > thisMonth()) { setNotice('The order month can’t be in the future.'); return; }
     if (me.guest && photos.length === 0) { setNotice('Guest reviews need at least one photo of what you received.'); return; }
-    if (me.guest && !proof) { setNotice('Guest reviews need a proof of purchase — add a receipt, order confirmation or bank statement line.'); return; }
 
     setSubmitting(true);
     const uploaded: string[] = [];
@@ -363,7 +362,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
               </div>
             ) : (
               <div className="mode-panel">
-                <p>No password needed — confirm your email with a one-click link. Guest reviews need <b>a photo</b>, which is shown publicly with your review, and <b>a proof of purchase</b>, which only PULP sees.</p>
+                <p>No password needed — confirm your email with a one-click link. Guest reviews just need <b>a photo of what you received</b>, which is shown publicly with your review.</p>
                 {guestSent ? (
                   <p className="guest-sent" role="status">Check <b>{guestEmail}</b> for a one-click link from PULP. It brings you back here with your answers saved. (Nothing arrived? Check spam, or <button type="button" className="text-button" onClick={() => setGuestSent(false)}>try again</button>.)</p>
                 ) : (
@@ -428,7 +427,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
         <textarea id="review-text" required minLength={20} maxLength={5000} rows={4} value={reviewText} onChange={(e) => setReviewText(e.target.value)} placeholder="Quality, fit, service, delivery — did it match the photos?" />
 
         <div className="photo-upload">
-          <p>Photos {guestRules ? <>* <span>(at least 1, up to {MAX_PHOTOS})</span></> : <span>(optional, up to {MAX_PHOTOS})</span>}</p>
+          <p>Photos {guestRules ? <>* <span>(at least 1 of what you received, up to {MAX_PHOTOS})</span></> : <span>(optional, up to {MAX_PHOTOS})</span>}</p>
           <p className="photo-hint">What arrived — and, if you like, a screenshot of the listing. <b>Photos are shown publicly with your review.</b> JPG, PNG or WebP, up to 5 MB each.</p>
           <div className="photo-grid">
             {photos.map((p, i) => (
@@ -447,9 +446,9 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
           <input ref={fileInput} type="file" accept="image/jpeg,image/png,image/webp" multiple hidden onChange={onPickFiles} />
         </div>
 
-        {guestRules || showProof ? (
+        {showProof ? (
           <div className="proof-upload">
-            <p>Proof of purchase {guestRules ? '*' : <span>(optional — earns a ✓ Verified purchase badge)</span>}</p>
+            <p>Proof of purchase <span>(optional — earns a ✓ Verified purchase badge)</span></p>
             <p className="photo-hint">Order confirmation, receipt, or bank/PayPal statement line — JPG, PNG, WebP or PDF, up to 10 MB. <b>Only PULP sees this.</b> It’s never published and is deleted 30 days after your review is checked. Feel free to cover your card number and address.</p>
             <div className="proof-row">
               {proof ? (
