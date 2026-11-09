@@ -3,3 +3,4 @@ update public.fashion_brands set "Website" = 'https://www.ansabjahangirstudio.co
 update public.fashion_brands set "Website" = 'https://sairarizwan.pk' where "Brand" = 'Saira Rizwan';
 update public.fashion_brands set "Website" = 'https://shizahassan.com' where "Brand" = 'Shiza Hassan';
 update public.fashion_brands set "Website" = 'https://rizwanbeygdesign.com' where "Brand" = 'Rizwan Beyg';
+update public.fashion_brands set "Website" = 'https://saharatif.com' where "Brand" = 'Sahar Atif';
