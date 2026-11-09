@@ -5,3 +5,4 @@ update public.fashion_brands set "Website" = 'https://shizahassan.com' where "Br
 update public.fashion_brands set "Website" = 'https://rizwanbeygdesign.com' where "Brand" = 'Rizwan Beyg';
 update public.fashion_brands set "Website" = 'https://saharatif.com' where "Brand" = 'Sahar Atif';
 update public.fashion_brands set "Website" = 'https://zarposhcollection.com' where "Brand" = 'Zarposh';
+update public.fashion_brands set "Website" = 'https://www.anayaonline.com', instagram = 'anayabykiranchaudhry' where "Brand" = 'Anaya by Kiran Chaudhry';
