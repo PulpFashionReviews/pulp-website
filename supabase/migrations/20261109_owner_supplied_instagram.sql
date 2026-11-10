@@ -10,3 +10,7 @@ update public.fashion_brands set instagram = 'aisha_imran_official' where "Brand
 update public.fashion_brands set instagram = 'amnaarshadofficial' where "Brand" = 'Amna Arshad';
 update public.fashion_brands set instagram = 'amnaismail.official' where "Brand" = 'Amna Ismail';
 update public.fashion_brands set instagram = 'amnaaqeelofficial' where "Brand" = 'Amna Aqeel';
+update public.fashion_brands set instagram = 'ayeshaibrahimofficial' where "Brand" = 'Ayesha Ibrahim Luxe';
+update public.fashion_brands set instagram = 'aimanminalcloset' where "Brand" = 'Aiman Minal Closet';
+update public.fashion_brands set instagram = 'makeupstudiobyareeba' where "Brand" = 'Areeba Shahid';
+update public.fashion_brands set instagram = 'akifilyasofficial' where "Brand" = 'Akif Ilyas';
