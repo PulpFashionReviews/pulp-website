@@ -23,3 +23,4 @@ where b."Brand" = 'House of SDK'
 on conflict do nothing;
 update public.fashion_brands set instagram = 'houseof.huda' where "Brand" = 'House of Huda';
 update public.fashion_brands set "Website" = 'https://houseofsdk.com' where "Brand" = 'House of SDK';
+update public.fashion_brands set based_in = 'Chicago, IL' where "Brand" = 'House of SDK';
