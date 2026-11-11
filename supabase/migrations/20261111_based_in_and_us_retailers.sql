@@ -22,3 +22,4 @@ select b.id, c.id from public.fashion_brands b join public.categories c on c.nam
 where b."Brand" = 'House of SDK'
 on conflict do nothing;
 update public.fashion_brands set instagram = 'houseof.huda' where "Brand" = 'House of Huda';
+update public.fashion_brands set "Website" = 'https://houseofsdk.com' where "Brand" = 'House of SDK';
