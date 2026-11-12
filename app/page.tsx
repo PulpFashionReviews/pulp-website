@@ -186,7 +186,7 @@ export default function Home() {
       shopper make a better decision.
     </p>
     <p>
-      PULP is where shoppers outside Pakistan share the delightful, the disappointing and everything in between — so
+      PULP is where shoppers outside Pakistan share the good, the bad and everything in between — so
       everyone can find the designers who deliver, and order with confidence.
     </p>
     <div className="how-actions">
