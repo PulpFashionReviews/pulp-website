@@ -183,7 +183,7 @@ export default function Home() {
     <h2>Ordered from Pakistan? Tell us how it <em>really</em> went.</h2>
     <p>
       Maybe your outfit arrived even more beautiful than the photos, right on time for the wedding. Or maybe it looked
-      nothing like the picture, took months to arrive, and came with surprise customs fees. Either way, your story
+      nothing like the picture, took months to arrive, and came with surprise import duties. Either way, your story
       helps the next shopper.
     </p>
     <p>
@@ -206,7 +206,7 @@ export default function Home() {
       </span>
       <div>
         <h3>Share your story</h3>
-        <p>Quality, fit, delivery, customs, communication — say what really happened, good or bad, in your own words.</p>
+        <p>Quality, fit, delivery, duties, communication — say what really happened, good or bad, in your own words.</p>
       </div>
     </li>
     <li>

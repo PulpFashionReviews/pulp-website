@@ -19,7 +19,7 @@ export default function GuidelinesPage() {
       <ul>
         <li><strong>Only review orders you placed yourself</strong> (or received as a gift you can speak to first-hand). Don’t post on behalf of someone else.</li>
         <li><strong>One review per order.</strong> If you’ve ordered from the same designer again, you’re welcome to review the new order — reviews for the same designer are limited to one every 30 days. If something changes about an existing order (a refund came through, a problem was fixed), edit that review instead.</li>
-        <li><strong>Be specific.</strong> The most helpful reviews cover fabric and stitching quality, fit and sizing, how closely the item matched the photos, delivery time and customs charges, and how the designer handled questions or problems.</li>
+        <li><strong>Be specific.</strong> The most helpful reviews cover fabric and stitching quality, fit and sizing, how closely the item matched the photos, delivery time and import duties, and how the designer handled questions or problems.</li>
         <li><strong>Good and bad are both welcome.</strong> We publish positive, mixed and negative reviews. We never remove a review just because it’s critical.</li>
       </ul>
 
