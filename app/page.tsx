@@ -180,15 +180,15 @@ export default function Home() {
 <section className="how-it-works" id="how-it-works">
   <div className="how-intro">
     <span className="section-kicker">HOW IT WORKS</span>
-    <h2>Ordered from Pakistan and got <em>burned?</em> You’re not alone.</h2>
+    <h2>Ordered from Pakistan? Tell us how it <em>really</em> went.</h2>
     <p>
-      The outfit looked nothing like the photos. The “original” turned out to be a copy. Delivery took months,
-      customs fees came out of nowhere, and your messages went unanswered. PULP is where shoppers outside Pakistan
-      tell the truth about what happened — so the next person doesn’t have to learn the hard way.
+      Maybe your outfit arrived even more beautiful than the photos, right on time for the wedding. Or maybe it looked
+      nothing like the picture, took months to arrive, and came with surprise customs fees. Either way, your story
+      helps the next shopper.
     </p>
     <p>
-      And when a designer gets it right, we want to hear that too. PULP is just as much a place to find the designers
-      real customers trust before you spend anything.
+      PULP is where shoppers outside Pakistan share the delightful, the disappointing and everything in between — so
+      everyone can find the designers who deliver, and order with confidence.
     </p>
     <div className="how-actions">
       <a className="button-primary" href="#write-review">Share your experience <span>↗</span></a>
