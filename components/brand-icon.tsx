@@ -44,8 +44,8 @@ export function BrandIcon({ name, website, logoPath, tone }: { name: string | nu
           alt={uploaded ? `${name} logo` : ''}
           loading="lazy"
           onError={() => setIconFailed(true)}
-          // 16px favicons look blurry when enlarged, so use the monogram for those.
-          onLoad={(e) => { if (!uploaded && e.currentTarget.naturalWidth < 32) setIconFailed(true); }}
+          // Icons under 64px look fuzzy when enlarged, so use the monogram for those.
+          onLoad={(e) => { if (!uploaded && e.currentTarget.naturalWidth < 64) setIconFailed(true); }}
         />
       ) : (
         <>
@@ -65,7 +65,7 @@ export function DesignerIcon({ name, website }: { name: string; website: string 
   // The page is rendered on the server, so the image may finish (or fail) loading before React attaches its handlers.
   useEffect(() => {
     const el = img.current;
-    if (el?.complete && el.naturalWidth < 32) setFailed(true);
+    if (el?.complete && el.naturalWidth < 64) setFailed(true);
   }, []);
   if (host && !failed) {
     return (
@@ -76,7 +76,7 @@ export function DesignerIcon({ name, website }: { name: string; website: string 
         src={`/api/site-icon?host=${encodeURIComponent(host)}`}
         alt=""
         onError={() => setFailed(true)}
-        onLoad={(e) => { if (e.currentTarget.naturalWidth < 32) setFailed(true); }}
+        onLoad={(e) => { if (e.currentTarget.naturalWidth < 64) setFailed(true); }}
       />
     );
   }
