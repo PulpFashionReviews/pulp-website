@@ -1171,3 +1171,4 @@ footer>div a{white-space:nowrap}
 .brand-monogram span.two{font-size:40px;letter-spacing:-.02em}
 .brand-monogram.has-icon{background:#fbf9f6;border-right:1px solid var(--line)}
 .brand-monogram.has-icon img{width:56px;height:56px;object-fit:contain;border-radius:10px}
+.brand-monogram.has-icon img.small{width:32px;height:32px;border-radius:6px}
