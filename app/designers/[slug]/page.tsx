@@ -160,7 +160,7 @@ export default async function DesignerPage({ params }: PageProps) {
           <div>
             <span className="section-kicker">DESIGNER PROFILE</span>
             <div className="designer-title">
-              <LogoManager brandId={brand.id} brandName={brand.Brand || 'Designer'} initialPath={brand.logo_path ?? null} />
+              <LogoManager brandId={brand.id} brandName={brand.Brand || 'Designer'} initialPath={brand.logo_path ?? null} website={brand.Website ?? null} />
               <h1>{brand.Brand}</h1>
             </div>
             {brand.claimed_at && <p className="claimed-label" title="This designer has verified their PULP page and can reply to reviews">✓ Claimed by designer</p>}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { logoUrl } from '@/lib/designers';
 
 // Social and link-in-bio hosts would show the platform's icon, not the designer's.
@@ -55,4 +55,30 @@ export function BrandIcon({ name, website, logoPath, tone }: { name: string | nu
       )}
     </div>
   );
+}
+
+/** Round site icon or monogram for a designer's page header, used until the designer uploads a logo. */
+export function DesignerIcon({ name, website }: { name: string; website: string | null }) {
+  const host = siteHost(website);
+  const [failed, setFailed] = useState(false);
+  const img = useRef<HTMLImageElement>(null);
+  // The page is rendered on the server, so the image may finish (or fail) loading before React attaches its handlers.
+  useEffect(() => {
+    const el = img.current;
+    if (el?.complete && el.naturalWidth < 32) setFailed(true);
+  }, []);
+  if (host && !failed) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        ref={img}
+        className="designer-logo site-icon"
+        src={`/api/site-icon?host=${encodeURIComponent(host)}`}
+        alt=""
+        onError={() => setFailed(true)}
+        onLoad={(e) => { if (e.currentTarget.naturalWidth < 32) setFailed(true); }}
+      />
+    );
+  }
+  return <span className="designer-logo monogram" aria-hidden="true">{initials(name)}</span>;
 }

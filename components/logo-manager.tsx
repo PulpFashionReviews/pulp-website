@@ -3,12 +3,13 @@
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { LOGO_BUCKET, logoUrl } from '@/lib/designers';
+import { DesignerIcon } from '@/components/brand-icon';
 
 const TYPES = ['image/png', 'image/jpeg', 'image/webp'];
 const MAX_BYTES = 2 * 1024 * 1024;
 
 /** A designer's logo, with upload / change / remove controls for its verified managers (and admins). */
-export function LogoManager({ brandId, brandName, initialPath }: { brandId: number; brandName: string; initialPath: string | null }) {
+export function LogoManager({ brandId, brandName, initialPath, website }: { brandId: number; brandName: string; initialPath: string | null; website: string | null }) {
   const [path, setPath] = useState<string | null>(initialPath);
   const [canEdit, setCanEdit] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -55,7 +56,6 @@ export function LogoManager({ brandId, brandName, initialPath }: { brandId: numb
   }
 
   const url = logoUrl(path);
-  if (!url && !canEdit) return null;
 
   return (
     <>
@@ -63,7 +63,7 @@ export function LogoManager({ brandId, brandName, initialPath }: { brandId: numb
         // eslint-disable-next-line @next/next/no-img-element
         <img className="designer-logo" src={url} alt={`${brandName} logo`} />
       ) : (
-        <button type="button" className="designer-logo empty" onClick={() => input.current?.click()} disabled={busy}>+ Add your logo</button>
+        <DesignerIcon name={brandName} website={website} />
       )}
       {canEdit && (
         <div className="logo-controls">
