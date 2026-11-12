@@ -182,9 +182,8 @@ export default function Home() {
     <span className="section-kicker">HOW IT WORKS</span>
     <h2>Ordered from Pakistan? Impressed or disappointed? <em>Let’s hear it!</em></h2>
     <p>
-      Maybe your outfit arrived even more beautiful than the photos, right on time for the wedding. Or maybe it looked
-      nothing like the picture, took months to arrive, and came with surprise import duties. Either way, your story
-      helps the next shopper.
+      Whether your purchase exceeded expectations or left you disappointed, your experience can help the next
+      shopper make a better decision.
     </p>
     <p>
       PULP is where shoppers outside Pakistan share the delightful, the disappointing and everything in between — so
