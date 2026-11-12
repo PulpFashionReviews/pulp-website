@@ -1170,5 +1170,7 @@ footer>div a{white-space:nowrap}
 .hero-copy .eyebrow,.hero-intro,.hero-facts{text-shadow:0 1px 10px rgba(0,0,0,.65)}
 .brand-monogram span.two{font-size:40px;letter-spacing:-.02em}
 .brand-monogram.has-icon{background:#fbf9f6;border-right:1px solid var(--line)}
-.brand-monogram.has-icon img{width:56px;height:56px;object-fit:contain;border-radius:10px}
-.brand-monogram.has-icon img.small{width:32px;height:32px;border-radius:6px}
+.brand-monogram.has-icon img{width:64%;max-width:84px;aspect-ratio:1;height:auto;object-fit:contain;border-radius:12px}
+.brand-monogram:not(.has-logo){background:#fbf9f6;border-right:1px solid var(--line);color:var(--wine)}
+.brand-monogram:not(.has-logo):not(.has-icon) span{opacity:.75}
+.brand-monogram:not(.has-logo):not(.has-icon) i{color:#c9a9ae}

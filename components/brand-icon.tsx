@@ -32,7 +32,6 @@ export function BrandIcon({ name, website, logoPath, tone }: { name: string | nu
   const uploaded = logoUrl(logoPath);
   const host = uploaded ? null : siteHost(website);
   const [iconFailed, setIconFailed] = useState(false);
-  const [smallIcon, setSmallIcon] = useState(false);
   const src = uploaded ?? (host && !iconFailed ? `/api/site-icon?host=${encodeURIComponent(host)}` : null);
   const letters = initials(name);
 
@@ -45,14 +44,8 @@ export function BrandIcon({ name, website, logoPath, tone }: { name: string | nu
           alt={uploaded ? `${name} logo` : ''}
           loading="lazy"
           onError={() => setIconFailed(true)}
-          className={smallIcon ? 'small' : undefined}
-          // 16px favicons look blurry when enlarged, so use the monogram; show 32px ones at their own size.
-          onLoad={(e) => {
-            if (uploaded) return;
-            const w = e.currentTarget.naturalWidth;
-            if (w < 32) setIconFailed(true);
-            else if (w < 64) setSmallIcon(true);
-          }}
+          // 16px favicons look blurry when enlarged, so use the monogram for those.
+          onLoad={(e) => { if (!uploaded && e.currentTarget.naturalWidth < 32) setIconFailed(true); }}
         />
       ) : (
         <>
