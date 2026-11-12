@@ -1168,3 +1168,21 @@ footer>div a{white-space:nowrap}
 .hero .hero-actions{margin-top:26px}
 @media(max-width:680px){.hero-search{padding:5px 5px 5px 12px}.hero-search input{font-size:15px}.hero-search .button-primary{padding:12px 12px}.hero-facts{font-size:14px}}
 .hero-copy .eyebrow,.hero-intro,.hero-facts{text-shadow:0 1px 10px rgba(0,0,0,.65)}
+.brand-monogram span.two{font-size:40px;letter-spacing:-.02em}
+.brand-monogram.has-icon{background:#fbf9f6;border-right:1px solid var(--line)}
+.brand-monogram.has-icon img{width:64%;max-width:84px;aspect-ratio:1;height:auto;object-fit:contain;border-radius:12px}
+.brand-monogram:not(.has-logo){background:#fbf9f6;border-right:1px solid var(--line);color:var(--wine)}
+.brand-monogram:not(.has-logo):not(.has-icon) span{opacity:.75}
+.brand-monogram:not(.has-logo):not(.has-icon) i{color:#c9a9ae}
+.designer-logo.site-icon{padding:16px}
+.designer-logo.monogram{display:grid;place-items:center;font:italic 500 34px var(--serif);color:var(--wine);background:#fbf9f6;flex:none}
+/* Designer page header: room between each line */
+.designer-hero .section-kicker{display:block;margin-bottom:18px}
+.designer-title{row-gap:16px;margin-bottom:18px}
+.designer-title h1{line-height:1.12;padding-bottom:4px}
+.designer-hero .claimed-label{margin:0 0 14px}
+.designer-meta{margin:0 0 18px;line-height:1.5}
+.designer-links{row-gap:12px;margin-bottom:4px}
+.designer-ships{margin:16px 0 0;line-height:1.5}
+.designer-hero .claim-link{margin-top:18px;line-height:1.5}
+@media (max-width: 680px){.designer-logo{width:72px;height:72px}.designer-logo.monogram{font-size:28px}.designer-hero-grid{gap:28px}}
