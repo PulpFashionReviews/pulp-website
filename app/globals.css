@@ -1168,3 +1168,6 @@ footer>div a{white-space:nowrap}
 .hero .hero-actions{margin-top:26px}
 @media(max-width:680px){.hero-search{padding:5px 5px 5px 12px}.hero-search input{font-size:15px}.hero-search .button-primary{padding:12px 12px}.hero-facts{font-size:14px}}
 .hero-copy .eyebrow,.hero-intro,.hero-facts{text-shadow:0 1px 10px rgba(0,0,0,.65)}
+.brand-monogram span.two{font-size:40px;letter-spacing:-.02em}
+.brand-monogram.has-icon{background:#fbf9f6;border-right:1px solid var(--line)}
+.brand-monogram.has-icon img{width:56px;height:56px;object-fit:contain;border-radius:10px}
