@@ -180,7 +180,7 @@ export default function Home() {
 <section className="how-it-works" id="how-it-works">
   <div className="how-intro">
     <span className="section-kicker">HOW IT WORKS</span>
-    <h2>Ordered from Pakistan? Tell us how it <em>really</em> went.</h2>
+    <h2>Ordered from Pakistan? Impressed or disappointed? <em>Let’s hear it!</em></h2>
     <p>
       Maybe your outfit arrived even more beautiful than the photos, right on time for the wedding. Or maybe it looked
       nothing like the picture, took months to arrive, and came with surprise import duties. Either way, your story
