@@ -11,7 +11,8 @@ const HOST = /^(?=.{3,253}$)([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,24}
 const WEEK = 60 * 60 * 24 * 7;
 const RASTER = /^image\/(png|jpe?g|webp|gif|x-icon|vnd\.microsoft\.icon)$/;
 const MAX_BYTES = 1024 * 1024;
-const UA = 'Mozilla/5.0 (compatible; PULP-icon/1.0; +https://pulp-website.vercel.app)';
+// Many shop platforms turn away unfamiliar bots, so identify as an ordinary browser.
+const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36';
 
 type Candidate = { url: string; score: number };
 
@@ -48,9 +49,13 @@ function candidatesFrom(html: string, base: string): Candidate[] {
   return out.sort((a, b) => b.score - a.score);
 }
 
+let trace: string[] | null = null;
+const note = (m: string) => { if (trace) trace.push(m); };
+
 async function fetchImage(url: string) {
   try {
     const res = await fetch(url, { headers: { 'User-Agent': UA }, signal: AbortSignal.timeout(6000), next: { revalidate: WEEK } });
+    note(`${res.status} ${res.headers.get('content-type')} ${url}`);
     if (!res.ok) return null;
     let type = (res.headers.get('content-type') || '').split(';')[0].trim().toLowerCase();
     if (!type || type === 'application/octet-stream') type = /\.ico($|\?)/i.test(url) ? 'image/x-icon' : type;
@@ -72,21 +77,27 @@ async function bestIcon(host: string) {
       redirect: 'follow',
       next: { revalidate: WEEK },
     });
+    note(`page ${page.status} ${page.url}`);
     if (page.ok) {
       const html = (await page.text()).slice(0, 400_000);
       const head = html.split(/<\/head>/i)[0];
-      for (const c of candidatesFrom(head, page.url || `https://${host}/`).slice(0, 4)) {
+      const cands = candidatesFrom(head, page.url || `https://${host}/`);
+      note(`candidates ${JSON.stringify(cands.slice(0, 6))}`);
+      for (const c of cands.slice(0, 4)) {
         if (c.score < 64) break;
         const img = await fetchImage(c.url);
         if (img) return img;
       }
     }
-  } catch { /* fall through */ }
+  } catch (e) { note(`page error ${String(e)}`); }
   // 2. The conventional high-resolution icon.
   const touch = await fetchImage(`https://${host}/apple-touch-icon.png`);
   if (touch) return touch;
-  // 3. Google's favicon service (often only 32px; the page shows a monogram if it's too small).
-  return fetchImage(`https://www.google.com/s2/favicons?domain=${encodeURIComponent(host)}&sz=256`);
+  // 3. Google's favicon services; the larger gstatic one first (the page shows a monogram if it's still too small).
+  return (
+    (await fetchImage(`https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=${encodeURIComponent(`https://${host}`)}&size=128`)) ??
+    fetchImage(`https://www.google.com/s2/favicons?domain=${encodeURIComponent(host)}&sz=256`)
+  );
 }
 
 /** Only serve icons for websites that are actually in the directory, so this isn't an open proxy. */
@@ -101,6 +112,13 @@ export async function GET(req: NextRequest) {
   const miss = (status: number) => new Response(null, { status, headers: { 'Cache-Control': `public, s-maxage=${WEEK}` } });
   if (!HOST.test(host)) return miss(400);
   if (!(await isListed(host))) return miss(404);
+  if (req.nextUrl.searchParams.get('debug') === '1') {
+    trace = [];
+    const icon = await bestIcon(host);
+    const out = { trace, bytes: icon?.body.byteLength ?? 0, type: icon?.type ?? null };
+    trace = null;
+    return Response.json(out, { headers: { 'Cache-Control': 'no-store' } });
+  }
   const icon = await bestIcon(host);
   if (!icon) return miss(404);
   return new Response(icon.body, {
