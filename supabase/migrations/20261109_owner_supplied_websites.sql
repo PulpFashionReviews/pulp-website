@@ -8,3 +8,4 @@ update public.fashion_brands set "Website" = 'https://zarposhcollection.com' whe
 update public.fashion_brands set "Website" = 'https://www.anayaonline.com', instagram = 'anayabykiranchaudhry' where "Brand" = 'Anaya by Kiran Chaudhry';
 update public.fashion_brands set "Website" = 'https://ayeshashoaibmalik.com' where "Brand" = 'Ayesha Malik';
 update public.fashion_brands set "Brand" = 'Ayesha Shoaib Malik' where "Brand" = 'Ayesha Malik' and "Website" = 'https://ayeshashoaibmalik.com';
+update public.fashion_brands set "Website" = null, instagram = 'aishafarid.official' where "Brand" = 'Aisha Farid';  -- owner: no formal website, Instagram only
