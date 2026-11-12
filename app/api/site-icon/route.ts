@@ -61,7 +61,7 @@ function candidatesFrom(html: string, base: string): Candidate[] {
     if (url) { upsize(url, 400, false); out.push({ url: url.toString(), score: 150 }); }
   }
   // A header image whose class, alt or file name says "logo".
-  for (const tag of (html.slice(0, 200_000).match(/<img\b[^>]*>/gi) ?? []).slice(0, 40)) {
+  for (const tag of (html.match(/<img\b[^>]*>/gi) ?? []).slice(0, 80)) {
     if (!/logo/i.test(`${attr(tag, 'class')} ${attr(tag, 'alt')} ${attr(tag, 'src')}`)) continue;
     const url = toUrl(attr(tag, 'src') || attr(tag, 'data-src'), base);
     if (url) { upsize(url, 400, false); out.push({ url: url.toString(), score: 140 }); break; }
