@@ -205,7 +205,7 @@ export default function Home() {
         </svg>
       </span>
       <div>
-        <h3>Tell your story</h3>
+        <h3>Share your story</h3>
         <p>Quality, fit, delivery, customs, communication — say what really happened, good or bad, in your own words.</p>
       </div>
     </li>
@@ -217,7 +217,7 @@ export default function Home() {
         </svg>
       </span>
       <div>
-        <h3>Show the proof</h3>
+        <h3>The proof is in the pictures</h3>
         <p>Put the website photo next to what actually arrived. Pictures say what a sales page won’t.</p>
       </div>
     </li>
@@ -229,7 +229,7 @@ export default function Home() {
         </svg>
       </span>
       <div>
-        <h3>Warn the next shopper</h3>
+        <h3>The honest review</h3>
         <p>Your review could save someone’s wedding outfit — and their money. Every review is checked, so it can’t be bought or buried.</p>
       </div>
     </li>
@@ -240,7 +240,7 @@ export default function Home() {
         </svg>
       </span>
       <div>
-        <h3>Find the ones worth it</h3>
+        <h3>Discover exceptional vendors</h3>
         <p>Sort by highest rated to discover designers with genuinely happy customers — and order with confidence.</p>
       </div>
     </li>
