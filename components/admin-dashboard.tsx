@@ -33,7 +33,7 @@ type FeedReply = {
   created_at: string; updated_at: string | null; author_email: string | null; review_text: string; review_rating: number;
 };
 type Message = { id: number; name: string | null; email: string; topic: string; message: string; handled: boolean; created_at: string; account_email: string | null };
-const TOPIC_LABELS: Record<string, string> = { question: 'Question', feedback: 'Feedback', review: 'Problem with a review', designer: 'Designer enquiry', press: 'Press / partnership', other: 'Other' };
+const TOPIC_LABELS: Record<string, string> = { question: 'Question', feedback: 'Feedback', review: 'Problem with a review', designer: 'Designer inquiry', press: 'Press / partnership', other: 'Other' };
 const CLAIM_ROLES: Record<string, string> = { owner: 'Owner / founder', staff: 'Works for the brand', agency: 'Agency / representative' };
 const emailDomain = (e: string | null) => (e && e.includes('@') ? e.split('@')[1].toLowerCase() : null);
 const siteDomain = (w: string | null) => (w ? w.trim().replace(/^https?:\s*\/*/i, '').replace(/^www\./i, '').split('/')[0].toLowerCase() : null);

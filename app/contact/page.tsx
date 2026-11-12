@@ -18,7 +18,7 @@ export default function ContactPage() {
           <div className="suggest-intro">
             <span className="section-kicker">CONTACT</span>
             <h1>Get in <em>touch.</em></h1>
-            <p>Questions, feedback, a problem with a review, or a designer enquiry — we read every message.</p>
+            <p>Questions, feedback, a problem with a review, or a designer inquiry — we read every message.</p>
             <p className="contact-email">Email us at<br /><a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></p>
             <p>Or send a message with the form and it will come straight to our inbox. We usually reply within a few days.</p>
           </div>
