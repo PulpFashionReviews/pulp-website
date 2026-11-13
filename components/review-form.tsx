@@ -324,13 +324,23 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
       if (previousProof && previousProof !== proofPath) {
         await supabase.storage.from(PROOF_BUCKET).remove([previousProof]);
       }
+      const wasGuest = me.guest;
       setNotice(editingId
         ? 'Your changes are saved. The updated review will appear once it’s approved again.'
-        : 'Thank you! Your review has been submitted and will appear once it’s approved.');
+        : wasGuest
+          ? 'Thank you! Your review has been submitted and will appear once it’s approved. We’ll email you when it’s live.'
+          : 'Thank you! Your review has been submitted and will appear once it’s approved.');
       resetForm();
       try { window.localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
-      supabase.auth.getUser().then(({ data }) => { if (data.user?.user_metadata?.draft) supabase!.auth.updateUser({ data: { draft: null } }); });
-      loadMine();
+      const { data: cur } = await supabase.auth.getUser();
+      if (cur.user?.user_metadata?.draft) await supabase.auth.updateUser({ data: { draft: null } });
+      if (wasGuest) {
+        // Guests don't stay signed in: confirming their email was only for this review.
+        await supabase.auth.signOut();
+        setMe(null);
+      } else {
+        loadMine();
+      }
     } catch (err) {
       if (uploaded.length) await supabase.storage.from(PHOTO_BUCKET).remove(uploaded);
       if (newProofPath) await supabase.storage.from(PROOF_BUCKET).remove([newProofPath]);
@@ -371,7 +381,9 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
         </div>
         {me ? (
           <p className="guest-banner">
-            {me.guest ? 'Posting as a guest' : 'Signed in as'}: <b>{me.email}</b> · <button type="button" className="text-button" onClick={signOut}>{me.guest ? 'Use a different email' : 'Sign out'}</button>
+            {me.guest
+              ? <>✓ Email confirmed: <b>{me.email}</b>. You’re posting a guest review. · <button type="button" className="text-button" onClick={signOut}>Use a different email</button></>
+              : <>Signed in as: <b>{me.email}</b> · <button type="button" className="text-button" onClick={signOut}>Sign out</button></>}
           </p>
         ) : (
           <div className="post-mode" id="post-mode">

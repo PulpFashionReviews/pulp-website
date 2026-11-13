@@ -30,6 +30,8 @@ export async function POST(req: NextRequest) {
     const { data, error } = await admin.auth.admin.generateLink({ type: 'invite', email, options: { redirectTo, data: { guest: true, draft } } });
     if (error) return Response.json({ error: error.message }, { status: 500 });
     link = data.properties?.action_link;
+    // Mark them as a guest in the part of their account only PULP can change.
+    if (data.user) await admin.auth.admin.updateUserById(data.user.id, { app_metadata: { ...(data.user.app_metadata || {}), guest: true } });
   } else {
     const { data, error } = await admin.auth.admin.generateLink({ type: 'magiclink', email, options: { redirectTo } });
     if (error) return Response.json({ error: error.message }, { status: 500 });
