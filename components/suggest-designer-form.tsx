@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
+import { CONTACT_EMAIL } from '@/lib/site';
 import { designerHref } from '@/lib/designers';
 import { PRICE_RANGES, RELATIONSHIPS, SHIPS_TO_OPTIONS } from '@/lib/review-options';
 
@@ -11,6 +12,24 @@ type BrandName = { id: number; Brand: string | null };
 type Me = { id: string; confirmed: boolean } | null;
 
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '');
+
+const SUGGEST_MAILTO = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('Designer suggestion for PULP')}&body=${encodeURIComponent(
+  'Designer or brand name:\nWebsite, Instagram or Facebook:\nWhat they sell (bridal, formal, pret, lawn, menswear…):\nAnything else we should know:\n',
+)}`;
+
+/** "Prefer email?" option, shown with or without an account. */
+function EmailOption({ compact = false }: { compact?: boolean }) {
+  return compact ? (
+    <p className="suggest-email-note">Prefer email? Send the designer’s name and a link to <a href={SUGGEST_MAILTO}>{CONTACT_EMAIL}</a>.</p>
+  ) : (
+    <div className="suggest-email">
+      <p className="post-mode-label">No account? Email us instead</p>
+      <p className="login-card-copy">Send us the designer’s name and their website or Instagram, and we’ll check and add them. No sign-up needed.</p>
+      <a className="outline-button" href={SUGGEST_MAILTO}>Email a suggestion ✉</a>
+      <p className="suggest-email-note">Or write to <b>{CONTACT_EMAIL}</b> from any email app.</p>
+    </div>
+  );
+}
 
 export function SuggestDesignerForm() {
   const [me, setMe] = useState<Me>(null);
@@ -89,12 +108,14 @@ export function SuggestDesignerForm() {
   if (!me) {
     return (
       <div className="review-form suggest-gate">
-        <h2 className="designer-subhead">Log in to suggest a designer</h2>
-        <p className="login-card-copy">Suggestions come from signed-in members so we can follow up if we have questions.</p>
+        <h2 className="designer-subhead">Suggest a designer</h2>
+        <p className="post-mode-label">With a PULP account</p>
+        <p className="login-card-copy">Log in to use the full form. It checks whether the designer is already listed, and lets you track your suggestion.</p>
         <div className="login-card-actions">
           <a className="button-primary" href="/login?next=/suggest-designer">Log in <span>↗</span></a>
           <a className="outline-button" href="/signup">Create account</a>
         </div>
+        <EmailOption />
       </div>
     );
   }
@@ -200,6 +221,7 @@ export function SuggestDesignerForm() {
         <button className="button-primary" type="submit" disabled={submitting}>{submitting ? 'Sending…' : 'Submit suggestion'} <span>↗</span></button>
       </div>
       {notice && <p className="notice" role="status">{notice}</p>}
+      <EmailOption compact />
     </form>
   );
 }

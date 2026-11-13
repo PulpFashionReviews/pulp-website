@@ -1243,3 +1243,7 @@ footer > .footer-brand p {
 .guest-confirm p{margin:0;font-size:15px;line-height:1.6}
 .guest-confirm-title{font:500 21px var(--serif);color:var(--wine)}
 .rating-stars{letter-spacing:1px}
+.suggest-email{margin-top:22px;padding-top:20px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.suggest-email .login-card-copy{margin:0}
+.suggest-email-note{font-size:14px;color:var(--muted);margin:6px 0 0;overflow-wrap:anywhere}
+.suggest-email-note a{color:var(--wine);text-decoration:underline}
