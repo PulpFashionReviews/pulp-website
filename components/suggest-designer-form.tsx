@@ -64,9 +64,9 @@ export function SuggestDesignerForm() {
     setNotice('');
     if (!supabase) { setNotice('Suggestions are temporarily unavailable. Please try again later.'); return; }
     if (company) { setDone(true); return; } // spam bot: pretend it worked
+    if (!website.trim() && !instagram.trim() && !facebook.trim()) { setNotice('Please add at least one link: website, Instagram or Facebook.'); return; }
     const contact = email.trim();
     if (contact && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact)) { setNotice('That email address doesn’t look right. Please check it, or leave it blank.'); return; }
-    if (!website.trim() && !instagram.trim() && !facebook.trim()) { setNotice('Please add at least one link: website, Instagram or Facebook.'); return; }
     if (!relationship) { setNotice('Please tell us how you know this designer.'); return; }
 
     setSubmitting(true);
@@ -125,6 +125,7 @@ export function SuggestDesignerForm() {
         </div>
       )}
 
+      <p className="links-label">Link * <span className="label-optional">(at least one: website, Instagram or Facebook)</span></p>
       <div className="order-fields">
         <div>
           <label htmlFor="sd-website">Website</label>
@@ -139,7 +140,7 @@ export function SuggestDesignerForm() {
           <input id="sd-facebook" value={facebook} onChange={(e) => setFacebook(e.target.value)} placeholder="Page name or link" maxLength={300} />
         </div>
       </div>
-      <p className="field-hint">At least one link is required, so we can confirm the designer.</p>
+      <p className="field-hint">We use it to confirm the designer before adding them.</p>
 
       <fieldset className="check-group">
         <legend>Categories <span>(optional, choose all that apply)</span></legend>

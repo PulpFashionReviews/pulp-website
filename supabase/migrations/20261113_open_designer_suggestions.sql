@@ -84,3 +84,6 @@ alter table public.designer_submissions add constraint designer_submissions_rela
 -- Categories are optional on suggestions (the admin can add them when approving).
 alter table public.designer_submissions drop constraint if exists designer_submissions_category_ids_check;
 alter table public.designer_submissions add constraint designer_submissions_category_ids_check check (cardinality(category_ids) <= 20);
+
+-- Required on suggestions: the name, "how do you know this designer?", and at least one link
+-- (website, Instagram or Facebook). Everything else is optional.
