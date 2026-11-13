@@ -1234,3 +1234,8 @@ footer > .footer-brand p {
   }
 }
 
+.upload-later{margin:12px 0 0;padding:14px 16px;background:#f3ebe6;border-left:3px solid var(--wine);color:var(--ink);font-size:15px;line-height:1.6}
+.upload-later p{margin:0 0 8px}
+.upload-later ol{margin:0 0 10px;padding-left:20px}
+.upload-later li{margin:4px 0}
+.upload-later .text-button{color:var(--wine);font-weight:600}

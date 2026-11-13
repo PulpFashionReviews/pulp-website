@@ -346,7 +346,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
             {me.guest ? 'Posting as a guest' : 'Signed in as'}: <b>{me.email}</b> · <button type="button" className="text-button" onClick={signOut}>{me.guest ? 'Use a different email' : 'Sign out'}</button>
           </p>
         ) : (
-          <div className="post-mode">
+          <div className="post-mode" id="post-mode">
             <p className="post-mode-label">How would you like to post?</p>
             <div className="mode-toggle" role="tablist" aria-label="How would you like to post?">
               <button type="button" role="tab" aria-selected={mode === 'account'} className={mode === 'account' ? 'active' : ''} onClick={() => setMode('account')}>With an account</button>
@@ -437,12 +437,30 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
               </div>
             ))}
             {photos.length < MAX_PHOTOS && (
-              <button type="button" className="photo-add" disabled={!me} title={!me ? 'Log in or confirm your email first' : undefined} onClick={() => fileInput.current?.click()}>
+              <button type="button" className="photo-add" disabled={!me} title={!me ? (mode === 'guest' ? 'Confirm your email first — see the steps below' : 'Log in first — see the steps below') : undefined} onClick={() => fileInput.current?.click()}>
                 <span>+</span>Add photo
               </button>
             )}
           </div>
-          {!me && <p className="upload-later">You can add photos once you’ve {mode === 'guest' ? 'confirmed your email' : 'logged in'}.</p>}
+          {!me && (
+            <div className="upload-later" role="note">
+              <p><b>Why is “Add photo” grayed out?</b> Photos unlock once we know who you are, so nobody can upload under your name.</p>
+              {mode === 'guest' ? (
+                <ol>
+                  <li>Scroll up to <b>“As a guest”</b>, type your email and click <b>“Email me a link”</b>.</li>
+                  <li>Open that email from PULP and click the link. Check spam if it isn’t there within a minute or two.</li>
+                  <li>You’ll come back to this form with your answers saved, and <b>“+ Add photo”</b> will work.</li>
+                </ol>
+              ) : (
+                <ol>
+                  <li>Scroll up and click <b>“Log in”</b>, or <b>“Create account”</b> if you’re new.</li>
+                  <li>You’ll come back to this form with your answers saved, and <b>“+ Add photo”</b> will work.</li>
+                </ol>
+              )}
+              {mode === 'account' && <p>Don’t want an account? Choose <b>“As a guest”</b> at the top. It only needs your email.</p>}
+              <a className="text-button" href="#post-mode">↑ Go to step 1</a>
+            </div>
+          )}
           <input ref={fileInput} type="file" accept="image/jpeg,image/png,image/webp" multiple hidden onChange={onPickFiles} />
         </div>
 
