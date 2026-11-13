@@ -155,8 +155,8 @@ export default function Home() {
     <em>Pakistani designers.</em>
   </h1>
   <p className="hero-intro">
-    Before you order, see what other shoppers actually received — with photos, delivery times, sizing and service.
-    Then share your own experience.
+    No more blind chances. Get real transparency into what a designer delivers before you order — photos of what
+    shoppers actually received, plus delivery times, sizing and service. Then share your own experience.
   </p>
   <form className="hero-search" role="search" onSubmit={(e) => { e.preventDefault(); setPage(1); document.getElementById('designers')?.scrollIntoView({ behavior: 'smooth' }); }}>
     <span aria-hidden="true">⌕</span>
@@ -230,7 +230,7 @@ export default function Home() {
       </span>
       <div>
         <h3>The honest review</h3>
-        <p>Your review could save someone’s wedding outfit — and their money. We believe in full transparency: every review is checked, so it can’t be bought or buried.</p>
+        <p>Your review could save someone’s wedding outfit — and their money. Every review is checked, so it can’t be bought or buried.</p>
       </div>
     </li>
     <li>
