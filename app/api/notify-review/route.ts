@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { clientForToken } from '@/lib/supabase-admin';
 import { escapeHtml, mailerReady, sendMail } from '@/lib/mailer';
 import { designerHref } from '@/lib/designers';
+import { SITE_URL } from '@/lib/site';
 
 // Emails a reviewer when an admin approves their review. Called by the admin dashboard.
 export async function POST(req: NextRequest) {
@@ -22,7 +23,7 @@ export async function POST(req: NextRequest) {
   if (!row.email) return Response.json({ sent: false, reason: 'no email on file' });
 
   const brand = row.brand_name || 'the designer';
-  const link = `${req.nextUrl.origin}${designerHref({ id: row.brand_id, Brand: row.brand_name })}`;
+  const link = `${SITE_URL}${designerHref({ id: row.brand_id, Brand: row.brand_name })}`;
   const b = escapeHtml(brand);
   const html = `
     <div style="font-family:Arial,sans-serif;max-width:520px;color:#252321;line-height:1.6">
