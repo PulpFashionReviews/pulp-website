@@ -222,13 +222,27 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
   async function sendGuestLink() {
     if (!supabase) { setGuestNotice('Reviews are temporarily unavailable. Please try again later.'); return; }
     setGuestBusy(true); setGuestNotice('');
-    const back = `${window.location.origin}${window.location.pathname}?guest=1`;
-    const { error } = await supabase.auth.signInWithOtp({
-      email: guestEmail.trim(),
-      options: { emailRedirectTo: back, shouldCreateUser: true, data: { guest: true, draft: { ...currentDraft(), mode: 'guest' } } },
-    });
+    const draft = { ...currentDraft(), mode: 'guest' };
+    // PULP sends the "Confirm your email" message itself.
+    const res = await fetch('/api/guest-link', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: guestEmail.trim(), path: window.location.pathname, draft }),
+    }).then((r) => r.json()).catch(() => ({ fallback: true })) as { sent?: boolean; error?: string; fallback?: boolean };
+    if (res.fallback) {
+      // Email sending not configured: use Supabase's own email instead.
+      const back = `${window.location.origin}${window.location.pathname}?guest=1`;
+      const { error } = await supabase.auth.signInWithOtp({
+        email: guestEmail.trim(),
+        options: { emailRedirectTo: back, shouldCreateUser: true, data: { guest: true, draft } },
+      });
+      setGuestBusy(false);
+      if (error) { setGuestNotice(error.message); return; }
+      setGuestSent(true);
+      return;
+    }
     setGuestBusy(false);
-    if (error) { setGuestNotice(error.message); return; }
+    if (!res.sent) { setGuestNotice(res.error || 'Something went wrong. Please try again.'); return; }
     setGuestSent(true);
   }
 
