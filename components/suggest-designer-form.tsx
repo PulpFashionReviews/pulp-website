@@ -67,7 +67,6 @@ export function SuggestDesignerForm() {
     const contact = email.trim();
     if (contact && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact)) { setNotice('That email address doesn’t look right. Please check it, or leave it blank.'); return; }
     if (!website.trim() && !instagram.trim() && !facebook.trim()) { setNotice('Please add at least one link: website, Instagram or Facebook.'); return; }
-    if (categoryIds.length === 0) { setNotice('Please choose at least one category.'); return; }
     if (!relationship) { setNotice('Please tell us how you know this designer.'); return; }
 
     setSubmitting(true);
@@ -143,7 +142,7 @@ export function SuggestDesignerForm() {
       <p className="field-hint">At least one link is required, so we can confirm the designer.</p>
 
       <fieldset className="check-group">
-        <legend>Categories * <span>(choose all that apply)</span></legend>
+        <legend>Categories <span>(optional, choose all that apply)</span></legend>
         <div className="check-grid">
           {categories.map((c) => (
             <label key={c.id} className={categoryIds.includes(c.id) ? 'checked' : ''}>

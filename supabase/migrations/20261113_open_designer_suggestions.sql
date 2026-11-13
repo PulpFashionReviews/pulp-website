@@ -80,3 +80,7 @@ $function$;
 alter table public.designer_submissions drop constraint if exists designer_submissions_relationship_check;
 alter table public.designer_submissions add constraint designer_submissions_relationship_check
   check (relationship in ('designer', 'works_for_brand', 'customer', 'marketer'));
+
+-- Categories are optional on suggestions (the admin can add them when approving).
+alter table public.designer_submissions drop constraint if exists designer_submissions_category_ids_check;
+alter table public.designer_submissions add constraint designer_submissions_category_ids_check check (cardinality(category_ids) <= 20);
