@@ -23,7 +23,7 @@ export function SuggestDesignerForm() {
   const [instagram, setInstagram] = useState('');
   const [facebook, setFacebook] = useState('');
   const [categoryIds, setCategoryIds] = useState<number[]>([]);
-  const [priceRange, setPriceRange] = useState('');
+  const [priceRanges, setPriceRanges] = useState<string[]>([]);
   const [shipsTo, setShipsTo] = useState<string[]>([]);
   const [relationship, setRelationship] = useState('');
   const [notes, setNotes] = useState('');
@@ -78,7 +78,7 @@ export function SuggestDesignerForm() {
       instagram: instagram.trim() || null,
       facebook: facebook.trim() || null,
       category_ids: categoryIds,
-      price_range: priceRange || null,
+      price_range: PRICE_RANGES.map((p) => p.value).filter((v) => priceRanges.includes(v)).join(', ') || null,
       ships_to: shipsTo,
       relationship,
       notes: notes.trim() || null,
@@ -99,7 +99,7 @@ export function SuggestDesignerForm() {
         <div className="login-card-actions">
           <button type="button" className="outline-button" onClick={() => {
             setDone(false); setName(''); setWebsite(''); setInstagram(''); setFacebook('');
-            setCategoryIds([]); setPriceRange(''); setShipsTo([]); setRelationship(''); setNotes(''); setEmail('');
+            setCategoryIds([]); setPriceRanges([]); setShipsTo([]); setRelationship(''); setNotes(''); setEmail('');
           }}>Suggest another</button>
           <Link className="button-primary" href="/#designers">Back to the directory <span>↗</span></Link>
         </div>
@@ -166,11 +166,17 @@ export function SuggestDesignerForm() {
         </div>
       </fieldset>
 
-      <label htmlFor="sd-price">Price range <span className="label-optional">(optional)</span></label>
-      <select id="sd-price" value={priceRange} onChange={(e) => setPriceRange(e.target.value)}>
-        <option value="">Not sure</option>
-        {PRICE_RANGES.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
-      </select>
+      <fieldset className="check-group">
+        <legend>Price range <span>(optional, choose all that apply)</span></legend>
+        <div className="check-grid">
+          {PRICE_RANGES.map((p) => (
+            <label key={p.value} className={priceRanges.includes(p.value) ? 'checked' : ''}>
+              <input type="checkbox" checked={priceRanges.includes(p.value)} onChange={() => setPriceRanges((cur) => toggle(cur, p.value))} />
+              {p.label}
+            </label>
+          ))}
+        </div>
+      </fieldset>
 
       <fieldset className="check-group">
         <legend>How do you know this designer? *</legend>

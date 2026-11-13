@@ -60,11 +60,13 @@ export const PRICE_RANGES = [
   { value: 'High', label: '$$$ · Luxury' },
 ];
 
-/** "Low" / "Medium" / "High" → "$" / "$$" / "$$$". */
+/** "Low" / "Medium" / "High" → "$" / "$$" / "$$$"; several ("Low, Medium") → a range ("$–$$"). */
 export function priceSymbol(value: string | null | undefined) {
   if (!value) return null;
   const symbols: Record<string, string> = { low: '$', medium: '$$', high: '$$$' };
-  return symbols[value.trim().toLowerCase()] ?? value;
+  const parts = value.split(',').map((v) => symbols[v.trim().toLowerCase()]).filter(Boolean).sort((a, b) => a.length - b.length);
+  if (!parts.length) return value;
+  return parts.length === 1 ? parts[0] : `${parts[0]}–${parts[parts.length - 1]}`;
 }
 
 export const RELATIONSHIPS = [

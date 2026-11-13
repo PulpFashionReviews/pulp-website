@@ -87,3 +87,8 @@ alter table public.designer_submissions add constraint designer_submissions_cate
 
 -- Required on suggestions: the name, "how do you know this designer?", and at least one link
 -- (website, Instagram or Facebook). Everything else is optional.
+
+-- Brands can sell at several price points: price range may be "Low", "Medium, High", etc.
+alter table public.designer_submissions drop constraint if exists designer_submissions_price_range_check;
+alter table public.designer_submissions add constraint designer_submissions_price_range_check
+  check (price_range is null or price_range ~ '^(Low|Medium|High)(, (Low|Medium|High)){0,2}$');

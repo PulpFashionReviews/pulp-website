@@ -28,7 +28,6 @@ export default function SuggestDesignerPage() {
             <h1>Can’t find a <em>designer?</em></h1>
             <p>Tell us about them. Whether you’re a happy (or unhappy) customer, or you run the brand yourself, suggestions help other shoppers find the reviews they need.</p>
             <ul>
-              <li>No account needed, and leaving your email is optional.</li>
               <li>We check every suggestion before it goes live.</li>
               <li>Once approved, anyone can review the designer.</li>
               <li>Designers can’t pay to be listed or to remove reviews.</li>
