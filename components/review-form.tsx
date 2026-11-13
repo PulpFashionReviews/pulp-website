@@ -364,7 +364,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
               <div className="mode-panel">
                 <p>No password needed — confirm your email with a one-click link. Guest reviews just need <b>a photo of what you received</b>, which is shown publicly with your review.</p>
                 {guestSent ? (
-                  <p className="guest-sent" role="status">Check <b>{guestEmail}</b> for a one-click link from PULP. It brings you back here with your answers saved. If this email already has a PULP account, the link signs you in to that account instead, and your review is saved the same way. (Nothing arrived? Check spam, or <button type="button" className="text-button" onClick={() => setGuestSent(false)}>try again</button>.)</p>
+                  <p className="guest-sent" role="status">Check <b>{guestEmail}</b> for a “Confirm your email” message from PULP and click the button in it. It brings you back here with your answers saved. (Nothing arrived? Check spam, or <button type="button" className="text-button" onClick={() => setGuestSent(false)}>try again</button>.)</p>
                 ) : (
                   <div className="guest-email-row">
                     <input type="email" placeholder="you@example.com" value={guestEmail} onChange={(e) => setGuestEmail(e.target.value)} aria-label="Your email"
@@ -448,7 +448,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
               {mode === 'guest' ? (
                 <ol>
                   <li>Scroll up to <b>“As a guest”</b>, type your email and click <b>“Email me a link”</b>.</li>
-                  <li>Open that email from PULP and click the link. Check spam if it isn’t there within a minute or two. If you already have a PULP account with that email, the link signs you in to it, which works too.</li>
+                  <li>Open that email from PULP and click <b>“Confirm my email”</b>. Check spam if it isn’t there within a minute or two.</li>
                   <li>You’ll come back to this form with your answers saved, and <b>“+ Add photo”</b> will work.</li>
                 </ol>
               ) : (
