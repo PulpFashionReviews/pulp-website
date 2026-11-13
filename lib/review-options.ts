@@ -68,9 +68,10 @@ export function priceSymbol(value: string | null | undefined) {
 }
 
 export const RELATIONSHIPS = [
-  { value: 'customer', label: 'I’m a customer' },
+  { value: 'designer', label: 'I’m the designer' },
   { value: 'works_for_brand', label: 'I own or work for this brand' },
   { value: 'marketer', label: 'I’m a marketer or agency for this brand' },
+  { value: 'customer', label: 'I’m a buyer / reviewer (I’ve shopped with them)' },
 ];
 
 /** "@name", "name" or a full URL → an Instagram profile link. */

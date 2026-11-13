@@ -1247,3 +1247,5 @@ footer > .footer-brand p {
 .suggest-email .login-card-copy{margin:0}
 .suggest-email-note{font-size:14px;color:var(--muted);margin:6px 0 0;overflow-wrap:anywhere}
 .suggest-email-note a{color:var(--wine);text-decoration:underline}
+.hp-field{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
+.suggest .field-hint{font-size:13px;color:var(--muted);margin:-4px 0 6px;line-height:1.5}
