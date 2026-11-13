@@ -142,10 +142,26 @@ export function AdminDashboard() {
     setBusy(null);
     if (error) { setMessage(error.message); return; }
     setReviews((cur) => cur.filter((x) => x.id !== r.id));
-    setMessage(next === 'approved'
+    const base = next === 'approved'
       ? `Approved${verified ? ' as a verified purchase' : ''} — it will appear on ${r.brand_name}'s page within about a minute.`
-      : next === 'rejected' ? 'Review rejected. It stays private.' : 'Moved back to waiting.');
+      : next === 'rejected' ? 'Review rejected. It stays private.' : 'Moved back to waiting.';
+    setMessage(base);
     loadCounts();
+    if (next === 'approved') {
+      // Let the reviewer know their review is live.
+      const { data: sess } = await supabase.auth.getSession();
+      const token = sess.session?.access_token;
+      if (!token) return;
+      const res = await fetch('/api/notify-review', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ reviewId: r.id }),
+      }).then((x) => x.json()).catch(() => null) as { sent?: boolean; reason?: string } | null;
+      setMessage(res?.sent ? `${base} The reviewer has been emailed.`
+        : res?.reason === 'email not set up' ? `${base} (Approval emails aren’t switched on yet.)`
+        : res?.reason === 'already emailed' ? base
+        : `${base} We couldn’t email the reviewer${res?.reason ? `: ${res.reason}` : ''}.`);
+    }
   }
 
   async function decideSubmission(s: QueueSubmission, approve: boolean) {

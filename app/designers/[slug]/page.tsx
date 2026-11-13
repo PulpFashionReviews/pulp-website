@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { BRAND_SELECT, BrandRow, Review, brandCategoryNames, designerSlug, reviewCategories, websiteUrl } from '@/lib/designers';
 import { ReviewForm } from '@/components/review-form';
 import { SiteFooter } from '@/components/site-footer';
-import { PHOTO_BUCKET, facebookUrl, formatOrderMonth, instagramUrl, priceSymbol } from '@/lib/review-options';
+import { facebookUrl, formatOrderMonth, instagramUrl, priceSymbol } from '@/lib/review-options';
 import { AuthLinks } from '@/components/auth-links';
 import { DesignerReply, Reply } from '@/components/designer-reply';
 import { LogoManager } from '@/components/logo-manager';
@@ -47,13 +47,10 @@ const getDesigner = cache(async (slug: string) => {
     .eq('brand_id', brand.id)
     .order('created_at', { ascending: false });
   const rows = (reviews || []) as FeedReview[];
-  // Photos are private; approved reviews' photos get short-lived viewing links.
-  const paths = rows.flatMap((r) => r.photo_paths ?? []);
+  // Photos are private; /api/review-photo hands out a fresh viewing link for approved reviews' photos,
+  // so they keep working however long this cached page is served.
   const photoUrls: Record<string, string> = {};
-  if (paths.length) {
-    const { data: signed } = await supabase.storage.from(PHOTO_BUCKET).createSignedUrls(paths, 60 * 60 * 2);
-    (signed || []).forEach((item, i) => { if (item.signedUrl) photoUrls[paths[i]] = item.signedUrl; });
-  }
+  for (const path of rows.flatMap((r) => r.photo_paths ?? [])) photoUrls[path] = `/api/review-photo?path=${encodeURIComponent(path)}`;
   // Designers' public replies (hidden ones are filtered out by the database).
   const { data: replyRows } = await supabase
     .from('review_replies')

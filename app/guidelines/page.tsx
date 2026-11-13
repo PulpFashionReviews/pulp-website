@@ -32,8 +32,8 @@ export default function GuidelinesPage() {
 
       <h2>Guest reviews, photos and proof of purchase</h2>
       <ul>
-        <li>You don’t need an account to post. As a <strong>guest</strong>, you confirm your email with a one-click link, then add <strong>at least one photo of what you received</strong>. Photos are shown publicly with your review.</li>
-        <li><strong>If you have an account, photos are optional</strong> — a rating and written review are enough.</li>
+        <li>You don’t need an account to post. As a <strong>guest</strong>, you just confirm your email with a one-click link.</li>
+        <li><strong>Photos are optional</strong> for everyone — a rating and written review are enough. Photos of what you received are very helpful, and they’re shown publicly with your review.</li>
         <li><strong>Proof of purchase is always optional</strong> — an order confirmation, receipt, or the line from your bank or PayPal statement. If you add it and we can match it to the designer and your order, your review gets a <strong>✓ Verified purchase</strong> badge.</li>
         <li>Proof is <strong>only seen by PULP</strong>, never published, and deleted 30 days after your review is checked. Cover your card number and address if you like — we just need the designer, date and amount.</li>
         <li>Each order number can be used for one review per designer. Edited or fake proof means the review won’t be published.</li>

@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useRef, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { CONTACT_EMAIL } from '@/lib/site';
@@ -26,16 +26,24 @@ export function ContactForm() {
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
+  const openedAt = useRef(Date.now());
 
   async function submit(e: FormEvent) {
     e.preventDefault();
     if (honey) { setSent(true); return; } // bots fill the hidden field
+    if (Date.now() - openedAt.current < 3000) { setSent(true); return; } // and submit within seconds
     setBusy(true); setError('');
     const topicLabel = TOPICS.find((t) => t.value === topic)?.label ?? topic;
     const payload = { name: name.trim() || null, email: email.trim(), topic, message: message.trim() };
 
     // 1) Keep a copy in PULP's admin inbox. 2) Email it to the PULP address.
-    const saved = supabase ? await supabase.from('contact_messages').insert(payload) : { error: { message: 'offline' } };
+    const saved = supabase ? await supabase.from('contact_messages').insert(payload) : { error: { message: 'offline', code: '' } };
+    // Our own sending limits (too many messages in an hour): stop here and say so.
+    if (saved.error && 'code' in saved.error && saved.error.code === 'P0001') {
+      setBusy(false);
+      setError(saved.error.message);
+      return;
+    }
     let emailed = false;
     try {
       const res = await fetch(FORWARD_URL, {
@@ -46,6 +54,7 @@ export function ContactForm() {
           _replyto: payload.email,
           _template: 'table',
           _captcha: 'false',
+          _honey: '',
           Name: payload.name ?? '—',
           Email: payload.email,
           Topic: topicLabel,

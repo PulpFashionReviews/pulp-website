@@ -30,7 +30,8 @@ export default function PrivacyPage() {
       <ul>
         <li>If you use our <strong>contact form</strong>, your name (optional), email address, topic and message. We store a copy so we can reply, and the form forwards it to our inbox by email.</li>
         <li>Like most websites, our hosting provider automatically records <strong>technical information</strong> such as your IP address, browser type, the pages you visit and the time of your visit, to keep the site secure and working.</li>
-        <li>If you’re signed in, your browser stores a <strong>login session</strong> so you stay signed in. We don’t currently use advertising or analytics cookies.</li>
+        <li>If you’re signed in, your browser stores a <strong>login session</strong> so you stay signed in. We don’t use advertising cookies.</li>
+        <li>We count visits with <strong>Vercel Web Analytics</strong>, which doesn’t use cookies and doesn’t identify you. It records things like the page visited, the referring site, and your country and device type, so we can see how PULP is used.</li>
       </ul>
 
       <h2>What’s public</h2>

@@ -45,7 +45,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
   const [guestSent, setGuestSent] = useState(false);
   const [guestBusy, setGuestBusy] = useState(false);
   const [guestNotice, setGuestNotice] = useState('');
-  const [mode, setMode] = useState<'account' | 'guest'>('account');
+  const [mode, setMode] = useState<'account' | 'guest'>('guest');
   const [showProof, setShowProof] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
 
@@ -56,8 +56,6 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
   const proofInput = useRef<HTMLInputElement>(null);
   const formTop = useRef<HTMLFormElement>(null);
 
-  // Guest rules (a photo is required) apply to guests, and preview while choosing "As a guest".
-  const guestRules = me ? me.guest : mode === 'guest';
   const designerName = brandName ?? brands?.find((b) => b.id === chosenId)?.Brand ?? 'this designer';
 
   // "What did you order?" uses the same categories as the directory.
@@ -262,7 +260,6 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
     if (!me.confirmed) { setNotice('Please confirm your email address first — check your inbox for the confirmation link.'); return; }
     if (!chosenId) { setNotice('Please choose the designer you shopped with.'); return; }
     if (orderMonth > thisMonth()) { setNotice('The order month can’t be in the future.'); return; }
-    if (me.guest && photos.length === 0) { setNotice('Guest reviews need at least one photo of what you received.'); return; }
 
     setSubmitting(true);
     const uploaded: string[] = [];
@@ -366,8 +363,8 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
           <div className="post-mode" id="post-mode">
             <p className="post-mode-label">How would you like to post?</p>
             <div className="mode-toggle" role="tablist" aria-label="How would you like to post?">
-              <button type="button" role="tab" aria-selected={mode === 'account'} className={mode === 'account' ? 'active' : ''} onClick={() => setMode('account')}>With an account</button>
-              <button type="button" role="tab" aria-selected={mode === 'guest'} className={mode === 'guest' ? 'active' : ''} onClick={() => setMode('guest')}>As a guest</button>
+              <button type="button" role="tab" aria-selected={mode === 'guest'} className={mode === 'guest' ? 'active' : ''} onClick={() => setMode('guest')}>Guest review</button>
+              <button type="button" role="tab" aria-selected={mode === 'account'} className={mode === 'account' ? 'active' : ''} onClick={() => setMode('account')}>Log in with an account</button>
             </div>
             {mode === 'account' ? (
               <div className="mode-panel">
@@ -379,7 +376,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
               </div>
             ) : (
               <div className="mode-panel">
-                <p>No account or password needed. <b>Write your review below</b>, then confirm your email at the bottom of the form. Guest reviews need <b>a photo of what you received</b>, which is shown publicly with your review.</p>
+                <p>No account or password needed. <b>Write your review below</b>, then confirm your email at the bottom of the form.</p>
                 <a className="text-button" href="#guest-confirm">Jump to the email step ↓</a>
               </div>
             )}
@@ -433,7 +430,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
         <textarea id="review-text" required minLength={20} maxLength={5000} rows={4} value={reviewText} onChange={(e) => setReviewText(e.target.value)} placeholder="Quality, fit, service, delivery — did it match the photos?" />
 
         <div className="photo-upload">
-          <p>Photos {guestRules ? <>* <span>(at least 1 of what you received, up to {MAX_PHOTOS})</span></> : <span>(optional, up to {MAX_PHOTOS})</span>}</p>
+          <p>Photos <span>(optional, up to {MAX_PHOTOS})</span></p>
           <p className="photo-hint">What arrived — and, if you like, a screenshot of the listing. <b>Photos are shown publicly with your review.</b> JPG, PNG or WebP, up to 5 MB each.</p>
           <div className="photo-grid">
             {photos.map((p, i) => (
@@ -450,12 +447,12 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
           </div>
           {!me && (
             <div className="upload-later" role="note">
-              <p><b>Why is “Add photo” grayed out?</b> Photos unlock once we know who you are, so nobody can upload under your name.</p>
+              <p><b>Want to add photos?</b> They’re optional, but very helpful. Photos unlock once we know who you are, so nobody can upload under your name.</p>
               {mode === 'guest' ? (
                 <ol>
                   <li>Finish your review, then scroll down to <b>“Last step: confirm your email”</b> at the bottom of the form.</li>
                   <li>Type your email, click <b>“Email me a link”</b>, then open the email from PULP and click <b>“Confirm my email”</b>. Check spam if it isn’t there within a minute or two.</li>
-                  <li>You’ll come back to this form with your answers saved. Add your photo here and click <b>“Submit for review”</b>.</li>
+                  <li>You’ll come back to this form with your answers saved. Add photos here if you like, then click <b>“Submit for review”</b>.</li>
                 </ol>
               ) : (
                 <ol>
@@ -463,7 +460,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
                   <li>You’ll come back to this form with your answers saved, and <b>“+ Add photo”</b> will work.</li>
                 </ol>
               )}
-              {mode === 'account' && <p>Don’t want an account? Choose <b>“As a guest”</b> at the top. It only needs your email.</p>}
+              {mode === 'account' && <p>Don’t want an account? Choose <b>“Guest review”</b> at the top. It only needs your email.</p>}
               {mode === 'guest'
                 ? <a className="text-button" href="#guest-confirm">↓ Go to the email step</a>
                 : <a className="text-button" href="#post-mode">↑ Go to step 1</a>}
@@ -519,7 +516,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
           <div className="guest-confirm" id="guest-confirm">
             <p className="guest-confirm-title">Last step: confirm your email</p>
             {guestSent ? (
-              <p className="guest-sent" role="status">Check <b>{guestEmail}</b> for a “Confirm your email” message from PULP and click the button in it. It brings you back here with your answers saved, so you can add your photo and submit. (Nothing arrived? Check spam, or <button type="button" className="text-button" onClick={() => setGuestSent(false)}>try again</button>.)</p>
+              <p className="guest-sent" role="status">Check <b>{guestEmail}</b> for a “Confirm your email” message from PULP and click the button in it. It brings you back here with your answers saved, so you can add photos if you like and submit. (Nothing arrived? Check spam, or <button type="button" className="text-button" onClick={() => setGuestSent(false)}>try again</button>.)</p>
             ) : (
               <>
                 <p>We’ll email you a one-click link. No account or password needed. Your answers stay saved on this device while you check your inbox.</p>
