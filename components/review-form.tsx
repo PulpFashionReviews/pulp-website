@@ -455,6 +455,29 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
         <label htmlFor="review-text">Your review *</label>
         <textarea id="review-text" required minLength={20} maxLength={5000} rows={4} value={reviewText} onChange={(e) => setReviewText(e.target.value)} placeholder="Quality, fit, service, delivery — did it match the photos?" />
 
+        {showDetails ? (
+          <div className="category-ratings">
+            <p>Rate the details <span>(optional)</span></p>
+            <div className="category-rating-grid">
+              {reviewCategories.map((c) => (
+                <label key={c}>
+                  {c}
+                  <select value={categoryRatings[c] || ''} onChange={(e) => setCategoryRatings((prev) => {
+                    const next = { ...prev };
+                    if (e.target.value) next[c] = Number(e.target.value); else delete next[c];
+                    return next;
+                  })}>
+                    <option value="">—</option>
+                    {[1, 2, 3, 4, 5].map((n) => <option key={n} value={n}>{n} / 5</option>)}
+                  </select>
+                </label>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <button type="button" className="more-toggle" onClick={() => setShowDetails(true)}>+ Rate service, quality, delivery &amp; more <span>(optional)</span></button>
+        )}
+
         <div className="photo-upload">
           <p>Photos <span>(optional, up to {MAX_PHOTOS})</span></p>
           <p className="photo-hint">What arrived — and, if you like, a screenshot of the listing. <b>Photos are shown publicly with your review.</b> JPG, PNG or WebP, up to 5 MB each.</p>
@@ -512,29 +535,6 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
           </div>
         ) : (
           <button type="button" className="more-toggle" onClick={() => setShowProof(true)}>+ Add proof of purchase <span>(optional — earns a ✓ Verified purchase badge)</span></button>
-        )}
-
-        {showDetails ? (
-          <div className="category-ratings">
-            <p>Rate the details <span>(optional)</span></p>
-            <div className="category-rating-grid">
-              {reviewCategories.map((c) => (
-                <label key={c}>
-                  {c}
-                  <select value={categoryRatings[c] || ''} onChange={(e) => setCategoryRatings((prev) => {
-                    const next = { ...prev };
-                    if (e.target.value) next[c] = Number(e.target.value); else delete next[c];
-                    return next;
-                  })}>
-                    <option value="">—</option>
-                    {[1, 2, 3, 4, 5].map((n) => <option key={n} value={n}>{n} / 5</option>)}
-                  </select>
-                </label>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <button type="button" className="more-toggle" onClick={() => setShowDetails(true)}>+ Rate service, quality, delivery &amp; more <span>(optional)</span></button>
         )}
 
         <p className="form-privacy">Reviews and photos stay private until approved. By submitting, you agree to our <Link href="/guidelines">Review Guidelines</Link> and <Link href="/terms">Terms of Use</Link>.</p>
