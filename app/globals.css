@@ -1242,3 +1242,4 @@ footer > .footer-brand p {
 .guest-confirm{margin-top:6px;padding:18px;border:1px solid var(--wine);background:#fbf6f4;display:flex;flex-direction:column;gap:10px;scroll-margin-top:100px}
 .guest-confirm p{margin:0;font-size:15px;line-height:1.6}
 .guest-confirm-title{font:500 21px var(--serif);color:var(--wine)}
+.rating-stars{letter-spacing:1px}
