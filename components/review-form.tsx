@@ -238,7 +238,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
     if (!supabase) { setNotice('Reviews are temporarily unavailable. Please try again later.'); return; }
     setNotice(''); setNeedsLogin(false);
     if (!me) {
-      if (mode === 'guest') { setNotice('Please confirm your email first — enter it at the top of the form and click the link we send you.'); }
+      if (mode === 'guest') { setNotice('Please confirm your email first, using the box at the bottom of the form.'); }
       else { setNeedsLogin(true); setNotice('Please log in before submitting a review — your answers are saved on this device.'); }
       formTop.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       return;
@@ -362,19 +362,8 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
               </div>
             ) : (
               <div className="mode-panel">
-                <p>No password needed — confirm your email with a one-click link. Guest reviews just need <b>a photo of what you received</b>, which is shown publicly with your review.</p>
-                {guestSent ? (
-                  <p className="guest-sent" role="status">Check <b>{guestEmail}</b> for a “Confirm your email” message from PULP and click the button in it. It brings you back here with your answers saved. (Nothing arrived? Check spam, or <button type="button" className="text-button" onClick={() => setGuestSent(false)}>try again</button>.)</p>
-                ) : (
-                  <div className="guest-email-row">
-                    <input type="email" placeholder="you@example.com" value={guestEmail} onChange={(e) => setGuestEmail(e.target.value)} aria-label="Your email"
-                      onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); if (guestEmail.includes('@')) sendGuestLink(); } }} />
-                    <button type="button" className="button-primary" disabled={guestBusy || !guestEmail.includes('@')} onClick={sendGuestLink}>
-                      {guestBusy ? 'Sending…' : 'Email me a link'}
-                    </button>
-                    {guestNotice && <p className="guest-error">{guestNotice}</p>}
-                  </div>
-                )}
+                <p>No account or password needed. <b>Write your review below</b>, then confirm your email at the bottom of the form. Guest reviews need <b>a photo of what you received</b>, which is shown publicly with your review.</p>
+                <a className="text-button" href="#guest-confirm">Jump to the email step ↓</a>
               </div>
             )}
           </div>
@@ -437,7 +426,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
               </div>
             ))}
             {photos.length < MAX_PHOTOS && (
-              <button type="button" className="photo-add" disabled={!me} title={!me ? (mode === 'guest' ? 'Confirm your email first — see the steps below' : 'Log in first — see the steps below') : undefined} onClick={() => fileInput.current?.click()}>
+              <button type="button" className="photo-add" disabled={!me} title={!me ? (mode === 'guest' ? 'Confirm your email at the bottom of the form first' : 'Log in first — see the steps below') : undefined} onClick={() => fileInput.current?.click()}>
                 <span>+</span>Add photo
               </button>
             )}
@@ -447,9 +436,9 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
               <p><b>Why is “Add photo” grayed out?</b> Photos unlock once we know who you are, so nobody can upload under your name.</p>
               {mode === 'guest' ? (
                 <ol>
-                  <li>Scroll up to <b>“As a guest”</b>, type your email and click <b>“Email me a link”</b>.</li>
-                  <li>Open that email from PULP and click <b>“Confirm my email”</b>. Check spam if it isn’t there within a minute or two.</li>
-                  <li>You’ll come back to this form with your answers saved, and <b>“+ Add photo”</b> will work.</li>
+                  <li>Finish your review, then scroll down to <b>“Last step: confirm your email”</b> at the bottom of the form.</li>
+                  <li>Type your email, click <b>“Email me a link”</b>, then open the email from PULP and click <b>“Confirm my email”</b>. Check spam if it isn’t there within a minute or two.</li>
+                  <li>You’ll come back to this form with your answers saved. Add your photo here and click <b>“Submit for review”</b>.</li>
                 </ol>
               ) : (
                 <ol>
@@ -458,7 +447,9 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
                 </ol>
               )}
               {mode === 'account' && <p>Don’t want an account? Choose <b>“As a guest”</b> at the top. It only needs your email.</p>}
-              <a className="text-button" href="#post-mode">↑ Go to step 1</a>
+              {mode === 'guest'
+                ? <a className="text-button" href="#guest-confirm">↓ Go to the email step</a>
+                : <a className="text-button" href="#post-mode">↑ Go to step 1</a>}
             </div>
           )}
           <input ref={fileInput} type="file" accept="image/jpeg,image/png,image/webp" multiple hidden onChange={onPickFiles} />
@@ -507,12 +498,33 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
         )}
 
         <p className="form-privacy">Reviews and photos stay private until approved. By submitting, you agree to our <Link href="/guidelines">Review Guidelines</Link> and <Link href="/terms">Terms of Use</Link>.</p>
-        <div className="form-actions">
+        {!me && mode === 'guest' && !editingId ? (
+          <div className="guest-confirm" id="guest-confirm">
+            <p className="guest-confirm-title">Last step: confirm your email</p>
+            {guestSent ? (
+              <p className="guest-sent" role="status">Check <b>{guestEmail}</b> for a “Confirm your email” message from PULP and click the button in it. It brings you back here with your answers saved, so you can add your photo and submit. (Nothing arrived? Check spam, or <button type="button" className="text-button" onClick={() => setGuestSent(false)}>try again</button>.)</p>
+            ) : (
+              <>
+                <p>We’ll email you a one-click link. No account or password needed. Your answers stay saved on this device while you check your inbox.</p>
+                <div className="guest-email-row">
+                  <input type="email" placeholder="you@example.com" value={guestEmail} onChange={(e) => setGuestEmail(e.target.value)} aria-label="Your email"
+                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); if (guestEmail.includes('@')) sendGuestLink(); } }} />
+                  <button type="button" className="button-primary" disabled={guestBusy || !guestEmail.includes('@')} onClick={sendGuestLink}>
+                    {guestBusy ? 'Sending…' : 'Email me a link'}
+                  </button>
+                </div>
+                {guestNotice && <p className="guest-error">{guestNotice}</p>}
+              </>
+            )}
+          </div>
+        ) : (
+          <div className="form-actions">
           <button className="button-primary" type="submit" disabled={submitting}>
             {submitting ? 'Saving…' : editingId ? 'Save changes' : 'Submit for review'} <span>↗</span>
           </button>
           {editingId && <button type="button" className="outline-button" onClick={() => { resetForm(); setNotice(''); }}>Cancel</button>}
         </div>
+        )}
         {notice && (
           <p className="notice" role="status">
             {notice} {needsLogin && <><Link href={loginHref()}>Log in</Link> or <Link href="/signup">sign up</Link>.</>}
