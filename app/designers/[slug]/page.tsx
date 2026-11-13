@@ -3,7 +3,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
 import { supabase } from '@/lib/supabase';
-import { BRAND_SELECT, BrandRow, Review, brandCategoryNames, designerSlug, reviewCategories, websiteUrl } from '@/lib/designers';
+import { BRAND_SELECT, BrandRow, Review, brandCategoryNames, designerHref, designerSlug, reviewCategories, websiteUrl } from '@/lib/designers';
+import { SITE_URL } from '@/lib/site';
 import { ReviewForm } from '@/components/review-form';
 import { SiteFooter } from '@/components/site-footer';
 import { facebookUrl, formatOrderMonth, instagramUrl, priceSymbol } from '@/lib/review-options';
@@ -64,11 +65,17 @@ const getDesigner = cache(async (slug: string) => {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const designer = await getDesigner(slug);
-  if (!designer) return { title: 'Designer not found — PULP' };
+  if (!designer) return { title: 'Designer not found — PULP', robots: { index: false } };
   const name = designer.brand.Brand || 'Designer';
+  const n = designer.reviews.length;
+  const description = n
+    ? `Read ${n} real customer review${n === 1 ? '' : 's'} of ${name}, with photos of what arrived, sizing, delivery times and service. Shopping from the US, UK or Canada? See what other buyers say first.`
+    : `${name} reviews from real shoppers outside Pakistan: photos of what arrived, sizing, delivery and service. Bought from ${name}? Be the first to review them on PULP.`;
   return {
-    title: `${name} reviews — PULP`,
-    description: `Read ${designer.reviews.length} real customer reviews of ${name}, with photos and detailed ratings, on PULP.`,
+    title: `${name} reviews: real customer photos & ratings | PULP`,
+    description,
+    alternates: { canonical: designerHref(designer.brand) },
+    openGraph: { title: `${name} reviews | PULP`, description, url: designerHref(designer.brand), siteName: 'PULP', type: 'website' },
   };
 }
 
@@ -239,6 +246,27 @@ export default async function DesignerPage({ params }: PageProps) {
         </aside>
       </div>
 
+      {average !== null && (
+        <script
+          type="application/ld+json"
+          // Lets search engines show the rating (e.g. ★★★★☆ 12 reviews) next to this page in results.
+          dangerouslySetInnerHTML={{ __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            name: brandName,
+            url: `${SITE_URL}${designerHref(brand)}`,
+            ...(brand.Website ? { sameAs: [websiteUrl(brand.Website)] } : {}),
+            aggregateRating: { '@type': 'AggregateRating', ratingValue: average.toFixed(1), bestRating: 5, worstRating: 1, ratingCount: latest.length, reviewCount: reviews.length },
+            review: reviews.slice(0, 10).map((r) => ({
+              '@type': 'Review',
+              reviewRating: { '@type': 'Rating', ratingValue: r.rating, bestRating: 5, worstRating: 1 },
+              author: { '@type': 'Person', name: 'PULP shopper' },
+              datePublished: r.created_at.slice(0, 10),
+              reviewBody: r.review_text,
+            })),
+          }).replace(/</g, '\\u003c') }}
+        />
+      )}
       <SiteFooter />
     </main>
   );
