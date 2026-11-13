@@ -79,6 +79,13 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
       // Guests confirm by email link and have no password on their account.
       const { data: guest } = await supabase!.rpc('current_user_is_guest');
       setMe({ id: u.id, email: u.email ?? null, confirmed: !!u.email_confirmed_at, guest: guest === true });
+      // A guest's answers also travel with their confirmation email, so they survive
+      // opening the link in another browser, a private window or another device.
+      const saved = u.user_metadata?.draft;
+      if (saved && !hasLocalDraft.current && !serverDraftUsed.current) {
+        serverDraftUsed.current = true;
+        applyDraft(saved);
+      }
     };
     read();
     const { data: sub } = supabase.auth.onAuthStateChange(() => { read(); });
@@ -88,7 +95,28 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
   // Keep a draft on this device so answers survive logging in or confirming an email.
   const DRAFT_KEY = 'pulp-review-draft';
   const restored = useRef(false);
+  const hasLocalDraft = useRef(false);
+  const serverDraftUsed = useRef(false);
   const [draftReady, setDraftReady] = useState(false);
+  type Draft = { brandId?: number | null; rating?: number; reviewText?: string; itemType?: string; shippedTo?: string; orderMonth?: string; categoryRatings?: Record<string, number>; orderRef?: string; mode?: string };
+  function currentDraft(): Draft {
+    return { brandId: chosenId, rating, reviewText, itemType, shippedTo, orderMonth, categoryRatings, orderRef, mode };
+  }
+  /** Fill the form from a saved draft. Returns false if the draft is for a different designer. */
+  function applyDraft(d: Draft) {
+    if (!d || typeof d !== 'object') return false;
+    if (brandId && d.brandId && d.brandId !== brandId) return false;
+    if (!brandId && d.brandId) setChosenId(d.brandId);
+    if (d.rating) setRating(d.rating);
+    if (d.reviewText) setReviewText(d.reviewText);
+    if (d.itemType) setItemType(d.itemType);
+    if (d.shippedTo) setShippedTo(d.shippedTo);
+    if (d.orderMonth) setOrderMonth(d.orderMonth);
+    if (d.categoryRatings && Object.keys(d.categoryRatings).length) { setCategoryRatings(d.categoryRatings); setShowDetails(true); }
+    if (d.orderRef) setOrderRef(d.orderRef);
+    if (d.mode === 'guest') setMode('guest');
+    return true;
+  }
   useEffect(() => {
     if (restored.current) return;
     restored.current = true;
@@ -96,27 +124,15 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
     try {
       const raw = window.localStorage.getItem(DRAFT_KEY);
       if (!raw) return;
-      const d = JSON.parse(raw);
-      if (brandId && d.brandId !== brandId) return;
-      if (!brandId && d.brandId) setChosenId(d.brandId);
-      if (d.rating) setRating(d.rating);
-      if (d.reviewText) setReviewText(d.reviewText);
-      if (d.itemType) setItemType(d.itemType);
-      if (d.shippedTo) setShippedTo(d.shippedTo);
-      if (d.orderMonth) setOrderMonth(d.orderMonth);
-      if (d.categoryRatings && Object.keys(d.categoryRatings).length) { setCategoryRatings(d.categoryRatings); setShowDetails(true); }
-      if (d.orderRef) setOrderRef(d.orderRef);
-      if (d.mode === 'guest') setMode('guest');
+      if (applyDraft(JSON.parse(raw))) hasLocalDraft.current = true;
     } catch { /* storage unavailable */ }
-  }, [brandId]);
+  }, [brandId]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (editingId || !draftReady) return;
     try {
       const empty = !reviewText && !itemType && !shippedTo && !orderMonth && !orderRef && !Object.keys(categoryRatings).length;
       if (empty) { window.localStorage.removeItem(DRAFT_KEY); return; }
-      window.localStorage.setItem(DRAFT_KEY, JSON.stringify({
-        brandId: chosenId, rating, reviewText, itemType, shippedTo, orderMonth, categoryRatings, orderRef, mode,
-      }));
+      window.localStorage.setItem(DRAFT_KEY, JSON.stringify(currentDraft()));
     } catch { /* storage unavailable */ }
   }, [draftReady, editingId, chosenId, rating, reviewText, itemType, shippedTo, orderMonth, categoryRatings, orderRef, mode]);
 
@@ -211,7 +227,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
     const back = `${window.location.origin}${window.location.pathname}?guest=1`;
     const { error } = await supabase.auth.signInWithOtp({
       email: guestEmail.trim(),
-      options: { emailRedirectTo: back, shouldCreateUser: true, data: { guest: true } },
+      options: { emailRedirectTo: back, shouldCreateUser: true, data: { guest: true, draft: { ...currentDraft(), mode: 'guest' } } },
     });
     setGuestBusy(false);
     if (error) { setGuestNotice(error.message); return; }
@@ -302,6 +318,7 @@ export function ReviewForm({ brandId, brandName, brands }: Props) {
         : 'Thank you! Your review has been submitted and will appear once it’s approved.');
       resetForm();
       try { window.localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
+      supabase.auth.getUser().then(({ data }) => { if (data.user?.user_metadata?.draft) supabase!.auth.updateUser({ data: { draft: null } }); });
       loadMine();
     } catch (err) {
       if (uploaded.length) await supabase.storage.from(PHOTO_BUCKET).remove(uploaded);
