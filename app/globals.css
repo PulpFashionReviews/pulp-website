@@ -1227,3 +1227,10 @@ footer > .footer-brand p {
   }
 }
 
+/* Review banner: keep the copy in the centre column now that the side decorations are gone */
+@media (min-width: 681px) {
+  .review-banner > div {
+    grid-column: 2;
+  }
+}
+

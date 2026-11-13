@@ -309,7 +309,7 @@ export default function Home() {
       {!loading && <p className="suggest-cta">Can’t find a designer? <Link href="/suggest-designer">Suggest one ↗</Link></p>}
     </section>
 
-    <section className="review-banner" id="reviews"><div className="banner-mark">P.</div><div><span className="section-kicker">YOUR EXPERIENCE MATTERS</span><h2>REAL EXPERIENCES.<br /><em>REAL PHOTOS.</em></h2><p>Help another woman shop smarter. Tell us what was worth it, what wasn't, and what you wish you knew.</p><a className="button-light" href="#write-review">Leave a review <span>↗</span></a></div></section>
+    <section className="review-banner" id="reviews"><div><span className="section-kicker">YOUR EXPERIENCE MATTERS</span><h2>REAL EXPERIENCES.<br /><em>REAL PHOTOS.</em></h2><p>Help another woman shop smarter. Tell us what was worth it, what wasn't, and what you wish you knew.</p><a className="button-light" href="#write-review">Leave a review <span>↗</span></a></div></section>
 
     <section className="write-section section-pad" id="write-review"><div className="write-intro"><span className="section-kicker">ADD YOUR VOICE</span><h2>Good or bad,<br /><em>we want to know.</em></h2><p>Thoughtful reviews make the whole community stronger. Reviews are checked before publishing to keep the directory useful and respectful.</p>{userEmail && <div className="login-card"><h3>You’re signed in</h3><p className="signed-in">{userEmail}</p><button className="outline-button" onClick={signOut}>Sign out</button></div>}</div>
       <ReviewForm brands={brands} /></section>
