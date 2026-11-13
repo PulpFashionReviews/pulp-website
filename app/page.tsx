@@ -155,8 +155,8 @@ export default function Home() {
     <em>Pakistani designers.</em>
   </h1>
   <p className="hero-intro">
-    No more blind chances. Get real transparency into what a designer delivers before you order — photos of what
-    shoppers actually received, plus delivery times, sizing and service. Then share your own experience.
+    Get real transparency into what a designer delivers before you order — photos of what shoppers actually
+    received, plus delivery times, sizing and service. Then share your own experience.
   </p>
   <form className="hero-search" role="search" onSubmit={(e) => { e.preventDefault(); setPage(1); document.getElementById('designers')?.scrollIntoView({ behavior: 'smooth' }); }}>
     <span aria-hidden="true">⌕</span>
