@@ -11,7 +11,7 @@ export default function AdminPage() {
   return (
     <main>
       <header className="topbar">
-        <Link href="/" className="wordmark" aria-label="PULP home">PULP<span>®</span></Link>
+        <Link href="/" className="wordmark" aria-label="PULP home">PULP</Link>
         <nav>
           <Link href="/#designers">Directory</Link>
         </nav>

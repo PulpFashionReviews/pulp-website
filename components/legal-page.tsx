@@ -8,7 +8,7 @@ export function LegalPage({ kicker, title, intro, children }: { kicker: string; 
   return (
     <main>
       <header className="topbar">
-        <Link href="/" className="wordmark" aria-label="PULP home">PULP<span>®</span></Link>
+        <Link href="/" className="wordmark" aria-label="PULP home">PULP</Link>
         <nav>
           <Link href="/#how-it-works">How It Works</Link>
           <Link href="/#designers">Find a Designer</Link>

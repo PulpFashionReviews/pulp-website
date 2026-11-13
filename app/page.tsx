@@ -110,7 +110,7 @@ export default function Home() {
   return <main>
 <header className="topbar">
   <a href="#top" className="wordmark" aria-label="PULP home">
-    PULP<span>®</span>
+    PULP
   </a>
 
   <nav>

@@ -98,7 +98,7 @@ export default function ResetPasswordPage() {
   return (
     <main className="auth-page">
       <div className="auth-card">
-        <a href="/" className="auth-logo">PULP<span>®</span></a>
+        <a href="/" className="auth-logo">PULP</a>
         <p className="auth-kicker">ACCOUNT RECOVERY</p>
         <h1>Reset your password</h1>
         <p className="auth-description">

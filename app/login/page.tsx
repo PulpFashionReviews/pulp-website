@@ -44,7 +44,7 @@ export default function LoginPage() {
   return (
     <main className="auth-page">
       <div className="auth-card">
-        <a href="/" className="auth-logo">PULP<span>®</span></a>
+        <a href="/" className="auth-logo">PULP</a>
         <p className="auth-kicker">WELCOME BACK</p>
         <h1>Log in to PULP</h1>
         <p className="auth-description">

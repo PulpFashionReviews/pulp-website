@@ -4,7 +4,7 @@ import { CONTACT_EMAIL } from '@/lib/site';
 export function SiteFooter() {
   return (
     <footer>
-      <Link href="/" className="wordmark footer-logo">PULP<span>®</span></Link>
+      <Link href="/" className="wordmark footer-logo">PULP</Link>
       <p>Fashion reviews, from the people who know.</p>
       <div>
         <Link href="/suggest-designer">Suggest a designer</Link>
@@ -22,7 +22,7 @@ export function SiteFooter() {
           designers listed. All brand names and logos belong to their respective owners. If you are a rights holder and
           have a concern about content on PULP, please contact us at {CONTACT_EMAIL}.
         </p>
-        © {new Date().getFullYear()} PULP. Real experiences. Real photos.
+        © {new Date().getFullYear()} PULP℠. Real experiences. Real photos.
       </small>
     </footer>
   );

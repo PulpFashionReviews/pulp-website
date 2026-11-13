@@ -43,7 +43,7 @@ export default function ForgotPasswordPage() {
   return (
     <main className="auth-page">
       <div className="auth-card">
-        <a href="/" className="auth-logo">PULP<span>®</span></a>
+        <a href="/" className="auth-logo">PULP</a>
         <p className="auth-kicker">ACCOUNT RECOVERY</p>
         <h1>Forgot your password?</h1>
         <p className="auth-description">

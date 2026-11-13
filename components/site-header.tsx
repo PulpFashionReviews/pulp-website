@@ -5,7 +5,7 @@ import { AuthLinks } from '@/components/auth-links';
 export function SiteHeader() {
   return (
     <header className="topbar">
-      <Link href="/" className="wordmark" aria-label="PULP home">PULP<span>®</span></Link>
+      <Link href="/" className="wordmark" aria-label="PULP home">PULP</Link>
       <nav>
         <Link href="/#how-it-works">How It Works</Link>
         <Link href="/#designers">Find a Designer</Link>
