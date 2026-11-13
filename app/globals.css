@@ -1203,3 +1203,27 @@ footer>div a{white-space:nowrap}
   }
 }
 
+/* Footer: tagline sits under the PULP wordmark; links stay on one line on the right */
+footer > .footer-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+footer > .footer-brand p {
+  margin: 0;
+}
+
+@media (min-width: 681px) {
+  footer {
+    grid-template-columns: 1fr auto;
+  }
+
+  footer > .footer-links {
+    flex-wrap: nowrap;
+    white-space: nowrap;
+  }
+}
+

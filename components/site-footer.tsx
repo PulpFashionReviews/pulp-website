@@ -4,10 +4,12 @@ import { CONTACT_EMAIL } from '@/lib/site';
 export function SiteFooter() {
   return (
     <footer>
-      <Link href="/" className="wordmark footer-logo">PULP</Link>
-      <p>Fashion reviews, from the people who know.</p>
-      <div>
-        <Link href="/suggest-designer">Suggest a designer</Link>
+      <div className="footer-brand">
+        <Link href="/" className="wordmark footer-logo">PULP</Link>
+        <p>Fashion reviews, from the people who know.</p>
+      </div>
+      <div className="footer-links">
+        <Link href="/suggest-designer">Submit a Designer</Link>
         <Link href="/claim">For designers</Link>
         <Link href="/contact">Contact</Link>
       </div>
